@@ -42,7 +42,8 @@ import org.firstinspires.ftc.teamcode.hardware.robot.Robot;
 public class Auto extends LinearOpMode {
 
     /* Declare OpMode members. */
-    Robot robot = new Robot();
+
+    Robot robot = new Robot(hardwareMap);
 
     
 

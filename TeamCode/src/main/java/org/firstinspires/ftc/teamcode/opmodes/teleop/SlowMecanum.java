@@ -2,6 +2,7 @@ package org.firstinspires.ftc.teamcode.opmodes.teleop;
 
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
+import com.qualcomm.robotcore.hardware.HardwareMap;
 
 import org.firstinspires.ftc.teamcode.hardware.robot.Robot;
 
@@ -9,18 +10,19 @@ import org.firstinspires.ftc.teamcode.hardware.robot.Robot;
 @TeleOp
 public class SlowMecanum extends LinearOpMode {
 
-    Robot robot = new Robot();
+
+
 
     @Override
     public void runOpMode() {
-
+        Robot robot = new Robot(hardwareMap);
         waitForStart();
 
         while (opModeIsActive()) {
 
 
 
-            double leftStickY = gamepad1.left_stick_y;
+            double leftStickY = gamepad1.left_stick_y * -1;
             double leftStickX = gamepad1.left_stick_x;
             double rightStickX = gamepad1.right_stick_x;
 
