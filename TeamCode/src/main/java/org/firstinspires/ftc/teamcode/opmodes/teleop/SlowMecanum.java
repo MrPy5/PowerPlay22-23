@@ -12,12 +12,15 @@ public class SlowMecanum extends LinearOpMode {
 
 
 
+    public boolean slowmo;
 
     @Override
     public void runOpMode() {
         Robot robot = new Robot(hardwareMap);
         waitForStart();
-
+        double slowfactor = 1;
+        boolean slow_mode = false;
+        boolean reset_slow = true;
         while (opModeIsActive()) {
 
 
@@ -34,10 +37,33 @@ public class SlowMecanum extends LinearOpMode {
             double lrPower;
             double rrPower;
 
-            wheelPower = Math.hypot(leftStickX, leftStickY);
-            if (wheelPower > .05) {
-                wheelPower = (.8 * Math.pow(wheelPower, 2) + .2) / 2;
+
+            if (gamepad1.right_trigger > 0.1 && reset_slow) {
+                gamepad1.rumble(10);
+                reset_slow = false;
+                if (slow_mode == false) {
+                    slowfactor = 0.4;
+                    slow_mode = true;
+                }
+                else if (slow_mode) {
+                    slowfactor = 1;
+                    slow_mode = false;
+                }
             }
+
+            if (gamepad1.right_trigger < 0.1) {
+                reset_slow = true;
+            }
+
+
+
+
+            wheelPower = Math.hypot(leftStickX, leftStickY);
+            if (wheelPower > .02) {
+                wheelPower = (.8 * wheelPower + .2) * slowfactor;
+            }
+
+
             stickAngleRadians = Math.atan2(leftStickY, leftStickX);
 
             stickAngleRadians = stickAngleRadians - Math.PI / 4; //adjust by 45 degrees
@@ -46,7 +72,7 @@ public class SlowMecanum extends LinearOpMode {
             double cosAngleRadians = Math.cos(stickAngleRadians);
             double factor = 1 / Math.max(Math.abs(sinAngleRadians), Math.abs(cosAngleRadians));
 
-            rightX = rightStickX * .5;
+            rightX = rightStickX * slowfactor * .8;
 
             lfPower = wheelPower * cosAngleRadians * factor + rightX;
             rfPower = wheelPower * sinAngleRadians * factor - rightX;
