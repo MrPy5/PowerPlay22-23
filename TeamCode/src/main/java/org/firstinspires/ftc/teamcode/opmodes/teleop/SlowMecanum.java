@@ -42,7 +42,7 @@ public class SlowMecanum extends LinearOpMode {
                 gamepad1.rumble(10);
                 reset_slow = false;
                 if (slow_mode == false) {
-                    slowfactor = 0.4;
+                    slowfactor = 0.3;
                     slow_mode = true;
                 }
                 else if (slow_mode) {
