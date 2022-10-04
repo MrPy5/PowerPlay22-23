@@ -29,6 +29,8 @@
 
 package org.firstinspires.ftc.robotcontroller.external.samples;
 
+import android.graphics.Bitmap;
+
 import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
@@ -50,7 +52,7 @@ import org.firstinspires.ftc.robotcore.external.tfod.Recognition;
  * is explained below.
  */
 @TeleOp(name = "Concept: TensorFlow Object Detection Webcam", group = "Concept")
-@Disabled
+
 public class ConceptTensorFlowObjectDetectionWebcam extends LinearOpMode {
 
     /*
@@ -83,7 +85,7 @@ public class ConceptTensorFlowObjectDetectionWebcam extends LinearOpMode {
      * and paste it in to your code on the next line, between the double quotes.
      */
     private static final String VUFORIA_KEY =
-            " -- YOUR NEW VUFORIA KEY GOES HERE  --- ";
+            "AUkG2oP/////AAABmQGYVdglZUJLn8w+eHLCAYVO1mp8Lu7z9SojA4Fm/w61UizkAnX3WrdTfIfPUpWQq6XGPhNVSMx5ey7H3j5/cYdga6WcJ4Gcx3Y12f7FylQzNwROkZQf1OdqIw9dQl5fDYUJjg7EWr3I5rPa1a56KrLYAHWORm/bWmOUmUf/jPuC11IJ24W+ZXCamgPEvx5xqSWdQuhLLIqHzVSUVOugt8O4uPwpheueN5HqY5f+CgkAqtdnOPUJT2Os1rRIlXaBN8LP0s1lTGZPL1BGBa19YYTT3rySTMi1ExTF62MX2qI106uD3S0eAK8R/er5ohD4pW/QAOaa65p37nboeP8i6WAImA6L/epx0UdhYw2UXbed";
 
     /**
      * {@link #vuforia} is the variable we will use to store our instance of the Vuforia
@@ -128,6 +130,10 @@ public class ConceptTensorFlowObjectDetectionWebcam extends LinearOpMode {
         if (opModeIsActive()) {
             while (opModeIsActive()) {
                 if (tfod != null) {
+
+
+                    /*telemetry.addData("Camera", "On");
+                    telemetry.update();
                     // getUpdatedRecognitions() will return null if no new information is available since
                     // the last time that call was made.
                     List<Recognition> updatedRecognitions = tfod.getUpdatedRecognitions();
@@ -148,7 +154,7 @@ public class ConceptTensorFlowObjectDetectionWebcam extends LinearOpMode {
                             telemetry.addData("- Size (Width/Height)","%.0f / %.0f", width, height);
                         }
                         telemetry.update();
-                    }
+                    }*/
                 }
             }
         }
@@ -168,6 +174,7 @@ public class ConceptTensorFlowObjectDetectionWebcam extends LinearOpMode {
 
         //  Instantiate the Vuforia engine
         vuforia = ClassFactory.getInstance().createVuforia(parameters);
+
     }
 
     /**
@@ -186,5 +193,8 @@ public class ConceptTensorFlowObjectDetectionWebcam extends LinearOpMode {
         // Use loadModelFromFile() if you have downloaded a custom team model to the Robot Controller's FLASH.
         tfod.loadModelFromAsset(TFOD_MODEL_ASSET, LABELS);
         // tfod.loadModelFromFile(TFOD_MODEL_FILE, LABELS);
+
+
+
     }
 }
