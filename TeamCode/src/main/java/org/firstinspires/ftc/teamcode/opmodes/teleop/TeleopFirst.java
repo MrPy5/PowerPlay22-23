@@ -29,13 +29,20 @@ public class TeleopFirst extends LinearOpMode {
         boolean reset_slow = true;
 
 
+        //---------------------------------------------------------------//
+        //GRABBER SERVO VARIABLES
 
-
-        int servoPos = 0;
-        boolean ableToBeMoved = true;
+        double grabberServoClosedPos = 0.7;
+        double grabberServoOpenPos = 0.3;
+        double grabberServoCurrentPos = 0;
+        boolean grabberTriggerReleased = true;
 
         //       0 = open
         //       1 = closed
+
+
+        //---------------------------------------------------------------//
+        //GRABBER TURRET VARIABLES
 
         int turretPos = 0;
 
@@ -51,6 +58,7 @@ public class TeleopFirst extends LinearOpMode {
         int backTurretPosTicks = 1393;
 
 
+        // *** Lift ***
 
         int liftPos = 0;
 
@@ -77,6 +85,10 @@ public class TeleopFirst extends LinearOpMode {
 
 
         while (opModeIsActive()) {
+
+            //---------------------------------------------------------------//
+            //GAMEPAD1 CONTROLs
+            double grabberTrigger = gamepad2.right_trigger;
 
 
 
@@ -115,23 +127,19 @@ public class TeleopFirst extends LinearOpMode {
             }
 
             //---------------------------------------------------------------//
-            //SERVO CODE
+            //GRABBER SERVO CODE
 
-            if (gamepad2.right_trigger > 0.01 && ableToBeMoved) {
-                if (servoPos == 0) {
-                    robot.gripperServo.setPosition(0.7);
-                    servoPos = 1;
+            if (grabberTrigger > 0.01 && grabberTriggerReleased) {
+                if (grabberServoCurrentPos == grabberServoOpenPos) {
+                    grabberServoCurrentPos = grabberServoClosedPos;
                 }
-                else if (servoPos == 1) {
-                    robot.gripperServo.setPosition(0.3);
-                    servoPos = 0;
+                else {
+                    grabberServoCurrentPos = grabberServoOpenPos;
                 }
-
-                ableToBeMoved = false;
-            }
-
-            if (gamepad2.right_trigger <= 0.01) {
-                ableToBeMoved = true;
+                Robot.gripperServo.setPosition(grabberServoCurrentPos);
+                grabberTriggerReleased = false;
+            } else {
+                grabberTriggerReleased = true;
             }
 
 
@@ -279,7 +287,7 @@ public class TeleopFirst extends LinearOpMode {
             telemetry.addData("LeftStickX", gamepad1.left_stick_x);
             telemetry.addData("LeftStickY", gamepad1.left_stick_y);
             telemetry.addData("RightStickX", gamepad1.right_stick_x);
-            telemetry.addData("RightStickY", ableToBeMoved);
+            telemetry.addData("RightStickY", grabberTriggerReleased);
 
             telemetry.update();
         }
