@@ -119,11 +119,11 @@ public class TeleopFirst extends LinearOpMode {
 
             if (gamepad2.right_trigger > 0.01 && ableToBeMoved) {
                 if (servoPos == 0) {
-                    robot.gripperServo.setPosition(0.9);
+                    robot.gripperServo.setPosition(0.7);
                     servoPos = 1;
                 }
                 else if (servoPos == 1) {
-                    robot.gripperServo.setPosition(0.5);
+                    robot.gripperServo.setPosition(0.3);
                     servoPos = 0;
                 }
 
@@ -185,21 +185,14 @@ public class TeleopFirst extends LinearOpMode {
 
             if (!robot.turretMotor.isBusy()) {
 
-
-                //INTEGRATION with Battery
+               //INTEGRATION with Battery
                 if (robot.turretMotor.getPower() > 0 && liftPos == 0) {
                     robot.liftMotor.setTargetPosition(0);
                     robot.liftMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
                     robot.liftMotor.setPower(0.75);
                 }
-
                 robot.turretMotor.setPower(0);
-
             }
-
-
-
-
 
 
 
@@ -209,7 +202,7 @@ public class TeleopFirst extends LinearOpMode {
             if (gamepad2.x) {
                 robot.liftMotor.setTargetPosition(groundLiftPosTicks);
                 robot.liftMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-                robot.liftMotor.setPower(0.15 * slowfactor);
+                robot.liftMotor.setPower(0.3 * slowfactor);
 
                 liftPos = 0;
 
@@ -218,7 +211,7 @@ public class TeleopFirst extends LinearOpMode {
             if (gamepad2.a) {
                 robot.liftMotor.setTargetPosition(lowLiftPosTicks);
                 robot.liftMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-                robot.liftMotor.setPower(0.15 * slowfactor);
+                robot.liftMotor.setPower(0.3 * slowfactor);
 
                 liftPos = 1;
 
@@ -227,14 +220,14 @@ public class TeleopFirst extends LinearOpMode {
             if (gamepad2.b) {
                 robot.liftMotor.setTargetPosition(mediumLiftPosTicks);
                 robot.liftMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-                robot.liftMotor.setPower(0.15 * slowfactor);
+                robot.liftMotor.setPower(0.3 * slowfactor);
 
                 liftPos = 2;
             }
             if (gamepad2.y) {
                 robot.liftMotor.setTargetPosition(highLiftPosTicks);
                 robot.liftMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-                robot.liftMotor.setPower(0.15 * slowfactor);
+                robot.liftMotor.setPower(0.3 * slowfactor);
 
                 liftPos = 3;
 
@@ -286,7 +279,8 @@ public class TeleopFirst extends LinearOpMode {
             telemetry.addData("LeftStickX", gamepad1.left_stick_x);
             telemetry.addData("LeftStickY", gamepad1.left_stick_y);
             telemetry.addData("RightStickX", gamepad1.right_stick_x);
-            telemetry.addData("RightStickY", gamepad1.right_stick_y);
+            telemetry.addData("RightStickY", ableToBeMoved);
+
             telemetry.update();
         }
     }
