@@ -48,11 +48,15 @@ public class Robot {
 
         turretMotor = hardwareMap.get(DcMotor.class, "turretMotor");
         turretMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        turretMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         turretMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
 
         liftMotor = hardwareMap.get(DcMotor.class, "liftMotor");
+        liftMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         liftMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         liftMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        liftMotor.setDirection(DcMotor.Direction.REVERSE);
+
 
         gripperServo = hardwareMap.get(Servo.class, "gripperServo");
 

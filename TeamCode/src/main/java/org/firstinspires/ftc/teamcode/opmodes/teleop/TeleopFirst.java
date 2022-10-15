@@ -31,6 +31,12 @@ public class TeleopFirst extends LinearOpMode {
 
 
 
+        int servoPos = 0;
+        boolean ableToBeMoved = true;
+
+        //       0 = open
+        //       1 = closed
+
         int turretPos = 0;
 
         //         0
@@ -40,8 +46,8 @@ public class TeleopFirst extends LinearOpMode {
         //         2
 
         int forwardTurretPosTicks = 0;
-        int rightTurretPosTicks = -696;
-        int leftTurretPosTicks = 696;
+        int rightTurretPosTicks = 696;
+        int leftTurretPosTicks = -696;
         int backTurretPosTicks = 1393;
 
 
@@ -55,11 +61,16 @@ public class TeleopFirst extends LinearOpMode {
         //    0  |  Ground
         //
 
+
+        int ticksPerRevolutionOrbital = 537;
+
         int groundLiftPosTicks = 0;
-        int overChassisLiftPosTicks = 500;
-        int lowLiftPosTicks = 600;
-        int mediumLiftPosTicks = 1393;
-        int highLiftPosTicks = 1700;
+        int overChassisLiftPosTicks = ticksPerRevolutionOrbital * 1;
+        int lowLiftPosTicks = ticksPerRevolutionOrbital * 2;
+        int mediumLiftPosTicks = ticksPerRevolutionOrbital * 3;
+        int highLiftPosTicks = ticksPerRevolutionOrbital * 5;
+
+
 
 
 
@@ -103,7 +114,25 @@ public class TeleopFirst extends LinearOpMode {
                 reset_slow = true;
             }
 
+            //---------------------------------------------------------------//
+            //SERVO CODE
 
+            if (gamepad2.right_trigger > 0.01 && ableToBeMoved) {
+                if (servoPos == 0) {
+                    robot.gripperServo.setPosition(0.9);
+                    servoPos = 1;
+                }
+                else if (servoPos == 1) {
+                    robot.gripperServo.setPosition(0.5);
+                    servoPos = 0;
+                }
+
+                ableToBeMoved = false;
+            }
+
+            if (gamepad2.right_trigger <= 0.01) {
+                ableToBeMoved = true;
+            }
 
 
             //---------------------------------------------------------------//
@@ -157,14 +186,15 @@ public class TeleopFirst extends LinearOpMode {
             if (!robot.turretMotor.isBusy()) {
 
 
-                //INTEGRATION
-                if (robot.turretMotor.getPower() >= 0) {
+                //INTEGRATION with Battery
+                if (robot.turretMotor.getPower() > 0 && liftPos == 0) {
                     robot.liftMotor.setTargetPosition(0);
                     robot.liftMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
                     robot.liftMotor.setPower(0.75);
                 }
 
                 robot.turretMotor.setPower(0);
+
             }
 
 
@@ -179,7 +209,7 @@ public class TeleopFirst extends LinearOpMode {
             if (gamepad2.x) {
                 robot.liftMotor.setTargetPosition(groundLiftPosTicks);
                 robot.liftMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-                robot.liftMotor.setPower(0.25 * slowfactor);
+                robot.liftMotor.setPower(0.15 * slowfactor);
 
                 liftPos = 0;
 
@@ -188,7 +218,7 @@ public class TeleopFirst extends LinearOpMode {
             if (gamepad2.a) {
                 robot.liftMotor.setTargetPosition(lowLiftPosTicks);
                 robot.liftMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-                robot.liftMotor.setPower(0.25 * slowfactor);
+                robot.liftMotor.setPower(0.15 * slowfactor);
 
                 liftPos = 1;
 
@@ -197,23 +227,24 @@ public class TeleopFirst extends LinearOpMode {
             if (gamepad2.b) {
                 robot.liftMotor.setTargetPosition(mediumLiftPosTicks);
                 robot.liftMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-                robot.liftMotor.setPower(0.25 * slowfactor);
+                robot.liftMotor.setPower(0.15 * slowfactor);
 
                 liftPos = 2;
             }
             if (gamepad2.y) {
                 robot.liftMotor.setTargetPosition(highLiftPosTicks);
                 robot.liftMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-                robot.liftMotor.setPower(0.25 * slowfactor);
+                robot.liftMotor.setPower(0.15 * slowfactor);
 
                 liftPos = 3;
 
             }
 
 
-            if (!robot.liftMotor.isBusy()) {
+            /*if (!robot.liftMotor.isBusy()) {
                 robot.liftMotor.setPower(0);
-            }
+                robot.liftMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+            }*/
 
 
 
