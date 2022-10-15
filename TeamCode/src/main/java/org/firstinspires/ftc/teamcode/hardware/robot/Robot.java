@@ -3,6 +3,7 @@ package org.firstinspires.ftc.teamcode.hardware.robot;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.HardwareMap;
+import com.qualcomm.robotcore.hardware.Servo;
 
 public class Robot {
 
@@ -13,6 +14,10 @@ public class Robot {
     public static DcMotor backRight;
     public static DcMotor frontLeft;
     public static DcMotor frontRight;
+
+    public static DcMotor liftMotor;
+    public static DcMotor turretMotor;
+    public static Servo gripperServo;
 
     public Robot(HardwareMap robot_hardwareMap) {
         hardwareMap = robot_hardwareMap;
@@ -39,6 +44,18 @@ public class Robot {
         frontLeft.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         backRight.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         frontRight.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+
+
+        turretMotor = hardwareMap.get(DcMotor.class, "turretMotor");
+        turretMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        turretMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+
+        liftMotor = hardwareMap.get(DcMotor.class, "liftMotor");
+        liftMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        liftMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+
+        gripperServo = hardwareMap.get(Servo.class, "gripperServo");
+
 
     }
 }

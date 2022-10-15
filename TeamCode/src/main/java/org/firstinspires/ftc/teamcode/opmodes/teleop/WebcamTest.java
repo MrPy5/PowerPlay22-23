@@ -76,7 +76,7 @@ import java.util.concurrent.TimeUnit;
  */
 @TeleOp(name="Webcam", group ="Concept")
 
-public class Webcam extends LinearOpMode {
+public class WebcamTest extends LinearOpMode {
 
     //----------------------------------------------------------------------------------------------
     // State
