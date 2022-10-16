@@ -1,10 +1,8 @@
 package org.firstinspires.ftc.teamcode.opmodes.teleop;
 
-import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
-import com.qualcomm.robotcore.hardware.HardwareMap;
 
 import org.firstinspires.ftc.teamcode.hardware.robot.Robot;
 
@@ -14,15 +12,14 @@ import org.firstinspires.ftc.teamcode.hardware.robot.Robot;
 public class TeleopFirst extends LinearOpMode {
 
 
-
-
-
     @Override
     public void runOpMode() {
 
         Robot robot = new Robot(hardwareMap);
         waitForStart();
 
+
+        double triggerSensitivity = 0.01;
 
         double slowfactor = 1;
         boolean slow_mode = false;
@@ -32,17 +29,18 @@ public class TeleopFirst extends LinearOpMode {
         //---------------------------------------------------------------//
         //GRABBER SERVO VARIABLES
 
-        double grabberServoClosedPos = 0.7;
-        double grabberServoOpenPos = 0.3;
-        double grabberServoCurrentPos = 0;
+        double grabberServoClosedPos = 0.3;
+        double grabberServoOpenPos = 0.7;
+        double grabberServoCurrentPos = 0.3;
         boolean grabberTriggerReleased = true;
-
 
 
         //---------------------------------------------------------------//
         //GRABBER TURRET VARIABLES
 
-        double turretSpeed = 0.5;
+        double turretSpeed = 0.25;
+        int turretPosCurrentTicks = 0;
+        int turretCloseToZero = 70;
 
         //         0
         //      |     |
@@ -55,12 +53,15 @@ public class TeleopFirst extends LinearOpMode {
         int leftTurretPosTicks = -696;
         int backTurretPosTicks = 1393;
 
+        int targetTurretPos = 0;
+
 
         //---------------------------------------------------------------//
         //LIFT VARIABLES
 
-        int liftPos = 0;
+        int liftPosCurrentTicks = 0;
         double liftSpeed = 0.5;
+
 
         //   >____
         //    3  |  High
@@ -73,41 +74,38 @@ public class TeleopFirst extends LinearOpMode {
         int ticksPerRevolutionOrbital = 537;
 
         int groundLiftPosTicks = 0;
-        int overChassisLiftPosTicks = ticksPerRevolutionOrbital * 1;
         int lowLiftPosTicks = ticksPerRevolutionOrbital * 2;
         int mediumLiftPosTicks = ticksPerRevolutionOrbital * 3;
-        int highLiftPosTicks = ticksPerRevolutionOrbital * 5;
+        int highLiftPosTicks = ticksPerRevolutionOrbital * 4;
+
+        int targetLiftPos = 0;
+        int liftMinHeightForTurning = lowLiftPosTicks;
 
 
-
-
-
+        Robot.gripperServo.setPosition(grabberServoOpenPos);
 
 
         while (opModeIsActive()) {
 
             //---------------------------------------------------------------//
             //GAMEPAD2 CONTROLS
-
             double grabberTrigger = gamepad2.right_trigger;
 
-            boolean forwardButton = gamepad2.dpad_up;
-            boolean backButton = gamepad2.dpad_down;
-            boolean leftButton = gamepad2.dpad_left;
-            boolean rightButton = gamepad2.dpad_right;
+            boolean turretPosForwardButton = gamepad2.dpad_up;
+            boolean turretPosBackButton = gamepad2.dpad_down;
+            boolean turretPosLeftButton = gamepad2.dpad_left;
+            boolean turretPosRightButton = gamepad2.dpad_right;
 
-            boolean groundButton = gamepad2.x;
-            boolean lowButton = gamepad2.a;
-            boolean mediumButton = gamepad2.b;
-            boolean highButton = gamepad2.y;
+            boolean liftPosGroundButton = gamepad2.x;
+            boolean liftPosLowButton = gamepad2.a;
+            boolean liftPosMediumButton = gamepad2.b;
+            boolean liftPosHighButton = gamepad2.y;
+
 
             //---------------------------------------------------------------//
             //GAMEPAD1 CONTROLS
 
             double slowmoTrigger = gamepad1.right_trigger;
-
-
-
 
             double leftStickY = gamepad1.left_stick_y * -1;
             double leftStickX = gamepad1.left_stick_x;
@@ -122,142 +120,90 @@ public class TeleopFirst extends LinearOpMode {
             double rrPower;
 
 
-
             //-----------------------------------------------------------//
             //SLO-MO CODE
 
-            if (slowmoTrigger > 0.1 && slowmoTriggerReleased) {
+            if (slowmoTrigger > triggerSensitivity) {
+                if (slowmoTriggerReleased) {
+                    if (slow_mode == false) {
+                        slowfactor = 0.3;
+                        slow_mode = true;
+                    } else {
+                        slowfactor = 1;
+                        slow_mode = false;
+                    }
+                    slowmoTriggerReleased = false;
+                } else {
+                    slowmoTriggerReleased = true;
+                }
+            }
+                //---------------------------------------------------------------//
+                //GRABBER SERVO CODE
 
-                slowmoTriggerReleased = false;
-                if (slow_mode == false) {
-                    slowfactor = 0.3;
-                    slow_mode = true;
+                if (grabberTrigger > 0.01) {
+                    if (grabberTriggerReleased) {
+                        if (grabberServoCurrentPos == grabberServoOpenPos) {
+                            grabberServoCurrentPos = grabberServoClosedPos;
+                        } else {
+                            grabberServoCurrentPos = grabberServoOpenPos;
+                        }
+                        Robot.gripperServo.setPosition(grabberServoCurrentPos);
+                        grabberTriggerReleased = false;
+                    }
+                } else {
+                    grabberTriggerReleased = true;
                 }
 
-                else if (slow_mode) {
-                    slowfactor = 1;
-                    slow_mode = false;
+
+                //---------------------------------------------------------------//
+                //TURRET CODE
+
+                if (turretPosForwardButton) {
+                    targetTurretPos = forwardTurretPosTicks;
                 }
-            }
-
-            else {
-                slowmoTriggerReleased = true;
-            }
-
-            //---------------------------------------------------------------//
-            //GRABBER SERVO CODE
-
-            if (grabberTrigger > 0.01 && grabberTriggerReleased) {
-                if (grabberServoCurrentPos == grabberServoOpenPos) {
-                    grabberServoCurrentPos = grabberServoClosedPos;
+                if (turretPosLeftButton) {
+                    targetTurretPos = leftTurretPosTicks;
                 }
-                else {
-                    grabberServoCurrentPos = grabberServoOpenPos;
+                if (turretPosRightButton) {
+                    targetTurretPos = rightTurretPosTicks;
                 }
-                Robot.gripperServo.setPosition(grabberServoCurrentPos);
-                grabberTriggerReleased = false;
-            } else {
-                grabberTriggerReleased = true;
-            }
-
-
-            //---------------------------------------------------------------//
-            //TURRET CODE
-
-            if (forwardButton) {
-                robot.turretMotor.setTargetPosition(forwardTurretPosTicks);
-                robot.turretMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-                robot.turretMotor.setPower(turretSpeed * slowfactor);
-
-
-
-            }
-            if (leftButton) {
-                robot.turretMotor.setTargetPosition(leftTurretPosTicks);
-                robot.turretMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-                robot.turretMotor.setPower(turretSpeed * slowfactor);
-
-
-
-            }
-            if (rightButton) {
-                robot.turretMotor.setTargetPosition(rightTurretPosTicks);
-                robot.turretMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-                robot.turretMotor.setPower(turretSpeed * slowfactor);
-
-
-
-            }
-            if (backButton) {
-                robot.turretMotor.setTargetPosition(backTurretPosTicks);
-                robot.turretMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-                robot.turretMotor.setPower(turretSpeed * slowfactor);
-
-
-
-            }
-
-
-            //----------------------------------------------------------//
-            //TURRET + LIFT INTEGRATION
-
-            if (liftPos == 0 && (backButton || forwardButton || leftButton || rightButton)) {
-                robot.liftMotor.setTargetPosition(overChassisLiftPosTicks);
-                robot.liftMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-                robot.liftMotor.setPower(0.75);
-            }
-
-
-
-            if (!robot.turretMotor.isBusy()) {
-
-               //INTEGRATION with Battery
-                if (robot.turretMotor.getPower() > 0 && liftPos == 0) {
-                    robot.liftMotor.setTargetPosition(0);
-                    robot.liftMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-                    robot.liftMotor.setPower(0.75);
+                if (turretPosBackButton) {
+                    targetTurretPos = backTurretPosTicks;
                 }
-                robot.turretMotor.setPower(0);
-            }
 
+                liftPosCurrentTicks = Robot.liftMotor.getCurrentPosition();
 
+                if (liftPosCurrentTicks > liftMinHeightForTurning) {
+                    Robot.turretMotor.setTargetPosition(targetTurretPos);
+                    Robot.turretMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+                    Robot.turretMotor.setPower(liftSpeed * slowfactor);
+                }
 
-            //----------------------------------------------------------//
-            //LIFT MOTOR
+                //----------------------------------------------------------//
+                //LIFT MOTOR
 
-            if (groundButton) {
-                robot.liftMotor.setTargetPosition(groundLiftPosTicks);
-                robot.liftMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-                robot.liftMotor.setPower(liftSpeed * slowfactor);
+                if (liftPosGroundButton) {
+                    targetLiftPos = groundLiftPosTicks;
+                }
 
-                liftPos = 0;
+                if (liftPosLowButton) {
+                    targetLiftPos = lowLiftPosTicks;
+                }
 
-            }
+                if (liftPosMediumButton) {
+                    targetLiftPos = mediumLiftPosTicks;
+                }
+                if (liftPosHighButton) {
+                    targetLiftPos = highLiftPosTicks;
+                }
 
-            if (lowButton) {
-                robot.liftMotor.setTargetPosition(lowLiftPosTicks);
-                robot.liftMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-                robot.liftMotor.setPower(liftSpeed * slowfactor);
+                turretPosCurrentTicks = Robot.turretMotor.getCurrentPosition();
 
-                liftPos = 1;
-
-            }
-
-            if (mediumButton) {
-                robot.liftMotor.setTargetPosition(mediumLiftPosTicks);
-                robot.liftMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-                robot.liftMotor.setPower(liftSpeed * slowfactor);
-
-                liftPos = 2;
-            }
-            if (highButton) {
-                robot.liftMotor.setTargetPosition(highLiftPosTicks);
-                robot.liftMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-                robot.liftMotor.setPower(liftSpeed * slowfactor);
-
-                liftPos = 3;
-
-            }
+                if (liftPosCurrentTicks < targetLiftPos || Math.abs(turretPosCurrentTicks) > turretCloseToZero || targetLiftPos > liftMinHeightForTurning) {
+                    Robot.liftMotor.setTargetPosition(targetLiftPos);
+                    Robot.liftMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+                    Robot.liftMotor.setPower(liftSpeed * slowfactor);
+                }
 
 
             /*if (!robot.liftMotor.isBusy()) {
@@ -266,45 +212,42 @@ public class TeleopFirst extends LinearOpMode {
             }*/
 
 
+                //---------------------------------------------------------//
+                //DRIVING CODE
 
-            //---------------------------------------------------------//
-            //DRIVING CODE
+                wheelPower = Math.hypot(leftStickX, leftStickY);
+                if (wheelPower > .02) {
+                    wheelPower = (.8 * wheelPower + .2) * slowfactor;
+                }
 
-            wheelPower = Math.hypot(leftStickX, leftStickY);
-            if (wheelPower > .02) {
-                wheelPower = (.8 * wheelPower + .2) * slowfactor;
+
+                stickAngleRadians = Math.atan2(leftStickY, leftStickX);
+
+                stickAngleRadians = stickAngleRadians - Math.PI / 4; //adjust by 45 degrees
+
+                double sinAngleRadians = Math.sin(stickAngleRadians);
+                double cosAngleRadians = Math.cos(stickAngleRadians);
+                double factor = 1 / Math.max(Math.abs(sinAngleRadians), Math.abs(cosAngleRadians));
+
+                rightX = rightStickX * slowfactor * .8;
+
+                lfPower = wheelPower * cosAngleRadians * factor + rightX;
+                rfPower = wheelPower * sinAngleRadians * factor - rightX;
+                lrPower = wheelPower * sinAngleRadians * factor + rightX;
+                rrPower = wheelPower * cosAngleRadians * factor - rightX;
+
+                Robot.backLeft.setPower(lrPower);
+                Robot.backRight.setPower(rrPower);
+                Robot.frontLeft.setPower(lfPower);
+                Robot.frontRight.setPower(rfPower);
+
+
+                //---------------------------------------------------------------------//
+                //TELEMETRY CODE
+
+
+                telemetry.update();
             }
-
-
-            stickAngleRadians = Math.atan2(leftStickY, leftStickX);
-
-            stickAngleRadians = stickAngleRadians - Math.PI / 4; //adjust by 45 degrees
-
-            double sinAngleRadians = Math.sin(stickAngleRadians);
-            double cosAngleRadians = Math.cos(stickAngleRadians);
-            double factor = 1 / Math.max(Math.abs(sinAngleRadians), Math.abs(cosAngleRadians));
-
-            rightX = rightStickX * slowfactor * .8;
-
-            lfPower = wheelPower * cosAngleRadians * factor + rightX;
-            rfPower = wheelPower * sinAngleRadians * factor - rightX;
-            lrPower = wheelPower * sinAngleRadians * factor + rightX;
-            rrPower = wheelPower * cosAngleRadians * factor - rightX;
-
-            robot.backLeft.setPower(lrPower);
-            robot.backRight.setPower(rrPower);
-            robot.frontLeft.setPower(lfPower);
-            robot.frontRight.setPower(rfPower);
-
-
-
-
-            //---------------------------------------------------------------------//
-            //TELEMETRY CODE
-
-
-
-            telemetry.update();
         }
     }
-}
+
