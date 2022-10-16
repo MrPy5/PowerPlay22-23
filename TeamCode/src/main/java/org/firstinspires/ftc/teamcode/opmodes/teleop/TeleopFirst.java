@@ -36,17 +36,11 @@ public class TeleopFirst extends LinearOpMode {
 
 
         //---------------------------------------------------------------//
-        //GRABBER TURRET VARIABLES
+        //TURRET VARIABLES
 
         double turretSpeed = 0.25;
         int turretPosCurrentTicks = 0;
         int turretCloseToZero = 70;
-
-        //         0
-        //      |     |
-        //    3    ^     1
-        //      |     |
-        //         2
 
         int forwardTurretPosTicks = 0;
         int rightTurretPosTicks = 696;
@@ -54,6 +48,7 @@ public class TeleopFirst extends LinearOpMode {
         int backTurretPosTicks = 1393;
 
         int targetTurretPos = 0;
+        int prevTargetTurretPos = 0;
 
 
         //---------------------------------------------------------------//
@@ -61,15 +56,6 @@ public class TeleopFirst extends LinearOpMode {
 
         int liftPosCurrentTicks = 0;
         double liftSpeed = 0.5;
-
-
-        //   >____
-        //    3  |  High
-        //    2  |  Medium
-        //    1  |  Low
-        //    0  |  Ground
-        //
-
 
         int ticksPerRevolutionOrbital = 537;
 
@@ -79,9 +65,26 @@ public class TeleopFirst extends LinearOpMode {
         int highLiftPosTicks = ticksPerRevolutionOrbital * 4;
 
         int targetLiftPos = 0;
+        int prevTargetLiftPos = 0;
         int liftMinHeightForTurning = lowLiftPosTicks;
 
 
+        //---------------------------------------------------------//
+        //DRIVING CODE VARIABLES
+        double sinAngleRadians;
+        double cosAngleRadians;
+        double factor;
+        double wheelPower;
+        double stickAngleRadians;
+        double rightX;
+        double lfPower;
+        double rfPower;
+        double lrPower;
+        double rrPower;
+
+
+        //---------------------------------------------------------//
+        //INIT SERVOS
         Robot.gripperServo.setPosition(grabberServoOpenPos);
 
 
@@ -111,13 +114,10 @@ public class TeleopFirst extends LinearOpMode {
             double leftStickX = gamepad1.left_stick_x;
             double rightStickX = gamepad1.right_stick_x;
 
-            double wheelPower;
-            double stickAngleRadians;
-            double rightX;
-            double lfPower;
-            double rfPower;
-            double lrPower;
-            double rrPower;
+            //---------------------------------------------------------------//
+            //READ HARDWARE VALUES
+            liftPosCurrentTicks = Robot.liftMotor.getCurrentPosition();
+            turretPosCurrentTicks = Robot.turretMotor.getCurrentPosition();
 
 
             //-----------------------------------------------------------//
@@ -172,12 +172,18 @@ public class TeleopFirst extends LinearOpMode {
                 targetTurretPos = backTurretPosTicks;
             }
 
-            liftPosCurrentTicks = Robot.liftMotor.getCurrentPosition();
-
             if (liftPosCurrentTicks > liftMinHeightForTurning) {
-                Robot.turretMotor.setTargetPosition(targetTurretPos);
+                if (targetTurretPos != prevTargetTurretPos) {
+                    Robot.turretMotor.setTargetPosition(targetTurretPos);
+                    Robot.turretMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+                    Robot.turretMotor.setPower(turretSpeed);
+                    prevTargetTurretPos = targetTurretPos;
+                }
+            } else if (Math.abs(targetTurretPos - turretPosCurrentTicks) > turretCloseToZero) {  // If not close to destination, temporarily keep turret where it is until lift raises.
+                Robot.turretMotor.setTargetPosition(turretPosCurrentTicks);
                 Robot.turretMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-                Robot.turretMotor.setPower(liftSpeed * slowfactor);
+                Robot.turretMotor.setPower(turretSpeed);
+                prevTargetTurretPos = turretPosCurrentTicks;
             }
 
             //----------------------------------------------------------//
@@ -198,12 +204,19 @@ public class TeleopFirst extends LinearOpMode {
                 targetLiftPos = highLiftPosTicks;
             }
 
-            turretPosCurrentTicks = Robot.turretMotor.getCurrentPosition();
-
-            if (liftPosCurrentTicks < targetLiftPos || Math.abs(turretPosCurrentTicks) > turretCloseToZero || targetLiftPos > liftMinHeightForTurning) {
-                Robot.liftMotor.setTargetPosition(targetLiftPos);
+            // Allow lift to move when:  1) going up  2) Near the zero position  3) It won't go too low for turning
+            if (liftPosCurrentTicks < targetLiftPos || Math.abs(turretPosCurrentTicks) < turretCloseToZero || targetLiftPos > liftMinHeightForTurning) {
+                if (targetLiftPos != prevTargetLiftPos) {
+                    Robot.liftMotor.setTargetPosition(targetLiftPos);
+                    Robot.liftMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+                    Robot.liftMotor.setPower(liftSpeed * slowfactor);
+                    prevTargetLiftPos = targetLiftPos;
+                }
+            } else {  // keep lift where is is
+                Robot.liftMotor.setTargetPosition(liftPosCurrentTicks);
                 Robot.liftMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
                 Robot.liftMotor.setPower(liftSpeed * slowfactor);
+                prevTargetLiftPos = liftPosCurrentTicks;
             }
 
 
@@ -221,14 +234,13 @@ public class TeleopFirst extends LinearOpMode {
                 wheelPower = (.8 * wheelPower + .2) * slowfactor;
             }
 
-
             stickAngleRadians = Math.atan2(leftStickY, leftStickX);
 
             stickAngleRadians = stickAngleRadians - Math.PI / 4; //adjust by 45 degrees
 
-            double sinAngleRadians = Math.sin(stickAngleRadians);
-            double cosAngleRadians = Math.cos(stickAngleRadians);
-            double factor = 1 / Math.max(Math.abs(sinAngleRadians), Math.abs(cosAngleRadians));
+            sinAngleRadians = Math.sin(stickAngleRadians);
+            cosAngleRadians = Math.cos(stickAngleRadians);
+            factor = 1 / Math.max(Math.abs(sinAngleRadians), Math.abs(cosAngleRadians));
 
             rightX = rightStickX * slowfactor * .8;
 
