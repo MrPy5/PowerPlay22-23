@@ -133,77 +133,78 @@ public class TeleopFirst extends LinearOpMode {
                         slow_mode = false;
                     }
                     slowmoTriggerReleased = false;
-                } else {
-                    slowmoTriggerReleased = true;
                 }
+            } else {
+                slowmoTriggerReleased = true;
             }
-                //---------------------------------------------------------------//
-                //GRABBER SERVO CODE
 
-                if (grabberTrigger > 0.01) {
-                    if (grabberTriggerReleased) {
-                        if (grabberServoCurrentPos == grabberServoOpenPos) {
-                            grabberServoCurrentPos = grabberServoClosedPos;
-                        } else {
-                            grabberServoCurrentPos = grabberServoOpenPos;
-                        }
-                        Robot.gripperServo.setPosition(grabberServoCurrentPos);
-                        grabberTriggerReleased = false;
+            //---------------------------------------------------------------//
+            //GRABBER SERVO CODE
+
+            if (grabberTrigger > triggerSensitivity) {
+                if (grabberTriggerReleased) {
+                    if (grabberServoCurrentPos == grabberServoOpenPos) {
+                        grabberServoCurrentPos = grabberServoClosedPos;
+                    } else {
+                        grabberServoCurrentPos = grabberServoOpenPos;
                     }
-                } else {
-                    grabberTriggerReleased = true;
+                    Robot.gripperServo.setPosition(grabberServoCurrentPos);
+                    grabberTriggerReleased = false;
                 }
+            } else {
+                grabberTriggerReleased = true;
+            }
 
 
-                //---------------------------------------------------------------//
-                //TURRET CODE
+            //---------------------------------------------------------------//
+            //TURRET CODE
 
-                if (turretPosForwardButton) {
-                    targetTurretPos = forwardTurretPosTicks;
-                }
-                if (turretPosLeftButton) {
-                    targetTurretPos = leftTurretPosTicks;
-                }
-                if (turretPosRightButton) {
-                    targetTurretPos = rightTurretPosTicks;
-                }
-                if (turretPosBackButton) {
-                    targetTurretPos = backTurretPosTicks;
-                }
+            if (turretPosForwardButton) {
+                targetTurretPos = forwardTurretPosTicks;
+            }
+            if (turretPosLeftButton) {
+                targetTurretPos = leftTurretPosTicks;
+            }
+            if (turretPosRightButton) {
+                targetTurretPos = rightTurretPosTicks;
+            }
+            if (turretPosBackButton) {
+                targetTurretPos = backTurretPosTicks;
+            }
 
-                liftPosCurrentTicks = Robot.liftMotor.getCurrentPosition();
+            liftPosCurrentTicks = Robot.liftMotor.getCurrentPosition();
 
-                if (liftPosCurrentTicks > liftMinHeightForTurning) {
-                    Robot.turretMotor.setTargetPosition(targetTurretPos);
-                    Robot.turretMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-                    Robot.turretMotor.setPower(liftSpeed * slowfactor);
-                }
+            if (liftPosCurrentTicks > liftMinHeightForTurning) {
+                Robot.turretMotor.setTargetPosition(targetTurretPos);
+                Robot.turretMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+                Robot.turretMotor.setPower(liftSpeed * slowfactor);
+            }
 
-                //----------------------------------------------------------//
-                //LIFT MOTOR
+            //----------------------------------------------------------//
+            //LIFT MOTOR
 
-                if (liftPosGroundButton) {
-                    targetLiftPos = groundLiftPosTicks;
-                }
+            if (liftPosGroundButton) {
+                targetLiftPos = groundLiftPosTicks;
+            }
 
-                if (liftPosLowButton) {
-                    targetLiftPos = lowLiftPosTicks;
-                }
+            if (liftPosLowButton) {
+                targetLiftPos = lowLiftPosTicks;
+            }
 
-                if (liftPosMediumButton) {
-                    targetLiftPos = mediumLiftPosTicks;
-                }
-                if (liftPosHighButton) {
-                    targetLiftPos = highLiftPosTicks;
-                }
+            if (liftPosMediumButton) {
+                targetLiftPos = mediumLiftPosTicks;
+            }
+            if (liftPosHighButton) {
+                targetLiftPos = highLiftPosTicks;
+            }
 
-                turretPosCurrentTicks = Robot.turretMotor.getCurrentPosition();
+            turretPosCurrentTicks = Robot.turretMotor.getCurrentPosition();
 
-                if (liftPosCurrentTicks < targetLiftPos || Math.abs(turretPosCurrentTicks) > turretCloseToZero || targetLiftPos > liftMinHeightForTurning) {
-                    Robot.liftMotor.setTargetPosition(targetLiftPos);
-                    Robot.liftMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-                    Robot.liftMotor.setPower(liftSpeed * slowfactor);
-                }
+            if (liftPosCurrentTicks < targetLiftPos || Math.abs(turretPosCurrentTicks) > turretCloseToZero || targetLiftPos > liftMinHeightForTurning) {
+                Robot.liftMotor.setTargetPosition(targetLiftPos);
+                Robot.liftMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+                Robot.liftMotor.setPower(liftSpeed * slowfactor);
+            }
 
 
             /*if (!robot.liftMotor.isBusy()) {
@@ -212,42 +213,43 @@ public class TeleopFirst extends LinearOpMode {
             }*/
 
 
-                //---------------------------------------------------------//
-                //DRIVING CODE
+            //---------------------------------------------------------//
+            //DRIVING CODE
 
-                wheelPower = Math.hypot(leftStickX, leftStickY);
-                if (wheelPower > .02) {
-                    wheelPower = (.8 * wheelPower + .2) * slowfactor;
-                }
-
-
-                stickAngleRadians = Math.atan2(leftStickY, leftStickX);
-
-                stickAngleRadians = stickAngleRadians - Math.PI / 4; //adjust by 45 degrees
-
-                double sinAngleRadians = Math.sin(stickAngleRadians);
-                double cosAngleRadians = Math.cos(stickAngleRadians);
-                double factor = 1 / Math.max(Math.abs(sinAngleRadians), Math.abs(cosAngleRadians));
-
-                rightX = rightStickX * slowfactor * .8;
-
-                lfPower = wheelPower * cosAngleRadians * factor + rightX;
-                rfPower = wheelPower * sinAngleRadians * factor - rightX;
-                lrPower = wheelPower * sinAngleRadians * factor + rightX;
-                rrPower = wheelPower * cosAngleRadians * factor - rightX;
-
-                Robot.backLeft.setPower(lrPower);
-                Robot.backRight.setPower(rrPower);
-                Robot.frontLeft.setPower(lfPower);
-                Robot.frontRight.setPower(rfPower);
-
-
-                //---------------------------------------------------------------------//
-                //TELEMETRY CODE
-
-
-                telemetry.update();
+            wheelPower = Math.hypot(leftStickX, leftStickY);
+            if (wheelPower > .02) {
+                wheelPower = (.8 * wheelPower + .2) * slowfactor;
             }
+
+
+            stickAngleRadians = Math.atan2(leftStickY, leftStickX);
+
+            stickAngleRadians = stickAngleRadians - Math.PI / 4; //adjust by 45 degrees
+
+            double sinAngleRadians = Math.sin(stickAngleRadians);
+            double cosAngleRadians = Math.cos(stickAngleRadians);
+            double factor = 1 / Math.max(Math.abs(sinAngleRadians), Math.abs(cosAngleRadians));
+
+            rightX = rightStickX * slowfactor * .8;
+
+            lfPower = wheelPower * cosAngleRadians * factor + rightX;
+            rfPower = wheelPower * sinAngleRadians * factor - rightX;
+            lrPower = wheelPower * sinAngleRadians * factor + rightX;
+            rrPower = wheelPower * cosAngleRadians * factor - rightX;
+
+            Robot.backLeft.setPower(lrPower);
+            Robot.backRight.setPower(rrPower);
+            Robot.frontLeft.setPower(lfPower);
+            Robot.frontRight.setPower(rfPower);
+
+
+            //---------------------------------------------------------------------//
+            //TELEMETRY CODE
+
+
+            telemetry.update();
+
         }
     }
+}
 
