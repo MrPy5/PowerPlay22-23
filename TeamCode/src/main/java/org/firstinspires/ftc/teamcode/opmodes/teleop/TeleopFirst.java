@@ -29,7 +29,7 @@ public class TeleopFirst extends LinearOpMode {
         //---------------------------------------------------------------//
         //GRABBER SERVO VARIABLES
 
-        double grabberServoClosedPos = 0.3;
+        double grabberServoClosedPos = 0.22;
         double grabberServoOpenPos = 0.7;
         double grabberServoCurrentPos = 0.3;
         boolean grabberTriggerReleased = true;
@@ -55,7 +55,7 @@ public class TeleopFirst extends LinearOpMode {
         //LIFT VARIABLES
 
         int liftPosCurrentTicks = 0;
-        double liftSpeed = 0.5;
+        double liftSpeed = 1;
 
         int ticksPerRevolutionOrbital = 537;
 
@@ -138,23 +138,6 @@ public class TeleopFirst extends LinearOpMode {
                 slowmoTriggerReleased = true;
             }
 
-            //---------------------------------------------------------------//
-            //GRABBER SERVO CODE
-
-            if (grabberTrigger > triggerSensitivity) {
-                if (grabberTriggerReleased) {
-                    if (grabberServoCurrentPos == grabberServoOpenPos) {
-                        grabberServoCurrentPos = grabberServoClosedPos;
-                    } else {
-                        grabberServoCurrentPos = grabberServoOpenPos;
-                    }
-                    Robot.gripperServo.setPosition(grabberServoCurrentPos);
-                    grabberTriggerReleased = false;
-                }
-            } else {
-                grabberTriggerReleased = true;
-            }
-
 
             //---------------------------------------------------------------//
             //TURRET CODE
@@ -195,13 +178,22 @@ public class TeleopFirst extends LinearOpMode {
 
             if (liftPosLowButton) {
                 targetLiftPos = lowLiftPosTicks;
+                if (grabberServoCurrentPos == grabberServoOpenPos) {
+                    grabberTrigger = 1;
+                }
             }
 
             if (liftPosMediumButton) {
                 targetLiftPos = mediumLiftPosTicks;
+                if (grabberServoCurrentPos == grabberServoOpenPos) {
+                    grabberTrigger = 1;
+                }
             }
             if (liftPosHighButton) {
                 targetLiftPos = highLiftPosTicks;
+                if (grabberServoCurrentPos == grabberServoOpenPos) {
+                    grabberTrigger = 1;
+                }
             }
 
             // Allow lift to move when:  1) going up  2) Near the zero position  3) It won't go too low for turning
@@ -219,6 +211,23 @@ public class TeleopFirst extends LinearOpMode {
                 prevTargetLiftPos = liftPosCurrentTicks;
             }
 
+
+            //---------------------------------------------------------------//
+            //GRABBER SERVO CODE
+
+            if (grabberTrigger > triggerSensitivity) {
+                if (grabberTriggerReleased) {
+                    if (grabberServoCurrentPos == grabberServoOpenPos) {
+                        grabberServoCurrentPos = grabberServoClosedPos;
+                    } else {
+                        grabberServoCurrentPos = grabberServoOpenPos;
+                    }
+                    Robot.gripperServo.setPosition(grabberServoCurrentPos);
+                    grabberTriggerReleased = false;
+                }
+            } else {
+                grabberTriggerReleased = true;
+            }
 
             /*if (!robot.liftMotor.isBusy()) {
                 robot.liftMotor.setPower(0);
