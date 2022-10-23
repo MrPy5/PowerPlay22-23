@@ -55,7 +55,7 @@ public class Robot {
         liftMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         liftMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         liftMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-        liftMotor.setDirection(DcMotor.Direction.REVERSE);
+        //liftMotor.setDirection(DcMotor.Direction.REVERSE);
 
 
         gripperServo = hardwareMap.get(Servo.class, "gripperServo");
