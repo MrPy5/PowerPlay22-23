@@ -33,7 +33,7 @@ public class TeleopFirst extends LinearOpMode {
 
         double grabberServoClosedPos = 0.22;
         double grabberServoOpenPos = 0.7;
-        double grabberServoCurrentPos = 0.3;
+        double grabberServoCurrentPos = 0.22;
         boolean grabberTriggerReleased = true;
 
 
@@ -71,7 +71,7 @@ public class TeleopFirst extends LinearOpMode {
         double liftSpeedPower;
 
         double liftMotorTicksPerRevolution = 537;
-        double liftSpoolDiameter = 7/8; //inches - if you have the correct spool diameter, everything else should just work
+        double liftSpoolDiameter = 0.875; //inches - if you have the correct spool diameter, everything else should just work
         double liftCascadeMultiplier = 3; // 3 stages of cascade stringing
         double liftTicksPerInch = liftMotorTicksPerRevolution / (liftSpoolDiameter * Math.PI * liftCascadeMultiplier);
 
@@ -81,7 +81,7 @@ public class TeleopFirst extends LinearOpMode {
         double liftJunctionLowHeight = 15;
         double liftJunctionMediumHeight = 24;
         double liftJunctionHighHeight = 35;
-        double liftMinHeightForTurning = 3;
+        double liftMinHeightForTurning = 6;
 
         double liftHeightTarget = 0;
         double liftHeightPrevTarget = 0;
@@ -121,6 +121,11 @@ public class TeleopFirst extends LinearOpMode {
             boolean liftPosLowButton = gamepad2.a;
             boolean liftPosMediumButton = gamepad2.b;
             boolean liftPosHighButton = gamepad2.y;
+
+            boolean liftPosUpManualButton = gamepad1.right_bumper;
+            boolean liftPosDownManualButton = gamepad1.left_bumper;
+
+            double liftPosToFiveButton = gamepad2.left_trigger;
 
 
             //---------------------------------------------------------------//
@@ -181,7 +186,7 @@ public class TeleopFirst extends LinearOpMode {
                     turretPrevTargetDegrees = turretTargetDegrees;
                 }
             } else if (Math.abs(turretTargetDegrees - turretCurrentDegrees) > turretCloseToZero) {  // If not close to destination, temporarily keep turret where it is until lift raises.
-                Robot.turretMotor.setTargetPosition((int) (turretCurrentDegrees * turretTicksPerDegree));
+                Robot.turretMotor.setTargetPosition((int) (liftMinHeightForTurning * liftTicksPerInch));
                 Robot.turretMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
                 Robot.turretMotor.setPower(turretSpeed);
                 turretPrevTargetDegrees = turretCurrentDegrees;
@@ -214,6 +219,22 @@ public class TeleopFirst extends LinearOpMode {
                 }
             }
 
+            //manual lift
+            if (liftPosDownManualButton) {
+                if (liftCurrentHeight > 1.25) {
+                    liftHeightTarget = liftCurrentHeight - 1.25;
+                }
+            }
+
+            if (liftPosUpManualButton) {
+                if (liftCurrentHeight < liftJunctionHighHeight - 1.25) {
+                    liftHeightTarget = liftCurrentHeight + 1.25;
+                }
+            }
+
+            if (liftPosToFiveButton > triggerSensitivity) {
+                liftHeightTarget = 5;
+            }
             // Allow lift to move when:  1) going up  2) Turret near the zero position  3) It won't go too low for Turret turning
             if (liftCurrentHeight < liftHeightTarget || Math.abs(turretCurrentDegrees) < turretCloseToZero || liftHeightTarget > liftMinHeightForTurning) {
                 if (liftHeightTarget != liftHeightPrevTarget) {
@@ -293,7 +314,8 @@ public class TeleopFirst extends LinearOpMode {
             telemetry.addData("Target Turret Position", turretTargetDegrees);
             telemetry.addData("Current Lift Position", liftCurrentHeight);
             telemetry.addData("Target Lift Position", liftHeightTarget);
-
+            telemetry.addData("More", Robot.liftMotor.getCurrentPosition());
+            telemetry.addData("liftticksperinch", liftTicksPerInch);
             telemetry.update();
 
         }
