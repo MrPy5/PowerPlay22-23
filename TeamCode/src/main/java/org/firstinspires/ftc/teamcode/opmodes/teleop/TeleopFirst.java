@@ -310,12 +310,12 @@ public class TeleopFirst extends LinearOpMode {
 
             //---------------------------------------------------------------------//
             //TELEMETRY CODE
-            telemetry.addData("Current Turret Position", turretCurrentDegrees);
-            telemetry.addData("Target Turret Position", turretTargetDegrees);
-            telemetry.addData("Current Lift Position", liftCurrentHeight);
-            telemetry.addData("Target Lift Position", liftHeightTarget);
-            telemetry.addData("More", Robot.liftMotor.getCurrentPosition());
-            telemetry.addData("liftticksperinch", liftTicksPerInch);
+            telemetry.addData("Turret Current Position (degrees):", turretCurrentDegrees);
+            telemetry.addData("Turret Target Position (degrees):", turretTargetDegrees);
+            telemetry.addData("Lift Current Position (inches):", liftCurrentHeight);
+            telemetry.addData("Lift Target Position (inches):", liftHeightTarget);
+            telemetry.addData("Lift Current Position (ticks):", Robot.liftMotor.getCurrentPosition());
+            //telemetry.addData("liftticksperinch", liftTicksPerInch);
             telemetry.update();
 
         }
