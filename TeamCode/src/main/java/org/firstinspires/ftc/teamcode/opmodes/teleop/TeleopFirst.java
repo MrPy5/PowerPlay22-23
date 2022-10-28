@@ -21,9 +21,17 @@ public class TeleopFirst extends LinearOpMode {
 
         double triggerSensitivity = 0.01;
 
+        //---------------------------------------------------------------//
+        //SLOW VARIABLES
+
         double slowModeSpeed = 1;
         double slowModeSlow = .3;
         double slowModeFast = 1;
+
+        double slowModeTurnSpeed = 0.8;
+        double slowModeTurnSlow = 0.5;
+        double slowModeTurnFast = 0.7;
+
         boolean slowMode = false;
         boolean slowmoTriggerReleased = true;
 
@@ -44,15 +52,8 @@ public class TeleopFirst extends LinearOpMode {
         double turretCurrentDegrees = 0;
         double turretCloseToZero = 70;
 
-        double turretTicksPerRevolution = 2786;
-        double turretTicksPerDegree = turretTicksPerRevolution / 360;
-
-        /**
-        double forwardTurretPosTicks = 0;
-        double rightTurretPosTicks = 696;
-        double leftTurretPosTicks = -696;
-        double backTurretPosTicks = 1393;
-         **/
+        double turretTicksPerRevolution = 2786.0;
+        double turretTicksPerDegree = turretTicksPerRevolution / 360.0;
 
         double turretForwardDegrees = 0; //all rotation variables in degrees
         double turretRightDegrees = 90;
@@ -71,7 +72,7 @@ public class TeleopFirst extends LinearOpMode {
         double liftSpeedPower;
 
         double liftMotorTicksPerRevolution = 537;
-        double liftSpoolDiameter = 0.875; //inches - if you have the correct spool diameter, everything else should just work
+        double liftSpoolDiameter = 0.94; //inches - if you have the correct spool diameter, everything else should just work
         double liftCascadeMultiplier = 3; // 3 stages of cascade stringing
         double liftTicksPerInch = liftMotorTicksPerRevolution / (liftSpoolDiameter * Math.PI * liftCascadeMultiplier);
 
@@ -80,7 +81,7 @@ public class TeleopFirst extends LinearOpMode {
         double liftJunctionGroundHeight = 1;
         double liftJunctionLowHeight = 15;
         double liftJunctionMediumHeight = 24;
-        double liftJunctionHighHeight = 35;
+        double liftJunctionHighHeight = 34;
         double liftMinHeightForTurning = 6;
 
         double liftHeightTarget = 0;
@@ -109,7 +110,8 @@ public class TeleopFirst extends LinearOpMode {
         while (opModeIsActive()) {
 
             //---------------------------------------------------------------//
-            //GAMEPAD2 CONTROLS
+            //GAMEPAD2 CONTROLS = Lift + turret + grabbing
+
             double grabberTrigger = gamepad2.right_trigger;
 
             boolean turretPosForwardButton = gamepad2.dpad_up;
@@ -117,25 +119,28 @@ public class TeleopFirst extends LinearOpMode {
             boolean turretPosLeftButton = gamepad2.dpad_left;
             boolean turretPosRightButton = gamepad2.dpad_right;
 
-            boolean liftPosGroundButton = gamepad2.x;
+            boolean liftPosGroundButton = gamepad2.right_bumper;
             boolean liftPosLowButton = gamepad2.a;
             boolean liftPosMediumButton = gamepad2.b;
-            boolean liftPosHighButton = gamepad2.y;
+            boolean liftPosGroundJunctionButton = gamepad2.x;
+            boolean liftPosHighButton =  gamepad2.y;
 
-            boolean liftPosUpManualButton = gamepad1.right_bumper;
-            boolean liftPosDownManualButton = gamepad1.left_bumper;
 
             double liftPosToFiveButton = gamepad2.left_trigger;
 
 
             //---------------------------------------------------------------//
-            //GAMEPAD1 CONTROLS
+            //GAMEPAD1 CONTROLS = Driving + slow mode
 
             double slowmoTrigger = gamepad1.right_trigger;
 
-            double leftStickY = gamepad1.left_stick_y * -1;
-            double leftStickX = gamepad1.left_stick_x;
-            double rightStickX = gamepad1.right_stick_x;
+            double leftStickY = gamepad1.left_stick_y * -1 * slowModeSpeed;
+            double leftStickX = gamepad1.left_stick_x * slowModeSpeed;
+            double rightStickX = gamepad1.right_stick_x * slowModeTurnSpeed * .8;
+
+            boolean liftPosUpManualButton = gamepad1.right_bumper;
+            boolean liftPosDownManualButton = gamepad1.left_bumper;
+
 
             //---------------------------------------------------------------//
             //READ HARDWARE VALUES
@@ -150,9 +155,12 @@ public class TeleopFirst extends LinearOpMode {
                 if (slowmoTriggerReleased) {
                     if (slowMode == false) {
                         slowModeSpeed = slowModeSlow;
+                        slowModeTurnSpeed = slowModeTurnSlow;
                         slowMode = true;
                     } else {
                         slowModeSpeed = slowModeFast;
+                        slowModeTurnSpeed = slowModeTurnFast;
+
                         slowMode = false;
                     }
                     slowmoTriggerReleased = false;
@@ -185,12 +193,12 @@ public class TeleopFirst extends LinearOpMode {
                     Robot.turretMotor.setPower(turretSpeed);
                     turretPrevTargetDegrees = turretTargetDegrees;
                 }
-            } else if (Math.abs(turretTargetDegrees - turretCurrentDegrees) > turretCloseToZero) {  // If not close to destination, temporarily keep turret where it is until lift raises.
+            } /*else if (Math.abs(turretTargetDegrees - turretCurrentDegrees) > turretCloseToZero) {  // If not close to destination, temporarily keep turret where it is until lift raises.
                 Robot.turretMotor.setTargetPosition((int) (liftMinHeightForTurning * liftTicksPerInch));
                 Robot.turretMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
                 Robot.turretMotor.setPower(turretSpeed);
                 turretPrevTargetDegrees = turretCurrentDegrees;
-            }
+            }*/
 
             //----------------------------------------------------------//
             //LIFT MOTOR
@@ -199,24 +207,23 @@ public class TeleopFirst extends LinearOpMode {
                 liftHeightTarget = liftPickupHeight;
             }
 
+            if (liftPosGroundJunctionButton) {
+                liftHeightTarget = liftJunctionGroundHeight;
+
+
+            }
             if (liftPosLowButton) {
                 liftHeightTarget = liftJunctionLowHeight;
-                if (grabberServoCurrentPos == grabberServoOpenPos) {
-                    grabberTrigger = 1;
-                }
+
             }
 
             if (liftPosMediumButton) {
                 liftHeightTarget = liftJunctionMediumHeight;
-                if (grabberServoCurrentPos == grabberServoOpenPos) {
-                    grabberTrigger = 1;
-                }
+
             }
             if (liftPosHighButton) {
                 liftHeightTarget = liftJunctionHighHeight;
-                if (grabberServoCurrentPos == grabberServoOpenPos) {
-                    grabberTrigger = 1;
-                }
+
             }
 
             //manual lift
@@ -238,7 +245,7 @@ public class TeleopFirst extends LinearOpMode {
             // Allow lift to move when:  1) going up  2) Turret near the zero position  3) It won't go too low for Turret turning
             if (liftCurrentHeight < liftHeightTarget || Math.abs(turretCurrentDegrees) < turretCloseToZero || liftHeightTarget > liftMinHeightForTurning) {
                 if (liftHeightTarget != liftHeightPrevTarget) {
-                    Robot.liftMotor.setTargetPosition((int)(liftHeightTarget * liftTicksPerInch));
+                    Robot.liftMotor.setTargetPosition((int) (liftHeightTarget * liftTicksPerInch));
                     Robot.liftMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
                     if (liftCurrentHeight < liftHeightTarget) {
                         liftSpeedPower = liftSpeedUp;
@@ -249,7 +256,7 @@ public class TeleopFirst extends LinearOpMode {
                     liftHeightPrevTarget = liftHeightTarget;
                 }
             } else {  // keep lift where is is
-                Robot.liftMotor.setTargetPosition((int)(liftCurrentHeight * liftTicksPerInch));
+                Robot.liftMotor.setTargetPosition((int) (liftCurrentHeight * liftTicksPerInch));
                 Robot.liftMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
                 Robot.liftMotor.setPower(liftSpeedUp);
                 liftHeightPrevTarget = liftCurrentHeight;
@@ -273,18 +280,13 @@ public class TeleopFirst extends LinearOpMode {
                 grabberTriggerReleased = true;
             }
 
-            /*if (!robot.liftMotor.isBusy()) {
-                robot.liftMotor.setPower(0);
-                robot.liftMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-            }*/
-
 
             //---------------------------------------------------------//
             //DRIVING CODE
 
             wheelPower = Math.hypot(leftStickX, leftStickY);
-            if (wheelPower > .02) {
-                wheelPower = (.8 * wheelPower + .2) * slowModeSpeed;
+            if (wheelPower > .15) {
+                wheelPower = (.85 * wheelPower + .15);
             }
 
             stickAngleRadians = Math.atan2(leftStickY, leftStickX);
@@ -295,12 +297,12 @@ public class TeleopFirst extends LinearOpMode {
             cosAngleRadians = Math.cos(stickAngleRadians);
             factor = 1 / Math.max(Math.abs(sinAngleRadians), Math.abs(cosAngleRadians));
 
-            rightX = rightStickX * slowModeSpeed * .8;
 
-            lfPower = wheelPower * cosAngleRadians * factor + rightX;
-            rfPower = wheelPower * sinAngleRadians * factor - rightX;
-            lrPower = wheelPower * sinAngleRadians * factor + rightX;
-            rrPower = wheelPower * cosAngleRadians * factor - rightX;
+
+            lfPower = wheelPower * cosAngleRadians * factor + rightStickX;
+            rfPower = wheelPower * sinAngleRadians * factor - rightStickX;
+            lrPower = wheelPower * sinAngleRadians * factor + rightStickX;
+            rrPower = wheelPower * cosAngleRadians * factor - rightStickX;
 
             Robot.backLeft.setPower(lrPower);
             Robot.backRight.setPower(rrPower);
@@ -314,8 +316,7 @@ public class TeleopFirst extends LinearOpMode {
             telemetry.addData("Turret Target Position (degrees):", turretTargetDegrees);
             telemetry.addData("Lift Current Position (inches):", liftCurrentHeight);
             telemetry.addData("Lift Target Position (inches):", liftHeightTarget);
-            telemetry.addData("Lift Current Position (ticks):", Robot.liftMotor.getCurrentPosition());
-            //telemetry.addData("liftticksperinch", liftTicksPerInch);
+            telemetry.addData("ticks", Robot.turretMotor.getCurrentPosition());
             telemetry.update();
 
         }
