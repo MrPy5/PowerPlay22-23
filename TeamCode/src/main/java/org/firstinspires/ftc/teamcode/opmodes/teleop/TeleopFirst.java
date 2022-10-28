@@ -129,7 +129,7 @@ public class TeleopFirst extends LinearOpMode {
             double liftPosToFiveButton = gamepad2.left_trigger;
 
 
-            //---------------------------------------------------------------//
+            //----------------------------------------------------------------//
             //GAMEPAD1 CONTROLS = Driving + slow mode
 
             double slowmoTrigger = gamepad1.right_trigger;
