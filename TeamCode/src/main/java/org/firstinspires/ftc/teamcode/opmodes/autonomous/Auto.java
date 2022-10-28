@@ -43,90 +43,127 @@ public class Auto extends LinearOpMode {
 
     /* Declare OpMode members. */
 
-    Robot robot = new Robot(hardwareMap);
-
-    
 
 
-
-
-    static final double     COUNTS_PER_MOTOR_REV    = 1440 ;
-    static final double     DRIVE_GEAR_REDUCTION    = 1.0 ;
-    static final double     WHEEL_DIAMETER_INCHES   = 4.0 ;
-    static final double     COUNTS_PER_INCH         = (COUNTS_PER_MOTOR_REV * DRIVE_GEAR_REDUCTION) /
-            (WHEEL_DIAMETER_INCHES * 3.1415);
-    static final double     DRIVE_SPEED             = 0.6;
-    static final double     TURN_SPEED              = 0.5;
+    static final double     COUNTS_PER_MOTOR_REV    = 537.6;
+    static final double     WHEEL_DIAMETER_INCHES   = 3.77;
+    static final double     COUNTS_PER_INCH         = (COUNTS_PER_MOTOR_REV) /
+            (WHEEL_DIAMETER_INCHES * Math.PI);
+    double     DRIVE_SPEED             = 0.3;
 
     @Override
     public void runOpMode() {
 
+        Robot robot = new Robot(hardwareMap);
 
-
-
-
-        telemetry.addData("Starting at",  "%7d :%7d",
-                robot.frontLeft.getCurrentPosition(),
-                robot.frontRight.getCurrentPosition());
-        telemetry.update();
-
-        // Wait for the game to start (driver presses PLAY)
         waitForStart();
 
+        ResetEncoders();
+        ZeroPowerToFloat();
+        Drive(110);
 
-        encoderDrive(DRIVE_SPEED,  48,  48, 5.0);  // S1: Forward 47 Inches with 5 Sec timeout
-        encoderDrive(TURN_SPEED,   12, -12, 4.0);  // S2: Turn Right 12 Inches with 4 Sec timeout
-        encoderDrive(DRIVE_SPEED, -24, -24, 4.0);  // S3: Reverse 24 Inches with 4 Sec timeout
+        sleep(5000);
 
-        telemetry.addData("Path", "Complete");
-        telemetry.update();
-        sleep(1000);  // pause to display final telemetry message.
     }
 
+    public void Drive(int inches) {
+        Robot.frontLeft.setTargetPosition((int) (inches * COUNTS_PER_INCH));
+        Robot.frontRight.setTargetPosition((int) (inches * COUNTS_PER_INCH));
+        Robot.backLeft.setTargetPosition((int) (inches * COUNTS_PER_INCH));
+        Robot.backRight.setTargetPosition((int) (inches * COUNTS_PER_INCH));
 
-    public void encoderDrive(double speed,
-                             double leftInches, double rightInches,
-                             double timeoutS) {
-        int newLeftTarget;
-        int newRightTarget;
+        Robot.frontLeft.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        Robot.frontRight.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        Robot.backLeft.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        Robot.backRight.setMode(DcMotor.RunMode.RUN_TO_POSITION);
 
+        Robot.frontLeft.setPower(DRIVE_SPEED);
+        Robot.frontRight.setPower(DRIVE_SPEED);
+        Robot.backLeft.setPower(DRIVE_SPEED);
+        Robot.backRight.setPower(DRIVE_SPEED);
 
-        if (opModeIsActive()) {
-
-
-            newLeftTarget = robot.frontLeft.getCurrentPosition() + (int)(leftInches * COUNTS_PER_INCH);
-            newRightTarget = robot.frontRight.getCurrentPosition() + (int)(rightInches * COUNTS_PER_INCH);
-            robot.frontLeft.setTargetPosition(newLeftTarget);
-            robot.frontRight.setTargetPosition(newRightTarget);
-
-
-            robot.frontLeft.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-            robot.frontRight.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-
-
-            robot.frontLeft.setPower(Math.abs(speed));
-            robot.frontRight.setPower(Math.abs(speed));
-
-
-            while (opModeIsActive() &&
-                    (robot.frontLeft.isBusy() && robot.frontRight.isBusy())) {
-
-                // Display it for the driver.
-                telemetry.addData("Running to",  " %7d :%7d", newLeftTarget,  newRightTarget);
-                telemetry.addData("Currently at",  " at %7d :%7d",
-                        robot.frontLeft.getCurrentPosition(), robot.frontRight.getCurrentPosition());
-                telemetry.update();
+        while (Robot.frontLeft.isBusy() || Robot.frontRight.isBusy() || Robot.backLeft.isBusy() || Robot.backRight.isBusy()) {
+            if (Robot.frontLeft.getCurrentPosition() / (inches * COUNTS_PER_INCH) <= 0.3) {
+                if (DRIVE_SPEED < 0.8) {
+                    DRIVE_SPEED = DRIVE_SPEED + 0.01;
+                }
+            }
+            if (Robot.frontLeft.getCurrentPosition() / (inches * COUNTS_PER_INCH) >= 0.7) {
+                if (DRIVE_SPEED > 0.1) {
+                    DRIVE_SPEED = DRIVE_SPEED - 0.01;
+                }
+                else {
+                    DRIVE_SPEED = 0.1;
+                }
             }
 
-            // Stop all motion;
-            robot.frontLeft.setPower(0);
-            robot.frontRight.setPower(0);
+            Robot.frontLeft.setPower(DRIVE_SPEED);
+            Robot.frontRight.setPower(DRIVE_SPEED);
+            Robot.backLeft.setPower(DRIVE_SPEED);
+            Robot.backRight.setPower(DRIVE_SPEED);
 
-            // Turn off RUN_TO_POSITION
-            robot.frontLeft.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-            robot.frontRight.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+            telemetry.addData("speed", DRIVE_SPEED);
+            telemetry.update();
 
-            sleep(250);   // optional pause after each move.
+
         }
+
+        Robot.frontLeft.setPower(0);
+        Robot.frontRight.setPower(0);
+        Robot.backLeft.setPower(0);
+        Robot.backRight.setPower(0);
     }
+
+    public void Turn(int inches_left, int inches_right) {
+        Robot.frontLeft.setTargetPosition((int) (inches_left * COUNTS_PER_INCH));
+        Robot.frontRight.setTargetPosition((int) (inches_right * COUNTS_PER_INCH));
+        Robot.backLeft.setTargetPosition((int) (inches_left * COUNTS_PER_INCH));
+        Robot.backRight.setTargetPosition((int) (inches_right * COUNTS_PER_INCH));
+
+        Robot.frontLeft.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        Robot.frontRight.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        Robot.backLeft.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        Robot.backRight.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+
+        Robot.frontLeft.setPower(DRIVE_SPEED);
+        Robot.frontRight.setPower(DRIVE_SPEED);
+        Robot.backLeft.setPower(DRIVE_SPEED);
+        Robot.backRight.setPower(DRIVE_SPEED);
+
+        while (Robot.frontLeft.isBusy() || Robot.frontRight.isBusy() || Robot.backLeft.isBusy() || Robot.backRight.isBusy()) {
+
+        }
+
+        Robot.frontLeft.setPower(0);
+        Robot.frontRight.setPower(0);
+        Robot.backLeft.setPower(0);
+        Robot.backRight.setPower(0);
+    }
+
+    public void ResetEncoders() {
+        Robot.frontLeft.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        Robot.frontRight.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        Robot.backLeft.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        Robot.backRight.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+
+        Robot.frontLeft.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        Robot.frontRight.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        Robot.backLeft.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        Robot.backRight.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+    }
+
+    public void ZeroPowerToBrake() {
+        Robot.backLeft.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        Robot.frontLeft.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        Robot.backRight.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        Robot.frontRight.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+    }
+    
+    public void ZeroPowerToFloat() {
+        Robot.backLeft.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
+        Robot.frontLeft.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
+        Robot.backRight.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
+        Robot.frontRight.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
+    }
+
 }

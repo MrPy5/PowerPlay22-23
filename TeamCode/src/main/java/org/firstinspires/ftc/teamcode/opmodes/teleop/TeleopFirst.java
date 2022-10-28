@@ -48,7 +48,7 @@ public class TeleopFirst extends LinearOpMode {
         //---------------------------------------------------------------//
         //TURRET VARIABLES
 
-        double turretSpeed = 0.25;
+        double turretSpeed = 0.5;
         double turretCurrentDegrees = 0;
         double turretCloseToZero = 70;
 

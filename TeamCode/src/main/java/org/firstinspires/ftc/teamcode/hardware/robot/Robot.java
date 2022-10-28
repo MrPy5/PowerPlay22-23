@@ -34,11 +34,7 @@ public class Robot {
         backRight.setDirection(DcMotor.Direction.REVERSE);
         frontRight.setDirection(DcMotor.Direction.REVERSE);
 
-        /*leftDrive.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        rightDrive.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
 
-        leftDrive.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        rightDrive.setMode(DcMotor.RunMode.RUN_USING_ENCODER);*/
 
         //backLeft.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         //frontLeft.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
