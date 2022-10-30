@@ -52,7 +52,7 @@ import org.firstinspires.ftc.robotcore.external.tfod.Recognition;
  * is explained below.
  */
 @TeleOp(name = "Concept: TensorFlow Object Detection Webcam", group = "Concept")
-
+@Disabled
 public class ConceptTensorFlowObjectDetectionWebcam extends LinearOpMode {
 
     /*
@@ -132,7 +132,7 @@ public class ConceptTensorFlowObjectDetectionWebcam extends LinearOpMode {
                 if (tfod != null) {
 
 
-                    /*telemetry.addData("Camera", "On");
+                    telemetry.addData("Camera", "On");
                     telemetry.update();
                     // getUpdatedRecognitions() will return null if no new information is available since
                     // the last time that call was made.
@@ -154,7 +154,7 @@ public class ConceptTensorFlowObjectDetectionWebcam extends LinearOpMode {
                             telemetry.addData("- Size (Width/Height)","%.0f / %.0f", width, height);
                         }
                         telemetry.update();
-                    }*/
+                    }
                 }
             }
         }
