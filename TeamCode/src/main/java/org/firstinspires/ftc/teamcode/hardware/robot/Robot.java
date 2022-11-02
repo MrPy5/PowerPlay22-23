@@ -36,10 +36,10 @@ public class Robot {
 
 
 
-        //backLeft.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-        //frontLeft.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-        //backRight.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-        //frontRight.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        backLeft.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        frontLeft.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        backRight.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        frontRight.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
 
 
         turretMotor = hardwareMap.get(DcMotor.class, "turretMotor");
