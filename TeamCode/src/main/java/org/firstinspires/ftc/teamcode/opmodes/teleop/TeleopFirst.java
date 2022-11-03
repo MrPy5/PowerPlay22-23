@@ -34,9 +34,9 @@ public class TeleopFirst extends LinearOpMode {
         //---------------------------------------------------------------//
         //SLOW VARIABLES
 
-        double slowModeSpeed = 1;
-        double slowModeSlow = .3;
-        double slowModeFast = 1;
+        double slowModeSpeed = .8;
+        double slowModeSlow = .4;
+        double slowModeFast = .8;
 
         double slowModeTurnSpeed = 0.7;
         double slowModeTurnSlow = 0.5;
@@ -331,11 +331,11 @@ public class TeleopFirst extends LinearOpMode {
             if (wheelPower > deadStickZone) {
                 startBreaking = false;
                 wheelPower = ((1 - wheelPowerMinToMove) * Math.pow(wheelPower, power) + wheelPowerMinToMove);
-                breakingValue = 0.10;
+                //breakingValue = 0.10;
             } else {
 
-                wheelPower = breakingValue;
-                startBreaking = true;
+                wheelPower = 0; //breakingValue;
+                //startBreaking = true;
             }
 
             if (startBreaking) {
@@ -373,6 +373,10 @@ public class TeleopFirst extends LinearOpMode {
 
             //---------------------------------------------------------------------//
             //TELEMETRY CODE
+            telemetry.addData("LeftStickX:", leftStickX);
+            telemetry.addData("LeftStickY:", leftStickY);
+            telemetry.addData("WheelPower:", wheelPower);
+
             telemetry.addData("Turret Current Position (degrees):", turretCurrentDegrees);
             telemetry.addData("Turret Target Position (degrees):", turretTargetDegrees);
             telemetry.addData("Lift Current Position (inches):", liftCurrentHeight);
