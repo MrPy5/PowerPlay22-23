@@ -218,7 +218,7 @@ public class Auto extends LinearOpMode {
         Robot.backRight.setPower(0.05);
         angles   = imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES);
         double distance = Math.abs(Float.parseFloat(formatAngle(angles.angleUnit, angles.firstAngle)) - changeFromZero - targetAngle);
-        while ((int) (Float.parseFloat(formatAngle(angles.angleUnit, angles.firstAngle)) + changeFromZero) > targetAngle + 0.5 || (int) (Float.parseFloat(formatAngle(angles.angleUnit, angles.firstAngle)) + changeFromZero) < targetAngle - 0.5) {
+        while (((int) (Float.parseFloat(formatAngle(angles.angleUnit, angles.firstAngle)) - changeFromZero) > targetAngle + 0.5 || (int) (Float.parseFloat(formatAngle(angles.angleUnit, angles.firstAngle)) - changeFromZero) < targetAngle - 0.5) && opModeIsActive()) {
             angles = imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES);
             telemetry.addData("> ", Float.parseFloat(formatAngle(angles.angleUnit, angles.firstAngle))-changeFromZero);
             telemetry.update();

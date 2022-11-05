@@ -216,7 +216,7 @@ public class TeleopFirst extends LinearOpMode {
             if (liftCurrentHeight > liftMinHeightForTurning - 0.5) {
                 turretTargetDegrees = turretButtonChoiceTargetDegrees;
             } else {
-                if (liftHeightTarget < liftMinHeightForTurning) {
+                if (liftHeightTarget < liftMinHeightForTurning && turretCurrentDegrees != turretForwardDegrees) {
                     liftHeightTarget = liftMinHeightForTurning;
                 }
                 if (Math.abs(turretTargetDegrees - turretCurrentDegrees) > turretCloseToZero) {  // If not close to destination, temporarily keep turret where it is until lift raises.
