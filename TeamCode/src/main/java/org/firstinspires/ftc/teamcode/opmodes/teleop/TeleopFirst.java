@@ -61,6 +61,7 @@ public class TeleopFirst extends LinearOpMode {
 
         double turretSpeed = 0.5;
         double turretCurrentDegrees;
+        double turretButtonChoiceTargetDegrees = 0;
         double turretCloseToZero = 70;
 
         double turretTicksPerDegree = Robot.turretTicksPerDegree;
@@ -141,7 +142,7 @@ public class TeleopFirst extends LinearOpMode {
             boolean liftPosLowButton = gamepad2.a;
             boolean liftPosMediumButton = gamepad2.b;
             boolean liftPosGroundJunctionButton = gamepad2.x;
-            boolean liftPosHighButton =  gamepad2.y;
+            boolean liftPosHighButton = gamepad2.y;
 
             boolean liftPosReturn = gamepad2.left_bumper;
 
@@ -175,8 +176,7 @@ public class TeleopFirst extends LinearOpMode {
                             slowModeSpeed = slowModeGroundJuctionSlow;
                             slowModeTurnSpeed = slowModeTurnSlow;
                             slowMode = true;
-                        }
-                        else {
+                        } else {
                             slowModeSpeed = slowModeSlow;
                             slowModeTurnSpeed = slowModeTurnSlow;
                             slowMode = true;
@@ -194,40 +194,41 @@ public class TeleopFirst extends LinearOpMode {
             }
 
 
-
-
             //---------------------------------------------------------------//
             //TURRET CODE
 
             if (turretPosForwardButton) {
-                turretTargetDegrees = turretForwardDegrees;
+                turretButtonChoiceTargetDegrees = turretForwardDegrees;
             }
             if (turretPosLeftButton) {
-                turretTargetDegrees = turretLeftDegrees;
+                turretButtonChoiceTargetDegrees = turretLeftDegrees;
             }
             if (turretPosRightButton) {
-                turretTargetDegrees = turretRightDegrees;
+                turretButtonChoiceTargetDegrees = turretRightDegrees;
             }
             if (turretPosBackButton) {
-                turretTargetDegrees = turretBackDegrees;
-                if (turretCurrentDegrees < 0 ){
-                    turretTargetDegrees = -turretTargetDegrees;
+                turretButtonChoiceTargetDegrees = turretBackDegrees;
+                if (turretCurrentDegrees < 0) {
+                    turretButtonChoiceTargetDegrees = -turretTargetDegrees;
                 }
             }
 
-            if (liftCurrentHeight > liftMinHeightForTurning) {
-                if (turretTargetDegrees != turretPrevTargetDegrees) {
-                    Robot.turretMotor.setTargetPosition((int) (turretTargetDegrees * turretTicksPerDegree));
-                    Robot.turretMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-                    Robot.turretMotor.setPower(turretSpeed);
-                    turretPrevTargetDegrees = turretTargetDegrees;
-                }/*
-                else if (Math.abs(turretTargetDegrees - turretCurrentDegrees) > turretCloseToZero) {  // If not close to destination, temporarily keep turret where it is until lift raises.
-                    Robot.liftMotor.setTargetPosition((int) (liftMinHeightForTurning * liftTicksPerInch));
-                    Robot.liftMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-                    Robot.liftMotor.setPower(liftSpeedUp);
-                    turretPrevTargetDegrees = turretCurrentDegrees;
-                }*/
+            if (liftCurrentHeight > liftMinHeightForTurning - 0.5) {
+                turretTargetDegrees = turretButtonChoiceTargetDegrees;
+            } else {
+                if (liftHeightTarget < liftMinHeightForTurning) {
+                    liftHeightTarget = liftMinHeightForTurning;
+                }
+                if (Math.abs(turretTargetDegrees - turretCurrentDegrees) > turretCloseToZero) {  // If not close to destination, temporarily keep turret where it is until lift raises.
+                    turretTargetDegrees = turretCurrentDegrees;
+                }
+            }
+
+            if (turretTargetDegrees != turretPrevTargetDegrees) {
+                Robot.turretMotor.setTargetPosition((int) (turretTargetDegrees * turretTicksPerDegree));
+                Robot.turretMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+                Robot.turretMotor.setPower(turretSpeed);
+                turretPrevTargetDegrees = turretTargetDegrees;
             }
 
             //----------------------------------------------------------//
@@ -338,18 +339,21 @@ public class TeleopFirst extends LinearOpMode {
             factor = 1 / Math.max(Math.abs(sinAngleRadians), Math.abs(cosAngleRadians));
 
 
-
             lfPower = wheelPower * cosAngleRadians * factor + rightStickX;
             rfPower = wheelPower * sinAngleRadians * factor - rightStickX;
             lrPower = wheelPower * sinAngleRadians * factor + rightStickX;
             rrPower = wheelPower * cosAngleRadians * factor - rightStickX;
 
-            /*if ((lrPower + rrPower + lfPower + rfPower) < 0.01 && GetAverageVelocity(ticksPerInch) > breakingVelocity) {
-                lrPower = 0.01;
-                rrPower = 0.01;
-                lfPower = 0.01;
-                rfPower = 0.01;
-            }*/
+            if (Math.abs(lrPower + rrPower + lfPower + rfPower) < 0.01 && GetAverageVelocity(ticksPerInch) > breakingVelocity) {
+                int multiplier = 1;
+                if ((lrPower + rrPower + lfPower + rfPower) < 0.0) {
+                    multiplier = -1;
+                }
+                lrPower = 0.01 * multiplier;
+                rrPower = 0.01 * multiplier;
+                lfPower = 0.01 * multiplier;
+                rfPower = 0.01 * multiplier;
+            }
 
             Robot.backLeft.setPower(lrPower);
             Robot.backRight.setPower(rrPower);

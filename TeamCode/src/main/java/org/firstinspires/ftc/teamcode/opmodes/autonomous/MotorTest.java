@@ -29,6 +29,8 @@
 
 package org.firstinspires.ftc.teamcode.opmodes.autonomous;
 
+import com.qualcomm.hardware.bosch.BNO055IMU;
+import com.qualcomm.hardware.bosch.JustLoggingAccelerationIntegrator;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
@@ -36,7 +38,11 @@ import com.qualcomm.robotcore.hardware.DcMotor;
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.AxesOrder;
 import org.firstinspires.ftc.robotcore.external.navigation.AxesReference;
+import org.firstinspires.ftc.robotcore.external.navigation.Orientation;
 import org.firstinspires.ftc.teamcode.hardware.robot.Robot;
+
+
+import java.util.Locale;
 
 
 @Autonomous(name="MotorTest")
@@ -53,15 +59,28 @@ public class MotorTest extends LinearOpMode {
             (WHEEL_DIAMETER_INCHES * Math.PI);
     double     driveSpeed             = 0.3;
 
+    BNO055IMU imu;
+    Orientation angles;
+    public static float changeFromZero = 0;
     @Override
     public void runOpMode() {
+        BNO055IMU.Parameters parameters = new BNO055IMU.Parameters();
+        parameters.angleUnit           = BNO055IMU.AngleUnit.DEGREES;
+        parameters.accelUnit           = BNO055IMU.AccelUnit.METERS_PERSEC_PERSEC;
+        parameters.calibrationDataFile = "BNO055IMUCalibration.json"; // see the calibration sample opmode
+        parameters.loggingEnabled      = true;
+        parameters.loggingTag          = "IMU";
+        parameters.accelerationIntegrationAlgorithm = new JustLoggingAccelerationIntegrator();
+
+        imu = hardwareMap.get(BNO055IMU.class, "imu");
+        imu.initialize(parameters);
 
         Robot robot = new Robot(hardwareMap);
 
         waitForStart();
 
         ResetEncoders();
-        while (opModeIsActive()) {
+        /*while (opModeIsActive()) {
             Robot.frontLeft.setPower(driveSpeed);
             Robot.frontRight.setPower(driveSpeed);
             Robot.backLeft.setPower(driveSpeed);
@@ -71,7 +90,7 @@ public class MotorTest extends LinearOpMode {
             telemetry.addData("BackLeft", Robot.backLeft.getCurrentPosition());
             telemetry.addData("BackRight", Robot.backRight.getCurrentPosition());
             telemetry.update();
-        }
+        }*/
         /*Turn(180);
         sleep(1000);
         Turn(90);
@@ -81,6 +100,22 @@ public class MotorTest extends LinearOpMode {
         Turn(-360);
         sleep(1000);
         */
+
+        angles = imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES);
+        float currentHeading = Float.parseFloat(formatAngle(angles.angleUnit, angles.firstAngle));
+        changeFromZero = Float.parseFloat(formatAngle(angles.angleUnit, angles.firstAngle));
+        while (opModeIsActive()) {
+            angles = imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES);
+
+
+            telemetry.addData("Z", Float.parseFloat(formatAngle(angles.angleUnit, angles.firstAngle)));
+            telemetry.addData("Y", Float.parseFloat(formatAngle(angles.angleUnit, angles.secondAngle)));
+            telemetry.addData("X", Float.parseFloat(formatAngle(angles.angleUnit, angles.thirdAngle)));
+
+            telemetry.addData("Zeroed", Float.parseFloat(formatAngle(angles.angleUnit, angles.firstAngle)) - changeFromZero);
+
+            telemetry.update();
+        }
     }
 
 
@@ -125,6 +160,12 @@ public class MotorTest extends LinearOpMode {
         Robot.backLeft.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         Robot.backRight.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
     }
+    String formatAngle(AngleUnit angleUnit, double angle) {
+        return formatDegrees(AngleUnit.DEGREES.fromUnit(angleUnit, angle));
+    }
 
+    String formatDegrees(double degrees){
+        return String.format(Locale.getDefault(), "%.1f", AngleUnit.DEGREES.normalize(degrees));
+    }
 
 }

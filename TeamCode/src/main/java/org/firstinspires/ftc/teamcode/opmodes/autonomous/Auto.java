@@ -98,7 +98,7 @@ public class Auto extends LinearOpMode {
     double grabberServoClosedPos = Robot.grabberServoClosedPos;
     double grabberServoOpenPos = Robot.grabberServoOpenPos;
     double grabberServoCurrentPos = 0.22;
-
+    float changeFromZero = 0;
     @Override
     public void runOpMode() {
 
@@ -116,7 +116,13 @@ public class Auto extends LinearOpMode {
         // and named "imu".
         imu = hardwareMap.get(BNO055IMU.class, "imu");
         imu.initialize(parameters);
+
+
         waitForStart();
+        sleep(5000);
+        angles = imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES);
+        float currentHeading = Float.parseFloat(formatAngle(angles.angleUnit, angles.firstAngle));
+        changeFromZero = (float) currentHeading;
 
         Robot.grabberServo.setPosition(Robot.grabberServoClosedPos);
 
@@ -144,7 +150,7 @@ public class Auto extends LinearOpMode {
 
         Drive(-12);
 
-        Turn(-90);
+        Turn(90);
 
         RaiseLift(7, false);
 
@@ -193,8 +199,7 @@ public class Auto extends LinearOpMode {
             Robot.backLeft.setPower(driveSpeedCurrent);
             Robot.backRight.setPower(driveSpeedCurrent);
 
-            telemetry.addData("speed", driveSpeedCurrent);
-            telemetry.update();
+
 
 
         }
@@ -207,26 +212,23 @@ public class Auto extends LinearOpMode {
 
     public void Turn(double targetAngle) {
         ResetEncoders();
-        Robot.frontLeft.setPower(-0.2);
-        Robot.frontRight.setPower(0.2);
-        Robot.backLeft.setPower(-0.2);
-        Robot.backRight.setPower(0.2);
-        angles   = imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES);
-        while (Float.parseFloat(formatAngle(angles.angleUnit, angles.firstAngle)) > targetAngle + 10 || Float.parseFloat(formatAngle(angles.angleUnit, angles.firstAngle)) < targetAngle - 10) {
-            angles   = imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES);
-            //telemetry.addData("> ", formatAngle(angles.angleUnit, angles.firstAngle));
-            //telemetry.update();
-        }
         Robot.frontLeft.setPower(-0.05);
         Robot.frontRight.setPower(0.05);
         Robot.backLeft.setPower(-0.05);
         Robot.backRight.setPower(0.05);
+        angles   = imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES);
+        double distance = Math.abs(Float.parseFloat(formatAngle(angles.angleUnit, angles.firstAngle)) - changeFromZero - targetAngle);
+        while ((int) (Float.parseFloat(formatAngle(angles.angleUnit, angles.firstAngle)) + changeFromZero) > targetAngle + 0.5 || (int) (Float.parseFloat(formatAngle(angles.angleUnit, angles.firstAngle)) + changeFromZero) < targetAngle - 0.5) {
+            angles = imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES);
+            telemetry.addData("> ", Float.parseFloat(formatAngle(angles.angleUnit, angles.firstAngle))-changeFromZero);
+            telemetry.update();
 
-        while (Float.parseFloat(formatAngle(angles.angleUnit, angles.firstAngle)) > targetAngle + 0.5 || Float.parseFloat(formatAngle(angles.angleUnit, angles.firstAngle)) < targetAngle - 0.5) {
-            angles   = imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES);
-            //telemetry.addData("> ", formatAngle(angles.angleUnit, angles.firstAngle));
-            //telemetry.update();
+
+
+
         }
+
+
 
         Robot.frontLeft.setPower(0);
         Robot.frontRight.setPower(0);
