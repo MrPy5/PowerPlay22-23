@@ -210,6 +210,9 @@ public class TeleopFirst extends LinearOpMode {
             }
             if (turretPosBackButton) {
                 turretTargetDegrees = turretBackDegrees;
+                if (turretCurrentDegrees < 0 ){
+                    turretTargetDegrees = -turretTargetDegrees;
+                }
             }
 
             if (liftCurrentHeight > liftMinHeightForTurning) {

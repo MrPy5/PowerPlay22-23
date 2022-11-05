@@ -34,9 +34,22 @@ public class Robot {
     public static double liftCascadeMultiplier = 3; // 3 stages of cascade stringing
     public static double liftTicksPerInch = liftMotorTicksPerRevolution / (liftSpoolDiameter * Math.PI * liftCascadeMultiplier);
 
+    public static double liftPickupHeight = 0;
+    public static double liftJunctionGroundHeight = 2;
+    public static double liftJunctionLowHeight = 15;
+    public static double liftJunctionMediumHeight = 24;
+    public static double liftJunctionHighHeight = 34;
+    public static double liftMinHeightForTurning = 6;
+    public static double liftMaximumHeight = 36;
+
     public static DcMotorEx turretMotor;
     public static double turretTicksPerRevolution = 2786.0;
     public static double turretTicksPerDegree = turretTicksPerRevolution / 360.0;
+
+    public static double turretForwardDegrees = 0; //all rotation variables in degrees
+    public static double turretRightDegrees = 90;
+    public static double turretLeftDegrees = -90;
+    public static double turretBackDegrees = 180;
 
     public static Servo grabberServo;
     public static double grabberServoClosedPos = 0.22;

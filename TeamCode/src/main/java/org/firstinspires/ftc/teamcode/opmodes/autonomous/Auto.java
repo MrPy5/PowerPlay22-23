@@ -118,19 +118,46 @@ public class Auto extends LinearOpMode {
         imu.initialize(parameters);
         waitForStart();
 
-        //ResetEncoders();
+        Robot.grabberServo.setPosition(Robot.grabberServoClosedPos);
+
         ZeroPowerToBrake();
-        Drive(50);
-        //ResetEncoders();
-        //Turn(-90);
-        ///ResetEncoders();
-        //Drive(31);
-       // sleep(5000);
+        Drive(65);
+
+
+        RaiseLift(Robot.liftJunctionHighHeight, true);
+
+
+        TurnTurret(Robot.turretRightDegrees, true);
+
+
+        sleep(1000);
+
+        RaiseLift(Robot.liftJunctionHighHeight - 2, true);
+
+        Robot.grabberServo.setPosition(Robot.grabberServoOpenPos);
+
+        RaiseLift(Robot.liftJunctionHighHeight, true);
+
+        TurnTurret(Robot.turretForwardDegrees, true);
+
+        RaiseLift(0, true);
+
+        Drive(-12);
+
+        Turn(-90);
+
+        RaiseLift(7, false);
+
+        Drive(24);
+
+
+
 
     }
 
     
     public void Drive(int inches) {
+        ResetEncoders();
         Robot.frontLeft.setTargetPosition((int) (inches * countsPerInch));
         Robot.frontRight.setTargetPosition((int) (inches * countsPerInch));
         Robot.backLeft.setTargetPosition((int) (inches * countsPerInch));
@@ -179,6 +206,7 @@ public class Auto extends LinearOpMode {
     }
 
     public void Turn(double targetAngle) {
+        ResetEncoders();
         Robot.frontLeft.setPower(-0.2);
         Robot.frontRight.setPower(0.2);
         Robot.backLeft.setPower(-0.2);
@@ -205,7 +233,12 @@ public class Auto extends LinearOpMode {
         Robot.backLeft.setPower(0);
         Robot.backRight.setPower(0);
     }
-    public void TurnTurret(double turretTargetDegrees) {
+    public void TurnTurret(double turretTargetDegrees, boolean wait) {
+        liftCurrentHeight = Robot.liftMotor.getCurrentPosition() / liftTicksPerInch;
+        turretCurrentDegrees = Robot.turretMotor.getCurrentPosition() / turretTicksPerDegree;
+
+
+
         if (liftCurrentHeight > liftMinHeightForTurning) {
             if (turretTargetDegrees != turretPrevTargetDegrees) {
                 Robot.turretMotor.setTargetPosition((int) (turretTargetDegrees * turretTicksPerDegree));
@@ -219,6 +252,40 @@ public class Auto extends LinearOpMode {
                 Robot.liftMotor.setPower(liftSpeedUp);
                 turretPrevTargetDegrees = turretCurrentDegrees;
             }
+        }
+
+        if (wait) {
+            while(Robot.turretMotor.isBusy());
+            Robot.turretMotor.setPower(0);
+        }
+    }
+
+    public void RaiseLift(double liftHeightTarget, boolean wait) {
+        liftCurrentHeight = Robot.liftMotor.getCurrentPosition() / liftTicksPerInch;
+        turretCurrentDegrees = Robot.turretMotor.getCurrentPosition() / turretTicksPerDegree;
+
+        // Allow lift to move when:  1) going up  2) Turret near the zero position  3) It won't go too low for Turret turning
+        if (liftCurrentHeight < liftHeightTarget || Math.abs(turretCurrentDegrees) < turretCloseToZero || liftHeightTarget > liftMinHeightForTurning) {
+            if (liftHeightTarget != liftHeightPrevTarget) {
+                Robot.liftMotor.setTargetPosition((int) (liftHeightTarget * liftTicksPerInch));
+                Robot.liftMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+                if (liftCurrentHeight < liftHeightTarget) {
+                    liftSpeedPower = liftSpeedUp;
+                } else {
+                    liftSpeedPower = liftSpeedDown;
+                }
+                Robot.liftMotor.setPower(liftSpeedPower);
+                liftHeightPrevTarget = liftHeightTarget;
+            }
+        } else {  // keep lift where is is
+            Robot.liftMotor.setTargetPosition((int) (liftCurrentHeight * liftTicksPerInch));
+            Robot.liftMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+            Robot.liftMotor.setPower(liftSpeedUp);
+            liftHeightPrevTarget = liftCurrentHeight;
+        }
+        if (wait) {
+            while (Robot.liftMotor.isBusy());
+            Robot.liftMotor.setPower(0);
         }
     }
     public void ChangeGripperState(double gripperTarget) {
