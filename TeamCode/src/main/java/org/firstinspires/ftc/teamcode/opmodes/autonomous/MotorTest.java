@@ -33,6 +33,9 @@ import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
 
+import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
+import org.firstinspires.ftc.robotcore.external.navigation.AxesOrder;
+import org.firstinspires.ftc.robotcore.external.navigation.AxesReference;
 import org.firstinspires.ftc.teamcode.hardware.robot.Robot;
 
 
@@ -48,7 +51,7 @@ public class MotorTest extends LinearOpMode {
     static final double     WHEEL_DIAMETER_INCHES   = 3.77;
     static final double     COUNTS_PER_INCH         = (COUNTS_PER_MOTOR_REV) /
             (WHEEL_DIAMETER_INCHES * Math.PI);
-    double     DRIVE_SPEED             = 0.3;
+    double     driveSpeed             = 0.3;
 
     @Override
     public void runOpMode() {
@@ -58,21 +61,57 @@ public class MotorTest extends LinearOpMode {
         waitForStart();
 
         ResetEncoders();
-
-        Robot.frontLeft.setPower(DRIVE_SPEED);
-        Robot.frontRight.setPower(DRIVE_SPEED);
-        Robot.backLeft.setPower(DRIVE_SPEED);
-        Robot.backRight.setPower(DRIVE_SPEED);
-
-        telemetry.addData("FrontLeft", Robot.frontLeft.getCurrentPosition());
-        telemetry.addData("FrontRight", Robot.frontRight.getCurrentPosition());
-        telemetry.addData("BackLeft", Robot.backLeft.getCurrentPosition());
-        telemetry.addData("BackRight", Robot.backRight.getCurrentPosition());
-        telemetry.update();
+        while (opModeIsActive()) {
+            Robot.frontLeft.setPower(driveSpeed);
+            Robot.frontRight.setPower(driveSpeed);
+            Robot.backLeft.setPower(driveSpeed);
+            Robot.backRight.setPower(driveSpeed);
+            telemetry.addData("FrontLeft", Robot.frontLeft.getCurrentPosition());
+            telemetry.addData("FrontRight", Robot.frontRight.getCurrentPosition());
+            telemetry.addData("BackLeft", Robot.backLeft.getCurrentPosition());
+            telemetry.addData("BackRight", Robot.backRight.getCurrentPosition());
+            telemetry.update();
+        }
+        /*Turn(180);
+        sleep(1000);
+        Turn(90);
+        sleep(1000);
+        Turn(-90);
+        sleep(1000);
+        Turn(-360);
+        sleep(1000);
+        */
     }
 
 
 
+
+
+    public void Turn(double angle) {
+        Robot.frontLeft.setTargetPosition(-(int) (angle * Robot.inchesPerWheelBaseDegree * Robot.ticksPerInch));
+        Robot.frontRight.setTargetPosition((int) (angle * Robot.inchesPerWheelBaseDegree * Robot.ticksPerInch));
+        Robot.backLeft.setTargetPosition(-(int) (angle * Robot.inchesPerWheelBaseDegree * Robot.ticksPerInch));
+        Robot.backRight.setTargetPosition((int) (angle * Robot.inchesPerWheelBaseDegree * Robot.ticksPerInch));
+
+        Robot.frontLeft.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        Robot.frontRight.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        Robot.backLeft.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        Robot.backRight.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+
+        Robot.frontLeft.setPower(driveSpeed);
+        Robot.frontRight.setPower(driveSpeed);
+        Robot.backLeft.setPower(driveSpeed);
+        Robot.backRight.setPower(driveSpeed);
+
+        while (Robot.frontLeft.isBusy() || Robot.frontRight.isBusy() || Robot.backLeft.isBusy() || Robot.backRight.isBusy()) {
+
+        }
+
+        Robot.frontLeft.setPower(0);
+        Robot.frontRight.setPower(0);
+        Robot.backLeft.setPower(0);
+        Robot.backRight.setPower(0);
+    }
 
 
     public void ResetEncoders() {

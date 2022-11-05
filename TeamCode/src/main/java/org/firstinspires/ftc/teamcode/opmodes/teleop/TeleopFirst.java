@@ -1,8 +1,8 @@
 //Checklist
 /*
 
--Fix -1 in driving variables
--Autonomous
+-180 turn for left
+-
 
 
  */
@@ -37,28 +37,21 @@ public class TeleopFirst extends LinearOpMode {
         double slowModeSpeed = .8;
         double slowModeSlow = .4;
         double slowModeFast = .8;
+        double slowModeGroundJuctionSlow = .2;
 
-        double slowModeTurnSpeed = 0.7;
+        double slowModeTurnSpeed = 0.6;
         double slowModeTurnSlow = 0.5;
-        double slowModeTurnFast = 0.7;
+        double slowModeTurnFast = 0.6;
 
         boolean slowMode = false;
         boolean slowmoTriggerReleased = true;
 
 
-        //--------------------------------------------------------------//
-        //Quadratic Curve Variables
-
-        int power = 2;
-        int powerone = 1;
-        int powertwo = 2;
-        boolean quadraticCurveReleased = true;
-
         //---------------------------------------------------------------//
         //GRABBER SERVO VARIABLES
 
-        double grabberServoClosedPos = 0.22;
-        double grabberServoOpenPos = 0.7;
+        double grabberServoClosedPos = Robot.grabberServoClosedPos;
+        double grabberServoOpenPos = Robot.grabberServoOpenPos;
         double grabberServoCurrentPos = 0.22;
         boolean grabberTriggerReleased = true;
 
@@ -70,8 +63,7 @@ public class TeleopFirst extends LinearOpMode {
         double turretCurrentDegrees;
         double turretCloseToZero = 70;
 
-        double turretTicksPerRevolution = 2786.0;
-        double turretTicksPerDegree = turretTicksPerRevolution / 360.0;
+        double turretTicksPerDegree = Robot.turretTicksPerDegree;
 
         double turretForwardDegrees = 0; //all rotation variables in degrees
         double turretRightDegrees = 90;
@@ -89,10 +81,7 @@ public class TeleopFirst extends LinearOpMode {
         double liftSpeedDown = .5;
         double liftSpeedPower;
 
-        double liftMotorTicksPerRevolution = 537;
-        double liftSpoolDiameter = 0.94; //inches - if you have the correct spool diameter, everything else should just work
-        double liftCascadeMultiplier = 3; // 3 stages of cascade stringing
-        double liftTicksPerInch = liftMotorTicksPerRevolution / (liftSpoolDiameter * Math.PI * liftCascadeMultiplier);
+        double liftTicksPerInch = Robot.liftTicksPerInch;
 
         double liftCurrentHeight; //all height variables are in inches
         double liftPickupHeight = 0;
@@ -105,6 +94,8 @@ public class TeleopFirst extends LinearOpMode {
 
         double liftHeightTarget = 0;
         double liftHeightPrevTarget = 0;
+
+        double manualLiftIncrement = 1.0;
 
         boolean turretReturn = false;
 
@@ -125,15 +116,13 @@ public class TeleopFirst extends LinearOpMode {
         double deadStickZone = 0.01;
         double wheelPowerMinToMove = 0.05;
 
-        int breakDuration = 10000;
-        int currentBreakDuration = 0;
-        double breakingValue = 0.10;
-        boolean startBreaking = false;
+        double breakingVelocity = 1.0;
 
+        double ticksPerInch = Robot.ticksPerInch;
 
         //---------------------------------------------------------//
         //INIT SERVOS
-        Robot.gripperServo.setPosition(grabberServoOpenPos);
+        Robot.grabberServo.setPosition(grabberServoOpenPos);
 
 
         while (opModeIsActive()) {
@@ -161,7 +150,6 @@ public class TeleopFirst extends LinearOpMode {
             //GAMEPAD1 CONTROLS = Driving + slow mode + manual lift
 
             double slowmoTrigger = gamepad1.right_trigger;
-            double quadraticCurveTrigger = gamepad1.left_trigger;
 
             double leftStickY = gamepad1.left_stick_y * -1 * slowModeSpeed;
             double leftStickX = gamepad1.left_stick_x * -1 * slowModeSpeed;
@@ -183,9 +171,17 @@ public class TeleopFirst extends LinearOpMode {
             if (slowmoTrigger > triggerSensitivity) {
                 if (slowmoTriggerReleased) {
                     if (!slowMode) {
-                        slowModeSpeed = slowModeSlow;
-                        slowModeTurnSpeed = slowModeTurnSlow;
-                        slowMode = true;
+                        if (liftJunctionGroundHeight == liftHeightPrevTarget) {
+                            slowModeSpeed = slowModeGroundJuctionSlow;
+                            slowModeTurnSpeed = slowModeTurnSlow;
+                            slowMode = true;
+                        }
+                        else {
+                            slowModeSpeed = slowModeSlow;
+                            slowModeTurnSpeed = slowModeTurnSlow;
+                            slowMode = true;
+                        }
+
                     } else {
                         slowModeSpeed = slowModeFast;
                         slowModeTurnSpeed = slowModeTurnFast;
@@ -197,21 +193,8 @@ public class TeleopFirst extends LinearOpMode {
                 slowmoTriggerReleased = true;
             }
 
-            //----------------------------------------------------------//
-            //Quadratic Curve Code
 
-            if (quadraticCurveTrigger > triggerSensitivity) {
-                if (quadraticCurveReleased) {
-                    if (power == powerone) {
-                        power = powertwo;
-                    } else {
-                        power = powerone;
-                    }
-                    quadraticCurveReleased = false;
-                }
-            } else {
-                quadraticCurveReleased = true;
-            }
+
 
             //---------------------------------------------------------------//
             //TURRET CODE
@@ -235,7 +218,13 @@ public class TeleopFirst extends LinearOpMode {
                     Robot.turretMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
                     Robot.turretMotor.setPower(turretSpeed);
                     turretPrevTargetDegrees = turretTargetDegrees;
-                }
+                }/*
+                else if (Math.abs(turretTargetDegrees - turretCurrentDegrees) > turretCloseToZero) {  // If not close to destination, temporarily keep turret where it is until lift raises.
+                    Robot.liftMotor.setTargetPosition((int) (liftMinHeightForTurning * liftTicksPerInch));
+                    Robot.liftMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+                    Robot.liftMotor.setPower(liftSpeedUp);
+                    turretPrevTargetDegrees = turretCurrentDegrees;
+                }*/
             }
 
             //----------------------------------------------------------//
@@ -243,6 +232,7 @@ public class TeleopFirst extends LinearOpMode {
 
             if (liftPosGroundButton) {
                 liftHeightTarget = liftPickupHeight;
+                turretTargetDegrees = turretForwardDegrees;
             }
             if (liftPosGroundJunctionButton) {
                 liftHeightTarget = liftJunctionGroundHeight;
@@ -259,22 +249,21 @@ public class TeleopFirst extends LinearOpMode {
 
             //manual lift
             if (liftPosDownManualButton) {
-                if (liftCurrentHeight > 1.25) {
-                    liftHeightTarget = liftCurrentHeight - 1.25;
+                if (liftCurrentHeight > manualLiftIncrement) {
+                    liftHeightTarget = liftCurrentHeight - manualLiftIncrement;
                 }
             }
             if (liftPosUpManualButton) {
-                if (liftCurrentHeight < liftMaximumHeight - 1.25) {
-                    liftHeightTarget = liftCurrentHeight + 1.25;
+                if (liftCurrentHeight < liftMaximumHeight - manualLiftIncrement) {
+                    liftHeightTarget = liftCurrentHeight + manualLiftIncrement;
                 }
             }
 
             //return lift
             if (liftPosReturn) {
                 grabberServoCurrentPos = grabberServoOpenPos;
-                Robot.gripperServo.setPosition(grabberServoCurrentPos);
-
-                liftHeightTarget = liftCurrentHeight + 1.25;
+                Robot.grabberServo.setPosition(grabberServoCurrentPos);
+                liftHeightTarget = liftCurrentHeight + manualLiftIncrement;
 
                 turretReturn = true;
             }
@@ -316,7 +305,7 @@ public class TeleopFirst extends LinearOpMode {
                     } else {
                         grabberServoCurrentPos = grabberServoOpenPos;
                     }
-                    Robot.gripperServo.setPosition(grabberServoCurrentPos);
+                    Robot.grabberServo.setPosition(grabberServoCurrentPos);
                     grabberTriggerReleased = false;
                 }
             } else {
@@ -329,26 +318,14 @@ public class TeleopFirst extends LinearOpMode {
 
             wheelPower = Math.hypot(leftStickX, leftStickY);
             if (wheelPower > deadStickZone) {
-                startBreaking = false;
-                wheelPower = ((1 - wheelPowerMinToMove) * Math.pow(wheelPower, power) + wheelPowerMinToMove);
-                //breakingValue = 0.10;
+
+                wheelPower = ((1 - wheelPowerMinToMove) * wheelPower + wheelPowerMinToMove);
+
             } else {
-
-                wheelPower = 0; //breakingValue;
-                //startBreaking = true;
+                wheelPower = 0;
             }
 
-            if (startBreaking) {
-                wheelPower = wheelPower - 0.01;
-                if (wheelPower < 0.03) {
-                    wheelPower = 0.03;
-                }
-                currentBreakDuration = currentBreakDuration - 1;
-                if (currentBreakDuration == 0) {
-                    startBreaking = false;
-                    wheelPower = 0;
-                }
-            }
+
             stickAngleRadians = Math.atan2(leftStickY, leftStickX);
 
             stickAngleRadians = stickAngleRadians - Math.PI / 4; //adjust by 45 degrees
@@ -364,12 +341,17 @@ public class TeleopFirst extends LinearOpMode {
             lrPower = wheelPower * sinAngleRadians * factor + rightStickX;
             rrPower = wheelPower * cosAngleRadians * factor - rightStickX;
 
+            /*if ((lrPower + rrPower + lfPower + rfPower) < 0.01 && GetAverageVelocity(ticksPerInch) > breakingVelocity) {
+                lrPower = 0.01;
+                rrPower = 0.01;
+                lfPower = 0.01;
+                rfPower = 0.01;
+            }*/
+
             Robot.backLeft.setPower(lrPower);
             Robot.backRight.setPower(rrPower);
             Robot.frontLeft.setPower(lfPower);
             Robot.frontRight.setPower(rfPower);
-
-
 
             //---------------------------------------------------------------------//
             //TELEMETRY CODE
@@ -381,10 +363,20 @@ public class TeleopFirst extends LinearOpMode {
             telemetry.addData("Turret Target Position (degrees):", turretTargetDegrees);
             telemetry.addData("Lift Current Position (inches):", liftCurrentHeight);
             telemetry.addData("Lift Target Position (inches):", liftHeightTarget);
-            telemetry.addData("ticks", Robot.turretMotor.getCurrentPosition());
+            telemetry.addData("Average Velocity:", GetAverageVelocity(ticksPerInch));
             telemetry.update();
 
         }
+    }
+
+    public double GetAverageVelocity(double ticksPerInch) {
+        double averageVelocity = 0;
+
+
+        averageVelocity = (Robot.backRight.getVelocity() + Robot.backLeft.getVelocity() + Robot.frontLeft.getVelocity() + Robot.frontRight.getVelocity()) / 4;
+
+        averageVelocity = (averageVelocity / ticksPerInch) / 12;
+        return averageVelocity;
     }
 }
 
