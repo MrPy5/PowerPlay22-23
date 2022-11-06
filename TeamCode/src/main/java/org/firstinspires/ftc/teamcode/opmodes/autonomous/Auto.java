@@ -99,6 +99,13 @@ public class Auto extends LinearOpMode {
     double grabberServoOpenPos = Robot.grabberServoOpenPos;
     double grabberServoCurrentPos = 0.22;
     float changeFromZero = 0;
+    
+    
+    //batchUpdate;
+    
+    public double batchDriveTarget;
+    public double batchLiftTarget;
+    
     @Override
     public void runOpMode() {
 
@@ -119,49 +126,157 @@ public class Auto extends LinearOpMode {
 
 
         waitForStart();
-        sleep(5000);
+
         angles = imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES);
         float currentHeading = Float.parseFloat(formatAngle(angles.angleUnit, angles.firstAngle));
         changeFromZero = (float) currentHeading;
 
         Robot.grabberServo.setPosition(Robot.grabberServoClosedPos);
-
-        ZeroPowerToBrake();
-        Drive(65);
-
-
-        RaiseLift(Robot.liftJunctionHighHeight, true);
-
-
-        TurnTurret(Robot.turretRightDegrees, true);
-
-
         sleep(1000);
 
-        RaiseLift(Robot.liftJunctionHighHeight - 2, true);
+        ZeroPowerToBrake();
+
+        //First Batch
+        batchDriveTarget = 65;
+        batchLiftTarget = Robot.liftJunctionHighHeight;
+        
+        BatchUpdate(true, batchDriveTarget, true, batchLiftTarget, false, 0);
+
+        //Second Batch
+        BatchUpdate(false, 0, false, 0, true, Robot.turretRightDegrees);
+
+        telemetry.addData("done", "");
+        telemetry.update();
+
+
+        BatchUpdate(false, 0, true, Robot.liftJunctionHighHeight - 2, false, 0);
+        sleep(1000);
 
         Robot.grabberServo.setPosition(Robot.grabberServoOpenPos);
 
-        RaiseLift(Robot.liftJunctionHighHeight, true);
+        BatchUpdate(false, 0, true, Robot.liftJunctionHighHeight, false, 0);
 
-        TurnTurret(Robot.turretForwardDegrees, true);
-
-        RaiseLift(0, true);
-
-        Drive(-12);
+        BatchUpdate(true, -12, true, 0, true, Robot.turretForwardDegrees);
 
         Turn(90);
 
-        RaiseLift(7, false);
+        BatchUpdate(true, 25, true, Robot.liftPickupHeight + 6, false, 0);
 
-        Drive(24);
+        Robot.grabberServo.setPosition(Robot.grabberServoOpenPos);
+
+
 
 
 
 
     }
 
-    
+    public void BatchUpdate(boolean drive, double batchDriveTarget, boolean lift, double batchLiftTarget, boolean turret, double batchTurretTarget) {
+        if (drive) {
+            Drive((int) batchDriveTarget);
+        }
+
+        if (lift) {
+            RaiseLift((int) batchLiftTarget);
+        }
+
+        if (turret) {
+            TurnTurret((int) batchTurretTarget);
+        }
+
+        boolean frontLeftBusy = false;
+        boolean frontRightBusy = false;
+        boolean backLeftBusy = false;
+        boolean backRightBusy = false;
+        boolean liftMotorBusy = false;
+        boolean turretMotorBusy = false;
+        if (drive) {
+            frontLeftBusy = Robot.frontLeft.isBusy();
+            frontRightBusy = Robot.frontRight.isBusy();
+            backLeftBusy = Robot.backLeft.isBusy();
+            backRightBusy = Robot.backRight.isBusy();
+        }
+        else {
+            frontLeftBusy = false;
+            frontRightBusy = false;
+            backLeftBusy = false;
+            backRightBusy = false;
+        }
+        if (lift) {
+            liftMotorBusy = Robot.liftMotor.isBusy();
+        }
+        else {
+            liftMotorBusy = false;
+        }
+
+        if (turret) {
+            turretMotorBusy = Robot.turretMotor.isBusy();
+        }
+        else {
+            turretMotorBusy = false;
+        }
+        while ((frontLeftBusy || frontRightBusy || backLeftBusy || backRightBusy|| liftMotorBusy || turretMotorBusy)) {
+            telemetry.addData("frontLeft:", Robot.frontLeft.isBusy());
+            telemetry.addData("frontRight:", Robot.frontRight.isBusy());
+            telemetry.addData("backLeft:", Robot.backLeft.isBusy());
+            telemetry.addData("backRight:", Robot.backRight.isBusy());
+            telemetry.addData("liftMotor:", Robot.liftMotor.isBusy());
+            telemetry.addData("turretMotor:", Robot.turretMotor.isBusy());
+            telemetry.update();
+
+            if (drive) {
+                frontLeftBusy = Robot.frontLeft.isBusy();
+                frontRightBusy = Robot.frontRight.isBusy();
+                backLeftBusy = Robot.backLeft.isBusy();
+                backRightBusy = Robot.backRight.isBusy();
+            }
+            else {
+                frontLeftBusy = false;
+                frontRightBusy = false;
+                backLeftBusy = false;
+                backRightBusy = false;
+            }
+            if (lift) {
+                liftMotorBusy = Robot.liftMotor.isBusy();
+            }
+            else {
+                liftMotorBusy = false;
+            }
+
+            if (turret) {
+                turretMotorBusy = Robot.turretMotor.isBusy();
+            }
+            else {
+                turretMotorBusy = false;
+            }
+
+            if (Robot.frontLeft.getCurrentPosition() / ((int) batchDriveTarget * countsPerInch) <= 0.3) {
+                if (driveSpeedCurrent < driveSpeedFast) {
+                    driveSpeedCurrent = driveSpeedCurrent + 0.01;
+                }
+            }
+            if (Robot.frontLeft.getCurrentPosition() / ((int) batchDriveTarget * countsPerInch) >= 0.7) {
+                if (driveSpeedCurrent > 0.1) {
+                    driveSpeedCurrent = driveSpeedCurrent - 0.01;
+                } else {
+                    driveSpeedCurrent = 0.1;
+                }
+            }
+            Robot.frontLeft.setPower(driveSpeedCurrent);
+            Robot.frontRight.setPower(driveSpeedCurrent);
+            Robot.backLeft.setPower(driveSpeedCurrent);
+            Robot.backRight.setPower(driveSpeedCurrent);
+        }
+        Robot.liftMotor.setPower(0);
+        
+        Robot.turretMotor.setPower(0);
+        Robot.frontLeft.setPower(0);
+        Robot.frontRight.setPower(0);
+        Robot.backLeft.setPower(0);
+        Robot.backRight.setPower(0);
+    }
+        
+
     public void Drive(int inches) {
         ResetEncoders();
         Robot.frontLeft.setTargetPosition((int) (inches * countsPerInch));
@@ -179,63 +294,88 @@ public class Auto extends LinearOpMode {
         Robot.backLeft.setPower(driveSpeedCurrent);
         Robot.backRight.setPower(driveSpeedCurrent);
 
-        while (Robot.frontLeft.isBusy() || Robot.frontRight.isBusy() || Robot.backLeft.isBusy() || Robot.backRight.isBusy()) {
-            if (Robot.frontLeft.getCurrentPosition() / (inches * countsPerInch) <= 0.3) {
-                if (driveSpeedCurrent < driveSpeedFast) {
-                    driveSpeedCurrent = driveSpeedCurrent + 0.01;
-                }
-            }
-            if (Robot.frontLeft.getCurrentPosition() / (inches * countsPerInch) >= 0.7) {
-                if (driveSpeedCurrent > 0.1) {
-                    driveSpeedCurrent = driveSpeedCurrent - 0.01;
-                }
-                else {
-                    driveSpeedCurrent = 0.1;
-                }
-            }
-
-            Robot.frontLeft.setPower(driveSpeedCurrent);
-            Robot.frontRight.setPower(driveSpeedCurrent);
-            Robot.backLeft.setPower(driveSpeedCurrent);
-            Robot.backRight.setPower(driveSpeedCurrent);
-
-
-
-
-        }
-
-        Robot.frontLeft.setPower(0);
-        Robot.frontRight.setPower(0);
-        Robot.backLeft.setPower(0);
-        Robot.backRight.setPower(0);
+        
     }
 
     public void Turn(double targetAngle) {
         ResetEncoders();
-        Robot.frontLeft.setPower(-0.05);
-        Robot.frontRight.setPower(0.05);
-        Robot.backLeft.setPower(-0.05);
-        Robot.backRight.setPower(0.05);
+
+        boolean goRight = false;
         angles   = imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES);
-        double distance = Math.abs(Float.parseFloat(formatAngle(angles.angleUnit, angles.firstAngle)) - changeFromZero - targetAngle);
-        while (((int) (Float.parseFloat(formatAngle(angles.angleUnit, angles.firstAngle)) - changeFromZero) > targetAngle + 0.5 || (int) (Float.parseFloat(formatAngle(angles.angleUnit, angles.firstAngle)) - changeFromZero) < targetAngle - 0.5) && opModeIsActive()) {
+
+        double currentAngle =  angles.firstAngle - changeFromZero;
+        if (currentAngle < 0) {
+            currentAngle = 360 + currentAngle;
+        }
+        telemetry.addData(">", currentAngle - targetAngle);
+        telemetry.update();
+        
+        double degreesToTurn = Math.abs(targetAngle - currentAngle);
+
+        goRight = targetAngle > currentAngle;
+
+        if (degreesToTurn > 180) {
+            goRight = !goRight;
+            degreesToTurn = 360 - degreesToTurn;
+        }
+
+        if (goRight) {
+            Robot.frontLeft.setPower(-0.2);
+            Robot.frontRight.setPower(0.2);
+            Robot.backLeft.setPower(-0.2);
+            Robot.backRight.setPower(0.2);
+        }
+
+        else {
+            Robot.frontLeft.setPower(0.2);
+            Robot.frontRight.setPower(-0.2);
+            Robot.backLeft.setPower(0.2);
+            Robot.backRight.setPower(-0.2);
+        }
+
+        while ((currentAngle > targetAngle + 30 || currentAngle < targetAngle - 30) && opModeIsActive()) {
             angles = imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES);
-            telemetry.addData("> ", Float.parseFloat(formatAngle(angles.angleUnit, angles.firstAngle))-changeFromZero);
-            telemetry.update();
-
-
-
+            currentAngle =  angles.firstAngle- changeFromZero;
+            if (currentAngle < 0) {
+                currentAngle = 360 + currentAngle;
+            }
 
         }
 
+        if (goRight) {
+            Robot.frontLeft.setPower(-0.05);
+            Robot.frontRight.setPower(0.05);
+            Robot.backLeft.setPower(-0.05);
+            Robot.backRight.setPower(0.05);
+        }
 
+        else {
+            Robot.frontLeft.setPower(0.05);
+            Robot.frontRight.setPower(-0.05);
+            Robot.backLeft.setPower(0.05);
+            Robot.backRight.setPower(-0.05);
+        }
+
+        while ((currentAngle > targetAngle + 0.5 || currentAngle < targetAngle - 0.5) && opModeIsActive()) {
+            angles = imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES);
+            currentAngle =  angles.firstAngle - changeFromZero;
+            if (currentAngle < 0) {
+                currentAngle = 360 + currentAngle;
+            }
+            telemetry.addData("> ", currentAngle);
+            telemetry.addData("> ", angles.firstAngle- changeFromZero);
+            telemetry.update();
+
+        }
 
         Robot.frontLeft.setPower(0);
         Robot.frontRight.setPower(0);
         Robot.backLeft.setPower(0);
         Robot.backRight.setPower(0);
     }
-    public void TurnTurret(double turretTargetDegrees, boolean wait) {
+
+
+    public void TurnTurret(double turretTargetDegrees) {
         liftCurrentHeight = Robot.liftMotor.getCurrentPosition() / liftTicksPerInch;
         turretCurrentDegrees = Robot.turretMotor.getCurrentPosition() / turretTicksPerDegree;
 
@@ -248,21 +388,13 @@ public class Auto extends LinearOpMode {
                 Robot.turretMotor.setPower(turretSpeed);
                 turretPrevTargetDegrees = turretTargetDegrees;
             }
-            else if (Math.abs(turretTargetDegrees - turretCurrentDegrees) > turretCloseToZero) {  // If not close to destination, temporarily keep turret where it is until lift raises.
-                Robot.liftMotor.setTargetPosition((int) (liftMinHeightForTurning * liftTicksPerInch));
-                Robot.liftMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-                Robot.liftMotor.setPower(liftSpeedUp);
-                turretPrevTargetDegrees = turretCurrentDegrees;
-            }
+
         }
 
-        if (wait) {
-            while(Robot.turretMotor.isBusy());
-            Robot.turretMotor.setPower(0);
-        }
+
     }
 
-    public void RaiseLift(double liftHeightTarget, boolean wait) {
+    public void RaiseLift(double liftHeightTarget) {
         liftCurrentHeight = Robot.liftMotor.getCurrentPosition() / liftTicksPerInch;
         turretCurrentDegrees = Robot.turretMotor.getCurrentPosition() / turretTicksPerDegree;
 
@@ -285,10 +417,7 @@ public class Auto extends LinearOpMode {
             Robot.liftMotor.setPower(liftSpeedUp);
             liftHeightPrevTarget = liftCurrentHeight;
         }
-        if (wait) {
-            while (Robot.liftMotor.isBusy());
-            Robot.liftMotor.setPower(0);
-        }
+        
     }
     public void ChangeGripperState(double gripperTarget) {
         if (grabberServoCurrentPos == grabberServoOpenPos) {

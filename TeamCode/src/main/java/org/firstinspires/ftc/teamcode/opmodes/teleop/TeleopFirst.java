@@ -193,50 +193,12 @@ public class TeleopFirst extends LinearOpMode {
                 slowmoTriggerReleased = true;
             }
 
-
-            //---------------------------------------------------------------//
-            //TURRET CODE
-
-            if (turretPosForwardButton) {
-                turretButtonChoiceTargetDegrees = turretForwardDegrees;
-            }
-            if (turretPosLeftButton) {
-                turretButtonChoiceTargetDegrees = turretLeftDegrees;
-            }
-            if (turretPosRightButton) {
-                turretButtonChoiceTargetDegrees = turretRightDegrees;
-            }
-            if (turretPosBackButton) {
-                turretButtonChoiceTargetDegrees = turretBackDegrees;
-                if (turretCurrentDegrees < 0) {
-                    turretButtonChoiceTargetDegrees = -turretTargetDegrees;
-                }
-            }
-
-            if (liftCurrentHeight > liftMinHeightForTurning - 0.5) {
-                turretTargetDegrees = turretButtonChoiceTargetDegrees;
-            } else {
-                if (liftHeightTarget < liftMinHeightForTurning && turretCurrentDegrees != turretForwardDegrees) {
-                    liftHeightTarget = liftMinHeightForTurning;
-                }
-                if (Math.abs(turretTargetDegrees - turretCurrentDegrees) > turretCloseToZero) {  // If not close to destination, temporarily keep turret where it is until lift raises.
-                    turretTargetDegrees = turretCurrentDegrees;
-                }
-            }
-
-            if (turretTargetDegrees != turretPrevTargetDegrees) {
-                Robot.turretMotor.setTargetPosition((int) (turretTargetDegrees * turretTicksPerDegree));
-                Robot.turretMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-                Robot.turretMotor.setPower(turretSpeed);
-                turretPrevTargetDegrees = turretTargetDegrees;
-            }
-
             //----------------------------------------------------------//
             //LIFT MOTOR
 
             if (liftPosGroundButton) {
                 liftHeightTarget = liftPickupHeight;
-                turretTargetDegrees = turretForwardDegrees;
+                turretButtonChoiceTargetDegrees = turretForwardDegrees;
             }
             if (liftPosGroundJunctionButton) {
                 liftHeightTarget = liftJunctionGroundHeight;
@@ -263,14 +225,6 @@ public class TeleopFirst extends LinearOpMode {
                 }
             }
 
-            //return lift
-            if (liftPosReturn) {
-                grabberServoCurrentPos = grabberServoOpenPos;
-                Robot.grabberServo.setPosition(grabberServoCurrentPos);
-                liftHeightTarget = liftCurrentHeight + manualLiftIncrement;
-
-                turretReturn = true;
-            }
 
             // Allow lift to move when:  1) going up  2) Turret near the zero position  3) It won't go too low for Turret turning
             if (liftCurrentHeight < liftHeightTarget || Math.abs(turretCurrentDegrees) < turretCloseToZero || liftHeightTarget > liftMinHeightForTurning) {
@@ -292,11 +246,45 @@ public class TeleopFirst extends LinearOpMode {
                 liftHeightPrevTarget = liftCurrentHeight;
             }
 
-            //return turret
-            if (liftCurrentHeight == liftHeightTarget && turretReturn) {
-                turretTargetDegrees = turretForwardDegrees;
-                turretReturn = false;
+
+            //---------------------------------------------------------------//
+            //TURRET CODE
+
+            if (turretPosForwardButton) {
+                turretButtonChoiceTargetDegrees = turretForwardDegrees;
             }
+            if (turretPosLeftButton) {
+                turretButtonChoiceTargetDegrees = turretLeftDegrees;
+            }
+            if (turretPosRightButton) {
+                turretButtonChoiceTargetDegrees = turretRightDegrees;
+            }
+            if (turretPosBackButton) {
+                turretButtonChoiceTargetDegrees = turretBackDegrees;
+                if (turretCurrentDegrees < 0) {
+                    turretButtonChoiceTargetDegrees = -turretButtonChoiceTargetDegrees;
+                }
+            }
+
+            if (liftCurrentHeight > liftMinHeightForTurning - 0.5) {
+                turretTargetDegrees = turretButtonChoiceTargetDegrees;
+            } else {
+
+                if (Math.abs(turretTargetDegrees - turretCurrentDegrees) > turretCloseToZero) {  // If not close to destination, temporarily keep turret where it is until lift raises.
+                    turretTargetDegrees = turretCurrentDegrees;
+                }
+            }
+
+            if (turretTargetDegrees != turretPrevTargetDegrees) {
+                Robot.turretMotor.setTargetPosition((int) (turretTargetDegrees * turretTicksPerDegree));
+                Robot.turretMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+                Robot.turretMotor.setPower(turretSpeed);
+                turretPrevTargetDegrees = turretTargetDegrees;
+            }
+
+
+
+
 
 
             //---------------------------------------------------------------//
