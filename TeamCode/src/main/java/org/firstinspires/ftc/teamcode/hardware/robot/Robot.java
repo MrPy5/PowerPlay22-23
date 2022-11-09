@@ -52,7 +52,7 @@ public class Robot {
     public static double turretBackDegrees = 180;
 
     public static Servo grabberServo;
-    public static double grabberServoClosedPos = 0.22;
+    public static double grabberServoClosedPos = 0.20;
     public static double grabberServoOpenPos = 0.7;
 
 

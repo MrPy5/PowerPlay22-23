@@ -89,9 +89,9 @@ public class TeleopFirst extends LinearOpMode {
         double liftJunctionGroundHeight = 2;
         double liftJunctionLowHeight = 15;
         double liftJunctionMediumHeight = 24;
-        double liftJunctionHighHeight = 34;
+        double liftJunctionHighHeight = 33;
         double liftMinHeightForTurning = 6;
-        double liftMaximumHeight = 36;
+        double liftMaximumHeight = 34;
 
         double liftHeightTarget = 0;
         double liftHeightPrevTarget = 0;
@@ -125,6 +125,14 @@ public class TeleopFirst extends LinearOpMode {
         //INIT SERVOS
         Robot.grabberServo.setPosition(grabberServoOpenPos);
 
+        waitForStart();
+        Robot.liftMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
+        Robot.liftMotor.setPower(0.2);
+        sleep(200);
+        Robot.liftMotor.setPower(0);
+        Robot.liftMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        Robot.liftMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        Robot.liftMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
 
         while (opModeIsActive()) {
 
@@ -198,6 +206,7 @@ public class TeleopFirst extends LinearOpMode {
 
             if (liftPosGroundButton) {
                 liftHeightTarget = liftPickupHeight;
+
                 turretButtonChoiceTargetDegrees = turretForwardDegrees;
             }
             if (liftPosGroundJunctionButton) {
@@ -332,7 +341,7 @@ public class TeleopFirst extends LinearOpMode {
             lrPower = wheelPower * sinAngleRadians * factor + rightStickX;
             rrPower = wheelPower * cosAngleRadians * factor - rightStickX;
 
-            if (Math.abs(lrPower + rrPower + lfPower + rfPower) < 0.01 && GetAverageVelocity(ticksPerInch) > breakingVelocity) {
+            /*if (Math.abs(lrPower + rrPower + lfPower + rfPower) < 0.01 && GetAverageVelocity(ticksPerInch) > breakingVelocity) {
                 int multiplier = 1;
                 if ((lrPower + rrPower + lfPower + rfPower) < 0.0) {
                     multiplier = -1;
@@ -341,7 +350,7 @@ public class TeleopFirst extends LinearOpMode {
                 rrPower = 0.01 * multiplier;
                 lfPower = 0.01 * multiplier;
                 rfPower = 0.01 * multiplier;
-            }
+            }*/
 
             Robot.backLeft.setPower(lrPower);
             Robot.backRight.setPower(rrPower);
@@ -350,8 +359,8 @@ public class TeleopFirst extends LinearOpMode {
 
             //---------------------------------------------------------------------//
             //TELEMETRY CODE
-            telemetry.addData("LeftStickX:", leftStickX);
-            telemetry.addData("LeftStickY:", leftStickY);
+            telemetry.addData("LeftStickX:", gamepad1.left_stick_x);
+            telemetry.addData("LeftStickY:", gamepad1.left_stick_y);
             telemetry.addData("WheelPower:", wheelPower);
 
             telemetry.addData("Turret Current Position (degrees):", turretCurrentDegrees);
