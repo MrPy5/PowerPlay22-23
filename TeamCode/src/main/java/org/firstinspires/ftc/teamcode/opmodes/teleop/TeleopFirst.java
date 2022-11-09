@@ -126,13 +126,13 @@ public class TeleopFirst extends LinearOpMode {
         Robot.grabberServo.setPosition(grabberServoOpenPos);
 
         waitForStart();
-        Robot.liftMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
-        Robot.liftMotor.setPower(0.2);
-        sleep(200);
+        /*Robot.liftMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
+        Robot.liftMotor.setPower(0.03);
+        sleep(800);
         Robot.liftMotor.setPower(0);
         Robot.liftMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         Robot.liftMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        Robot.liftMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        Robot.liftMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);*/
 
         while (opModeIsActive()) {
 

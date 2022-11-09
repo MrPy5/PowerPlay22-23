@@ -169,13 +169,13 @@ public class Auto extends LinearOpMode {
         driveSpeedFast = 0.3;
 
         // Forward to 5 stack, raise to pickup height
-        BatchUpdate(true, 24, true, Robot.liftPickupHeight + 6.5, false, 0);
+        BatchUpdate(true, 23, true, Robot.liftPickupHeight + 6.5, false, 0);
 
         //Close servo
         Robot.grabberServo.setPosition(Robot.grabberServoClosedPos);
 
         //Wait
-        sleep(500);
+        sleep(250);
 
         //Raise lift a bit
         BatchUpdate(false, 0, true, Robot.liftPickupHeight + 10, false, 0);
@@ -187,7 +187,9 @@ public class Auto extends LinearOpMode {
         //open servo
         Robot.grabberServo.setPosition(Robot.grabberServoOpenPos);
         //turn forward
-        sleep(500);
+        sleep(250);
+
+        BatchUpdate(false, 0, true, Robot.liftJunctionHighHeight,  false, 0);
 
         BatchUpdate(false, 0, false, 0, true, turretForwardDegrees);
 
@@ -196,7 +198,7 @@ public class Auto extends LinearOpMode {
         //Close servo
         Robot.grabberServo.setPosition(Robot.grabberServoClosedPos);
         //Wait
-        sleep(500);
+        sleep(250);
         //10 height
         BatchUpdate(false, 0, true, Robot.liftPickupHeight + 10, false, 0);
         //Rest of the way, back to high junction
@@ -207,7 +209,7 @@ public class Auto extends LinearOpMode {
         Robot.grabberServo.setPosition(Robot.grabberServoOpenPos);
         //turn forward
         sleep(500);
-
+        BatchUpdate(false, 0, true, Robot.liftJunctionHighHeight,  false, 0);
 
 
         BatchUpdate(false, 0, false, 0, true, turretForwardDegrees);
