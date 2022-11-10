@@ -77,7 +77,7 @@ public class WebcamExample extends LinearOpMode
          * of a frame from the camera. Note that switching pipelines on-the-fly
          * (while a streaming session is in flight) *IS* supported.
          */
-        webcam.setPipeline(new SamplePipeline(0.0,0.0,0.0,0.0));
+        webcam.setPipeline(new PipelineClassExample());
 
         /*
          * Open the connection to the camera device. New in v1.4.0 is the ability
@@ -336,7 +336,7 @@ public class WebcamExample extends LinearOpMode
                 }
                 // Draw Rectangles If Area Is At Least 500
                 if (first && maxRect.area() > 600 && getRectHeight() > getRectWidth()) {
-                    Imgproc.rectangle(blue, maxRect, new Scalar(0, 255, 0), 2);
+                    Imgproc.rectangle(blue, maxRect, new Scalar(0, 0, 255), 2);
                 }
                 // Draw Borders
                 Imgproc.rectangle(blue, new Rect(
@@ -349,7 +349,7 @@ public class WebcamExample extends LinearOpMode
 
 
                 // Display Data
-                Imgproc.putText(blue,"Blue: " +  blue.get((int) getRectMidpointXY().y, (int) getRectMidpointXY().x)[0] + ", " +blue.get((int) getRectMidpointXY().y, (int) getRectMidpointXY().x)[1] +  ", " + blue.get((int) getRectMidpointXY().y, (int) getRectMidpointXY().x)[2], new Point(5, CAMERA_HEIGHT - 5), 0, 0.6, new Scalar(255, 255, 255), 2);
+                //Imgproc.putText(blue,"Blue: " +  blue.get((int) getRectMidpointXY().y, (int) getRectMidpointXY().x)[0] + ", " +blue.get((int) getRectMidpointXY().y, (int) getRectMidpointXY().x)[1] +  ", " + blue.get((int) getRectMidpointXY().y, (int) getRectMidpointXY().x)[2], new Point(5, CAMERA_HEIGHT - 5), 0, 0.6, new Scalar(255, 255, 255), 2);
                 blue_area = blue.get((int) getRectMidpointXY().y, (int) getRectMidpointXY().x);
                 loopCounter++;
             } catch (Exception e) {
@@ -429,7 +429,7 @@ public class WebcamExample extends LinearOpMode
 
 
                 // Display Data
-                Imgproc.putText(green,"Green: " +  green.get((int) getRectMidpointXY().y, (int) getRectMidpointXY().x)[0] + ", " +green.get((int) getRectMidpointXY().y, (int) getRectMidpointXY().x)[1] +  ", " + green.get((int) getRectMidpointXY().y, (int) getRectMidpointXY().x)[2], new Point(5, CAMERA_HEIGHT - 5), 0, 0.6, new Scalar(255, 255, 255), 2);
+                //Imgproc.putText(green,"Green: " +  green.get((int) getRectMidpointXY().y, (int) getRectMidpointXY().x)[0] + ", " +green.get((int) getRectMidpointXY().y, (int) getRectMidpointXY().x)[1] +  ", " + green.get((int) getRectMidpointXY().y, (int) getRectMidpointXY().x)[2], new Point(5, CAMERA_HEIGHT - 5), 0, 0.6, new Scalar(255, 255, 255), 2);
                 green_area = green.get((int) getRectMidpointXY().y, (int) getRectMidpointXY().x);
                 loopCounter++;
             } catch (Exception e) {
@@ -439,7 +439,7 @@ public class WebcamExample extends LinearOpMode
 
             telemetry.addData("Green", green_area[0] + " " + green_area[1] + " " + green_area[2]);
             telemetry.addData("Blue", blue_area[0] + " " + blue_area[1] + " " + blue_area[2]);
-            if (blue_area[1] > blue_area[0] && blue_area[1] > blue_area[2]) {
+            /*if (blue_area[1] > blue_area[0] && blue_area[1] > blue_area[2]) {
                 telemetry.addData("Green Cup", "");
             }
             else if (blue_area[2] > blue_area[0] && blue_area[2] > blue_area[1]) {
@@ -448,8 +448,8 @@ public class WebcamExample extends LinearOpMode
             else {
                 telemetry.addData("Red Cup", "");
             }
-            telemetry.update();
-            return green;
+            telemetry.update();*/
+            return blue;
 
 
 
