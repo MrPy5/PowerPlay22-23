@@ -241,9 +241,9 @@ public class Auto extends LinearOpMode {
                 midTotal++;
             }
         }
-        telemetry.addData("totals ", leftTotal + " " + midTotal + " " + rightTotal);
-        telemetry.update();
-
+        /*telemetry.addData("totals ", leftTotal + " " + midTotal + " " + rightTotal);
+        telemetry.update();*/
+        /*
         //Close servo to start match
         Robot.grabberServo.setPosition(Robot.grabberServoClosedPos);
         sleep(500);
@@ -296,7 +296,7 @@ public class Auto extends LinearOpMode {
         Robot.grabberServo.setPosition(Robot.grabberServoOpenPos);
         //turn forward
         sleep(250);
-
+        */
         /*BatchUpdate(false, 0, true, Robot.liftJunctionHighHeight,  false, 0);
 
         BatchUpdate(false, 0, false, 0, true, turretForwardDegrees);
@@ -317,7 +317,7 @@ public class Auto extends LinearOpMode {
         Robot.grabberServo.setPosition(Robot.grabberServoOpenPos);
         //turn forward
         sleep(300);*/
-
+        /*
         BatchUpdate(false, 0, true, Robot.liftJunctionHighHeight,  false, 0);
 
         if (rightTotal > leftTotal && rightTotal > midTotal) {
@@ -339,7 +339,7 @@ public class Auto extends LinearOpMode {
         BatchUpdate(false, 0, false, 0, true, turretForwardDegrees);
         BatchUpdate(false, 0, true, 0, false, 0);
         Turn(180);
-
+        */
 
 
 
