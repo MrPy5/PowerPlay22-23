@@ -2,181 +2,123 @@ package org.firstinspires.ftc.teamcode.opmodes.teleop;
 
 
 
-import static org.firstinspires.ftc.teamcode.opmodes.teleop.Constants.*;
 
-
-import android.graphics.Bitmap;
-import org.firstinspires.ftc.teamcode.opmodes.teleop.Constants.*;
-
-import org.opencv.android.Utils;
 import org.opencv.core.*;
 import org.opencv.imgproc.*;
 import org.openftc.easyopencv.OpenCvPipeline;
 
 import java.util.ArrayList;
+import java.util.List;
 
-public class PipelineClassExample extends OpenCvPipeline
-{
-
-    private Mat blurInput = new Mat();
-    private Mat blurOutput = new Mat();
-    private Mat hsvThresholdOutput = new Mat();
-    private ArrayList<MatOfPoint> findContoursOutput = new ArrayList<>();
-    private Mat findContoursOutputMat = new Mat();
-    private Mat finalContourOutputMat = new Mat();
-
-    private int largestX, largestY;
-    private double largestArea;
-
-    public PipelineClassExample() {
+public class PipelineClassExample extends OpenCvPipeline {
 
 
-        largestX = -1;
-        largestY = -1;
-        largestArea = -1;
+    public static double[] colorAtMiddleRect = new double[3];
+
+
+    private int width; // width of the image
+
+
+    /**
+     * @param width The width of the image (check your camera)
+     */
+    public PipelineClassExample(int width) {
+        this.width = width;
     }
 
     @Override
-    public Mat processFrame(Mat input)
-    {
-        // Step Blur0 (stage 1):
-        blurInput = input;
-        BlurType blurType = BlurType.get(BLUR);
-        double blurRadius = BLUR_RADIUS;
-        blur(blurInput, blurType, blurRadius, blurOutput);
+    public Mat processFrame(Mat input) {
+        // "Mat" stands for matrix, which is basically the image that the detector will process
+        // the input matrix is the image coming from the camera
+        // the function will return a matrix to be drawn on your phone's screen
 
-        // Step HSV_Threshold0  (stage 2):
-        Mat hsvThresholdInput = blurOutput;
-        double[] hsvThresholdHue = {HUE_MIN, HUE_MAX};
-        double[] hsvThresholdSaturation = {SATURATION_MIN, SATURATION_MAX};
-        double[] hsvThresholdValue = {VALUE_MIN, VALUE_MAX};
-        hsvThreshold(hsvThresholdInput, hsvThresholdHue, hsvThresholdSaturation, hsvThresholdValue, hsvThresholdOutput);
+        // The detector detects regular stones. The camera fits two stones.
+        // If it finds one regular stone then the other must be the skystone.
+        // If both are regular stones, it returns NONE to tell the robot to keep looking
 
-        // Step Find_Contours0 (stage 3):
-        Mat findContoursInput = hsvThresholdOutput;
-        boolean findContoursExternalOnly = false;
-        findContours(findContoursInput, findContoursExternalOnly, findContoursOutput);
-        findContoursOutputMat = input.clone();
-        for(int i = 0; i < findContoursOutput.size(); i++) {
-            Imgproc.drawContours(findContoursOutputMat, findContoursOutput, i, new Scalar(255, 255, 255), 2);
-        }
+        // Make a working copy of the input matrix in HSV
+        Mat mat = new Mat();
+        Imgproc.cvtColor(input, mat, Imgproc.COLOR_RGB2HSV);
 
-        // Finding largest contour (stage 4):
-        finalContourOutputMat = input.clone();
-        largestArea = -1;
-        largestX = -1;
-        largestY = -1;
-        int largestContourIndex = -1;
-        for(int i = 0; i < findContoursOutput.size(); i++) {
-            MatOfPoint contour = findContoursOutput.get(i);
-            double contourArea = Imgproc.contourArea(contour);
-            if(contourArea > MIN_CONTOUR_AREA && contourArea > largestArea) {
-                Moments p = Imgproc.moments(contour, false);
-                int x = (int) (p.get_m10() / p.get_m00());
-                int y = (int) (p.get_m01() / p.get_m00());
-
-                largestContourIndex = i;
-                largestX = x;
-                largestY = y;
-                largestArea = contourArea;
-            }
-        }
-        if(largestContourIndex != -1)
-            Imgproc.drawContours(finalContourOutputMat, findContoursOutput, largestContourIndex, new Scalar(255, 255, 255), 2);
-
-        handleDashboard();
-
-        return input;
-    }
-
-    public int[] getPosition() {
-        return new int[] {largestX, largestY};
-    }
-
-    private void handleDashboard() {
-
-    }
-
-    private void sendMatToDashboard(Mat input) {
-        Bitmap bitmap = Bitmap.createBitmap(input.width(), input.height(), Bitmap.Config.RGB_565);
-        Utils.matToBitmap(input, bitmap);
-
-    }
+        // if something is wrong, we assume there's no skystone
 
 
-    enum BlurType{
-        BOX("Box Blur"), GAUSSIAN("Gaussian Blur"), MEDIAN("Median Filter"),
-        BILATERAL("Bilateral Filter");
+        // We create a HSV range for yellow to detect regular stones
+        // NOTE: In OpenCV's implementation,
+        // Hue values are half the real value
+        Scalar lowHSV = new Scalar(36, 50, 70); // lower bound HSV for yellow
+        Scalar highHSV = new Scalar(89, 255, 255); // higher bound HSV for yellow
+        Mat thresh = new Mat();
 
-        private final String label;
+        // We'll get a black and white image. The white regions represent the regular stones.
+        // inRange(): thresh[i][j] = {255,255,255} if mat[i][i] is within the range
+        Core.inRange(mat, lowHSV, highHSV, thresh);
 
-        BlurType(String label) {
-            this.label = label;
-        }
+        // Use Canny Edge Detection to find edges
+        // you might have to tune the thresholds for hysteresis
+        Mat edges = new Mat();
+        Imgproc.Canny(thresh, edges, 100, 300);
 
-        public static BlurType get(String type) {
-            if (BILATERAL.label.equals(type)) {
-                return BILATERAL;
-            }
-            else if (GAUSSIAN.label.equals(type)) {
-                return GAUSSIAN;
-            }
-            else if (MEDIAN.label.equals(type)) {
-                return MEDIAN;
-            }
-            else {
-                return BOX;
-            }
-        }
-
-        @Override
-        public String toString() {
-            return this.label;
-        }
-    }
-
-    private void blur(Mat input, BlurType type, double doubleRadius,
-                      Mat output) {
-        int radius = (int)(doubleRadius + 0.5);
-        int kernelSize;
-        switch(type){
-            case BOX:
-                kernelSize = 2 * radius + 1;
-                Imgproc.blur(input, output, new Size(kernelSize, kernelSize));
-                break;
-            case GAUSSIAN:
-                kernelSize = 6 * radius + 1;
-                Imgproc.GaussianBlur(input,output, new Size(kernelSize, kernelSize), radius);
-                break;
-            case MEDIAN:
-                kernelSize = 2 * radius + 1;
-                Imgproc.medianBlur(input, output, kernelSize);
-                break;
-            case BILATERAL:
-                Imgproc.bilateralFilter(input, output, -1, radius, radius);
-                break;
-        }
-    }
-
-    private void hsvThreshold(Mat input, double[] hue, double[] sat, double[] val,
-                              Mat out) {
-        Imgproc.cvtColor(input, out, Imgproc.COLOR_BGR2HSV);
-        Core.inRange(out, new Scalar(hue[0], sat[0], val[0]),
-                new Scalar(hue[1], sat[1], val[1]), out);
-    }
-
-    private void findContours(Mat input, boolean externalOnly,
-                              ArrayList<MatOfPoint> contours) {
+        // https://docs.opencv.org/3.4/da/d0c/tutorial_bounding_rects_circles.html
+        // Oftentimes the edges are disconnected. findContours connects these edges.
+        // We then find the bounding rectangles of those contours
+        List<MatOfPoint> contours = new ArrayList<>();
         Mat hierarchy = new Mat();
-        contours.clear();
-        int mode;
-        if (externalOnly) {
-            mode = Imgproc.RETR_EXTERNAL;
+        Imgproc.findContours(edges, contours, hierarchy, Imgproc.RETR_TREE, Imgproc.CHAIN_APPROX_SIMPLE);
+
+        MatOfPoint2f[] contoursPoly = new MatOfPoint2f[contours.size()];
+        Rect[] boundRect = new Rect[contours.size()];
+        for (int i = 0; i < contours.size(); i++) {
+            contoursPoly[i] = new MatOfPoint2f();
+            Imgproc.approxPolyDP(new MatOfPoint2f(contours.get(i).toArray()), contoursPoly[i], 3, true);
+            boundRect[i] = Imgproc.boundingRect(new MatOfPoint(contoursPoly[i].toArray()));
         }
-        else {
-            mode = Imgproc.RETR_LIST;
+
+        // Iterate and check whether the bounding boxes
+        // cover left and/or right side of the image
+        try {
+            double left_x = 0.25 * width;
+            double right_x = 0.75 * width;
+            Rect rectangleToDraw = null;
+            double maxArea = -1;
+            for (int i = 0; i != boundRect.length; i++) {
+                if (boundRect[i].area() > maxArea) {
+                    maxArea = boundRect[i].area();
+                    rectangleToDraw = boundRect[i];
+                }
+
+            }
+            if (rectangleToDraw != null) {
+                Imgproc.rectangle(input, rectangleToDraw, new Scalar(0.5, 76.9, 89.8));
+
+
+                double middleX = rectangleToDraw.x + (rectangleToDraw.width / 2.0);
+                double middleY = rectangleToDraw.y + (rectangleToDraw.height / 2.0);
+
+                colorAtMiddleRect = input.get((int) middleY, (int) middleX);
+            }
+        } finally {
+
         }
-        int method = Imgproc.CHAIN_APPROX_SIMPLE;
-        Imgproc.findContours(input, contours, hierarchy, mode, method);
+
+
+        return input; // return the mat with rectangles drawn
     }
+
+    public static String getColorAtMiddleRect() {
+
+        if (colorAtMiddleRect[0] > colorAtMiddleRect[2] && colorAtMiddleRect[1] > colorAtMiddleRect[2]) {
+            return "mid";
+        }
+        else if (colorAtMiddleRect[0] > colorAtMiddleRect[1] && colorAtMiddleRect[0] > colorAtMiddleRect[2]) {
+            return "right";
+        }
+
+        else {//if (colorAtMiddleRect[2] > colorAtMiddleRect[1] && colorAtMiddleRect[2] > colorAtMiddleRect[0]) {
+            return "left";
+        }
+
+
+    }
+
 }

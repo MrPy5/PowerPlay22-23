@@ -77,7 +77,7 @@ public class WebcamExample extends LinearOpMode
          * of a frame from the camera. Note that switching pipelines on-the-fly
          * (while a streaming session is in flight) *IS* supported.
          */
-        webcam.setPipeline(new PipelineClassExample());
+        webcam.setPipeline(new PipelineClassExample(640));
 
         /*
          * Open the connection to the camera device. New in v1.4.0 is the ability
@@ -135,19 +135,22 @@ public class WebcamExample extends LinearOpMode
             /*
              * Send some stats to the telemetry
              */
-            telemetry.addData("Frame Count", webcam.getFrameCount());
+            /*telemetry.addData("Frame Count", webcam.getFrameCount());
             telemetry.addData("FPS", String.format("%.2f", webcam.getFps()));
             telemetry.addData("Total frame time ms", webcam.getTotalFrameTimeMs());
             telemetry.addData("Pipeline time ms", webcam.getPipelineTimeMs());
             telemetry.addData("Overhead time ms", webcam.getOverheadTimeMs());
             telemetry.addData("Theoretical max FPS", webcam.getCurrentPipelineMaxFps());
-            telemetry.update();
+            telemetry.update();*/
 
             /*
              * NOTE: stopping the stream from the camera early (before the end of the OpMode
              * when it will be automatically stopped for you) *IS* supported. The "if" statement
              * below will stop streaming from the camera when the "A" button on gamepad 1 is pressed.
              */
+            telemetry.addData("Color > ", PipelineClassExample.getColorAtMiddleRect());
+            telemetry.addData("Data > ", PipelineClassExample.colorAtMiddleRect[0] + " " + PipelineClassExample.colorAtMiddleRect[1] + " " + PipelineClassExample.colorAtMiddleRect[2]);
+            telemetry.update();
             if(gamepad1.a)
             {
                 /*
@@ -169,8 +172,8 @@ public class WebcamExample extends LinearOpMode
                  * time. Of course, this comment is irrelevant in light of the use case described in
                  * the above "important note".
                  */
-                webcam.stopStreaming();
-                //webcam.closeCameraDevice();
+
+                webcam.closeCameraDevice();
             }
 
             /*
@@ -197,7 +200,7 @@ public class WebcamExample extends LinearOpMode
      * if you're doing something weird where you do need it synchronized with your OpMode thread,
      * then you will need to account for that accordingly.
      */
-    public class SamplePipeline extends OpenCvPipeline {
+    /*public class SamplePipeline extends OpenCvPipeline {
         Scalar BLUE_scalar= new Scalar(41, 240, 110);
         Scalar YELLOW_scalar = new Scalar(210,16,146);
         Scalar RED_scalar = new Scalar(82,90,240);
@@ -226,13 +229,13 @@ public class WebcamExample extends LinearOpMode
         public volatile boolean error = false;
         public volatile Exception debug;
 
-        private double borderLeftX;     //fraction of pixels from the left side of the cam to skip
-        private double borderRightX;    //fraction of pixels from the right of the cam to skip
-        private double borderTopY;      //fraction of pixels from the top of the cam to skip
-        private double borderBottomY;   //fraction of pixels from the bottom of the cam to skip
+        private double borderLeftX = 0;     //fraction of pixels from the left side of the cam to skip
+        private double borderRightX = 0;    //fraction of pixels from the right of the cam to skip
+        private double borderTopY = 0;      //fraction of pixels from the top of the cam to skip
+        private double borderBottomY = 0;   //fraction of pixels from the bottom of the cam to skip
 
-        private int CAMERA_WIDTH;
-        private int CAMERA_HEIGHT;
+        private int CAMERA_WIDTH = 640;
+        private int CAMERA_HEIGHT = 360;
 
         private int loopCounter = 0;
         private int pLoopCounter = 0;
@@ -449,13 +452,13 @@ public class WebcamExample extends LinearOpMode
                 telemetry.addData("Red Cup", "");
             }
             telemetry.update();*/
-            return blue;
+            //return blue;
 
 
 
         }
 
-
+        /*
         public int getRectHeight() {
             synchronized (sync) {
                 return maxRect.height;
@@ -508,6 +511,5 @@ public class WebcamExample extends LinearOpMode
             synchronized (sync) {
                 return maxRect.area();
             }
-        }
-    }
-}
+        }*/
+

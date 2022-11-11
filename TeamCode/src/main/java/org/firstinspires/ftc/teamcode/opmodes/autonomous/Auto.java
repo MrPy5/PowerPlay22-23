@@ -42,8 +42,30 @@ import org.firstinspires.ftc.robotcore.external.navigation.AxesOrder;
 import org.firstinspires.ftc.robotcore.external.navigation.AxesReference;
 import org.firstinspires.ftc.robotcore.external.navigation.Orientation;
 import org.firstinspires.ftc.teamcode.hardware.robot.Robot;
+import org.firstinspires.ftc.teamcode.opmodes.teleop.PipelineClassExample;
 import org.firstinspires.ftc.teamcode.opmodes.teleop.TeleopFirst;
-
+import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
+import org.opencv.core.Mat;
+import org.opencv.core.Point;
+import org.opencv.core.Scalar;
+import org.opencv.imgproc.Imgproc;
+import org.openftc.easyopencv.OpenCvCamera;
+import org.openftc.easyopencv.OpenCvCameraFactory;
+import org.openftc.easyopencv.OpenCvCameraRotation;
+import org.openftc.easyopencv.OpenCvPipeline;
+import org.openftc.easyopencv.OpenCvWebcam;
+import java.util.ArrayList;
+import org.opencv.core.Core;
+import org.opencv.core.Mat;
+import org.opencv.core.MatOfPoint;
+import org.opencv.core.MatOfPoint2f;
+import org.opencv.core.Point;
+import org.opencv.core.Rect;
+import org.opencv.core.Scalar;
+import org.opencv.core.Size;
+import org.opencv.imgproc.Imgproc;
+import org.openftc.easyopencv.OpenCvPipeline;
+import java.util.List;
 import java.util.Locale;
 
 
@@ -52,6 +74,7 @@ import java.util.Locale;
 public class Auto extends LinearOpMode {
 
     /* Declare OpMode members. */
+    OpenCvWebcam webcam;
     BNO055IMU imu;
     Orientation angles;
 
@@ -105,7 +128,11 @@ public class Auto extends LinearOpMode {
     
     public double batchDriveTarget;
     public double batchLiftTarget;
-    
+
+    //
+    public int leftTotal = 0;
+    public int midTotal = 0;
+    public int rightTotal = 0;
     @Override
     public void runOpMode() {
 
@@ -130,20 +157,101 @@ public class Auto extends LinearOpMode {
         imu.write8(BNO055IMU.Register.AXIS_MAP_SIGN,AXIS_MAP_SIGN_BYTE & 0x0F);
         imu.write8(BNO055IMU.Register.OPR_MODE,BNO055IMU.SensorMode.IMU.bVal & 0x0F);
 
+
+
+        int cameraMonitorViewId = hardwareMap.appContext.getResources().getIdentifier("cameraMonitorViewId", "id", hardwareMap.appContext.getPackageName());
+        webcam = OpenCvCameraFactory.getInstance().createWebcam(hardwareMap.get(WebcamName.class, "Webcam 1"), cameraMonitorViewId);
+
+        // OR...  Do Not Activate the Camera Monitor View
+        //webcam = OpenCvCameraFactory.getInstance().createWebcam(hardwareMap.get(WebcamName.class, "Webcam 1"));
+
+        /*
+         * Specify the image processing pipeline we wish to invoke upon receipt
+         * of a frame from the camera. Note that switching pipelines on-the-fly
+         * (while a streaming session is in flight) *IS* supported.
+         */
+        webcam.setPipeline(new PipelineClassExample(640));
+
+        /*
+         * Open the connection to the camera device. New in v1.4.0 is the ability
+         * to open the camera asynchronously, and this is now the recommended way
+         * to do it. The benefits of opening async include faster init time, and
+         * better behavior when pressing stop during init (i.e. less of a chance
+         * of tripping the stuck watchdog)
+         *
+         * If you really want to open synchronously, the old method is still available.
+         */
+        webcam.setMillisecondsPermissionTimeout(2500); // Timeout for obtaining permission is configurable. Set before opening.
+        webcam.openCameraDeviceAsync(new OpenCvCamera.AsyncCameraOpenListener()
+        {
+            @Override
+            public void onOpened()
+            {
+                /*
+                 * Tell the webcam to start streaming images to us! Note that you must make sure
+                 * the resolution you specify is supported by the camera. If it is not, an exception
+                 * will be thrown.
+                 *
+                 * Keep in mind that the SDK's UVC driver (what OpenCvWebcam uses under the hood) only
+                 * supports streaming from the webcam in the uncompressed YUV image format. This means
+                 * that the maximum resolution you can stream at and still get up to 30FPS is 480p (640x480).
+                 * Streaming at e.g. 720p will limit you to up to 10FPS and so on and so forth.
+                 *
+                 * Also, we specify the rotation that the webcam is used in. This is so that the image
+                 * from the camera sensor can be rotated such that it is always displayed with the image upright.
+                 * For a front facing camera, rotation is defined assuming the user is looking at the screen.
+                 * For a rear facing camera or a webcam, rotation is defined assuming the camera is facing
+                 * away from the user.
+                 */
+                webcam.startStreaming(320, 240, OpenCvCameraRotation.UPRIGHT);
+            }
+
+            @Override
+            public void onError(int errorCode)
+            {
+                /*
+                 * This will be called if the camera could not be opened
+                 */
+            }
+        });
+
+        telemetry.addLine("Waiting for start");
+        telemetry.update();
+
         waitForStart();
 
         angles = imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES);
         float currentHeading = Float.parseFloat(formatAngle(angles.angleUnit, angles.firstAngle));
         changeFromZero = (float) currentHeading;
 
+        for (int i = 0; i < 15; i++) {
+            telemetry.addData("Color > ", PipelineClassExample.getColorAtMiddleRect());
+            telemetry.addData("Data > ", PipelineClassExample.colorAtMiddleRect[0] + " " + PipelineClassExample.colorAtMiddleRect[1] + " " + PipelineClassExample.colorAtMiddleRect[2]);
+            telemetry.update();
+            String result = PipelineClassExample.getColorAtMiddleRect();
+            if (result == "right") {
+                rightTotal++;
+            }
+
+            if (result == "left") {
+                leftTotal++;
+            }
+
+            if (result == "mid") {
+                midTotal++;
+            }
+        }
+        telemetry.addData("totals ", leftTotal + " " + midTotal + " " + rightTotal);
+        telemetry.update();
+
         //Close servo to start match
         Robot.grabberServo.setPosition(Robot.grabberServoClosedPos);
-        sleep(250);
+        sleep(500);
 
         ZeroPowerToBrake();
 
         //Get to High cone and move turret Right
-        batchDriveTarget = 65;
+        batchDriveTarget = 64;
         batchLiftTarget = Robot.liftJunctionHighHeight;
         
         BatchUpdate(true, batchDriveTarget, true, batchLiftTarget, true, turretRightDegrees);
@@ -154,33 +262,33 @@ public class Auto extends LinearOpMode {
 
         //Release servo
         Robot.grabberServo.setPosition(Robot.grabberServoOpenPos);
-        sleep(250);
+        sleep(500);
 
         //Raise turret to original height
         BatchUpdate(false, 0, true, Robot.liftJunctionHighHeight, false, 0);
 
         //Reverse to 5 stack, forward, drop to one
-        BatchUpdate(true, -10.5, true, 1, true, Robot.turretForwardDegrees);
+        BatchUpdate(true, -10, true, 1, true, Robot.turretForwardDegrees);
 
         //Turn to 90
-        Turn(90);
+        Turn(93);
 
         //Lower Drive Speed
         driveSpeedFast = 0.3;
 
         // Forward to 5 stack, raise to pickup height
-        BatchUpdate(true, 23, true, Robot.liftPickupHeight + 6.5, false, 0);
+        BatchUpdate(true, 24.5, true, Robot.liftPickupHeight + 6, false, 0);
 
         //Close servo
         Robot.grabberServo.setPosition(Robot.grabberServoClosedPos);
 
         //Wait
-        sleep(250);
+        sleep(500);
 
         //Raise lift a bit
         BatchUpdate(false, 0, true, Robot.liftPickupHeight + 10, false, 0);
         //Raise lift rest of the way, back to high junction
-        BatchUpdate(true, -36, true, Robot.liftJunctionHighHeight, true, turretRightDegrees);
+        BatchUpdate(true, -37, true, Robot.liftJunctionHighHeight, true, turretRightDegrees);
 
         BatchUpdate(false, 0, true, Robot.liftJunctionHighHeight - 2, false, 0);
 
@@ -189,31 +297,48 @@ public class Auto extends LinearOpMode {
         //turn forward
         sleep(250);
 
-        BatchUpdate(false, 0, true, Robot.liftJunctionHighHeight,  false, 0);
+        /*BatchUpdate(false, 0, true, Robot.liftJunctionHighHeight,  false, 0);
 
         BatchUpdate(false, 0, false, 0, true, turretForwardDegrees);
 
         //Forward to 5 stack, lift height
-        BatchUpdate(true, 36, true, Robot.liftPickupHeight + 5.5, false, 0);
+        BatchUpdate(true, 37, true, Robot.liftPickupHeight + 4.5, false, 0);
         //Close servo
         Robot.grabberServo.setPosition(Robot.grabberServoClosedPos);
         //Wait
-        sleep(250);
+        sleep(300);
         //10 height
         BatchUpdate(false, 0, true, Robot.liftPickupHeight + 10, false, 0);
         //Rest of the way, back to high junction
-        BatchUpdate(true, -36, true, Robot.liftJunctionHighHeight, true, turretRightDegrees);
+        BatchUpdate(true, -37, true, Robot.liftJunctionHighHeight, true, turretRightDegrees);
         BatchUpdate(false, 0, true, Robot.liftJunctionHighHeight - 2, false, 0);
 
         //open servo
         Robot.grabberServo.setPosition(Robot.grabberServoOpenPos);
         //turn forward
-        sleep(500);
+        sleep(300);*/
+
         BatchUpdate(false, 0, true, Robot.liftJunctionHighHeight,  false, 0);
 
+        if (rightTotal > leftTotal && rightTotal > midTotal) {
+            BatchUpdate(true, -8, false, 0,false, 0);
+        }
+
+        if (midTotal > leftTotal && midTotal > rightTotal) {
+            BatchUpdate(true, 8, false, 0,false, 0);
+        }
+
+        if (leftTotal > midTotal && leftTotal > rightTotal) {
+            telemetry.addData("LEFT!!!!", "");
+            telemetry.update();
+            BatchUpdate(true, 8, false, 0,false, 0);
+            BatchUpdate(true, 8, false, 0,false, 0);
+
+        }
 
         BatchUpdate(false, 0, false, 0, true, turretForwardDegrees);
         BatchUpdate(false, 0, true, 0, false, 0);
+        Turn(180);
 
 
 
@@ -265,13 +390,13 @@ public class Auto extends LinearOpMode {
             turretMotorBusy = false;
         }
         while ((frontLeftBusy || frontRightBusy || backLeftBusy || backRightBusy|| liftMotorBusy || turretMotorBusy)) {
-            telemetry.addData("frontLeft:", Robot.frontLeft.isBusy());
+            /*telemetry.addData("frontLeft:", Robot.frontLeft.isBusy());
             telemetry.addData("frontRight:", Robot.frontRight.isBusy());
             telemetry.addData("backLeft:", Robot.backLeft.isBusy());
             telemetry.addData("backRight:", Robot.backRight.isBusy());
             telemetry.addData("liftMotor:", Robot.liftMotor.isBusy());
             telemetry.addData("turretMotor:", Robot.turretMotor.isBusy());
-            telemetry.update();
+            telemetry.update();*/
 
             if (drive) {
                 frontLeftBusy = Robot.frontLeft.isBusy();
@@ -356,8 +481,8 @@ public class Auto extends LinearOpMode {
         if (currentAngle < 0) {
             currentAngle = 360 + currentAngle;
         }
-        telemetry.addData(">", currentAngle - targetAngle);
-        telemetry.update();
+        /*telemetry.addData(">", currentAngle - targetAngle);
+        telemetry.update();*/
         double degreesToTurn = Math.abs(targetAngle - currentAngle);
 
         goRight = targetAngle > currentAngle;
@@ -415,9 +540,9 @@ public class Auto extends LinearOpMode {
             if (currentAngle < 0) {
                 currentAngle = 360 + currentAngle;
             }
-            telemetry.addData("> ", currentAngle);
+            /*telemetry.addData("> ", currentAngle);
             telemetry.addData("> ", angles.firstAngle - changeFromZero);
-            telemetry.update();
+            telemetry.update();*/
 
         }
 
