@@ -77,7 +77,7 @@ public class WebcamExample extends LinearOpMode
          * of a frame from the camera. Note that switching pipelines on-the-fly
          * (while a streaming session is in flight) *IS* supported.
          */
-        webcam.setPipeline(new PipelineClassExample(640));
+        webcam.setPipeline(new PipelineClassExample(640, 360));
 
         /*
          * Open the connection to the camera device. New in v1.4.0 is the ability
@@ -148,8 +148,28 @@ public class WebcamExample extends LinearOpMode
              * when it will be automatically stopped for you) *IS* supported. The "if" statement
              * below will stop streaming from the camera when the "A" button on gamepad 1 is pressed.
              */
-            telemetry.addData("Color > ", PipelineClassExample.getColorAtMiddleRect());
-            telemetry.addData("Data > ", PipelineClassExample.colorAtMiddleRect[0] + " " + PipelineClassExample.colorAtMiddleRect[1] + " " + PipelineClassExample.colorAtMiddleRect[2]);
+            if ((int) PipelineClassExample.getColorAtMiddleRect()[0] > 120) {
+
+                telemetry.addData("Color > ", "Red");
+            }
+    
+            /*if ((int) PipelineClassExample.getColorAtMiddleRect()[1] > (int) PipelineClassExample.getColorAtMiddleRect()[2] && (int) PipelineClassExample.getColorAtMiddleRect()[1] > (int) PipelineClassExample.getColorAtMiddleRect()[0]) {
+                telemetry.addData("Color > ", "Green");
+
+
+            }*/
+    
+            else {
+                if ((int) PipelineClassExample.getColorAtMiddleRect()[1] + (int) PipelineClassExample.getColorAtMiddleRect()[2] >= 250) {
+                    telemetry.addData("Color > ", "Blue");
+                }
+                else {
+                    telemetry.addData("Color > ", "Green");
+                }
+
+            }
+            telemetry.addData("Color > ", (int) PipelineClassExample.getColorAtMiddleRect()[0] + " " + (int) PipelineClassExample.getColorAtMiddleRect()[1] + " " + (int) PipelineClassExample.getColorAtMiddleRect()[2]);
+
             telemetry.update();
             if(gamepad1.a)
             {
@@ -181,7 +201,7 @@ public class WebcamExample extends LinearOpMode
              * excess CPU cycles for no reason. (By default, telemetry is only sent to the DS at 4Hz
              * anyway). Of course in a real OpMode you will likely not want to do this.
              */
-            sleep(100);
+            sleep(1000);
         }
     }
 

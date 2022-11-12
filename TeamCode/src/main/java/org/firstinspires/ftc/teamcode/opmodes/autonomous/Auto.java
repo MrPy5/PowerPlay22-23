@@ -48,6 +48,7 @@ import org.openftc.easyopencv.OpenCvCameraFactory;
 import org.openftc.easyopencv.OpenCvCameraRotation;
 import org.openftc.easyopencv.OpenCvWebcam;
 
+import java.nio.channels.Pipe;
 import java.util.Locale;
 
 
@@ -152,7 +153,7 @@ public class Auto extends LinearOpMode {
          * of a frame from the camera. Note that switching pipelines on-the-fly
          * (while a streaming session is in flight) *IS* supported.
          */
-        webcam.setPipeline(new PipelineClassExample(640));
+        webcam.setPipeline(new PipelineClassExample(640, 320));
 
         /*
          * Open the connection to the camera device. New in v1.4.0 is the ability
@@ -205,28 +206,42 @@ public class Auto extends LinearOpMode {
         angles = imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES);
         float currentHeading = Float.parseFloat(formatAngle(angles.angleUnit, angles.firstAngle));
         changeFromZero = (float) currentHeading;
+        sleep(1000);
 
-        /**
         for (int i = 0; i < 15; i++) {
-            telemetry.addData("Color > ", PipelineClassExample.getColorAtMiddleRect());
-            telemetry.addData("Data > ", PipelineClassExample.colorAtMiddleRect[0] + " " + PipelineClassExample.colorAtMiddleRect[1] + " " + PipelineClassExample.colorAtMiddleRect[2]);
-            telemetry.update();
-            String result = PipelineClassExample.getColorAtMiddleRect();
-            if (result == "right") {
+            if ((int) PipelineClassExample.getColorAtMiddleRect()[0] > 120) {
+
+                telemetry.addData("Color > ", "Red");
                 rightTotal++;
             }
 
-            if (result == "left") {
-                leftTotal++;
+            /*if ((int) PipelineClassExample.getColorAtMiddleRect()[1] > (int) PipelineClassExample.getColorAtMiddleRect()[2] && (int) PipelineClassExample.getColorAtMiddleRect()[1] > (int) PipelineClassExample.getColorAtMiddleRect()[0]) {
+                telemetry.addData("Color > ", "Green");
+
+
+            }*/
+
+            else {
+                if ((int) PipelineClassExample.getColorAtMiddleRect()[1] + (int) PipelineClassExample.getColorAtMiddleRect()[2] >= 250) {
+                    telemetry.addData("Color > ", "Blue");
+                    leftTotal++;
+                }
+                else {
+                    telemetry.addData("Color > ", "Green");
+                    midTotal++;
+                }
+
             }
 
-            if (result == "mid") {
-                midTotal++;
-            }
+            telemetry.addData("totals ", leftTotal + " " + midTotal + " " + rightTotal);
+            telemetry.addData("values", PipelineClassExample.blueArea + " " + PipelineClassExample.greenArea + " " + PipelineClassExample.redArea);
+            telemetry.update();
+            sleep(500);
         }
-         **/
-        /*telemetry.addData("totals ", leftTotal + " " + midTotal + " " + rightTotal);
-        telemetry.update();*/
+
+
+        telemetry.addData("totals ", leftTotal + " " + midTotal + " " + rightTotal);
+        telemetry.update();
 
         //Close servo to start match
         Robot.grabberServo.setPosition(Robot.grabberServoClosedPos);
@@ -306,7 +321,7 @@ public class Auto extends LinearOpMode {
 
         BatchUpdate(false, 0, true, Robot.liftJunctionHighHeight,  false, 0);
 
-        /*if (rightTotal > leftTotal && rightTotal > midTotal) {
+        if (rightTotal > leftTotal && rightTotal > midTotal) {
             BatchUpdate(true, -8, false, 0,false, 0);
         }
 
@@ -317,10 +332,10 @@ public class Auto extends LinearOpMode {
         if (leftTotal > midTotal && leftTotal > rightTotal) {
             telemetry.addData("LEFT!!!!", "");
             telemetry.update();
-            BatchUpdate(true, 8, false, 0,false, 0);
-            BatchUpdate(true, 8, false, 0,false, 0);
+            BatchUpdate(true, 24, false, 0,false, 0);
 
-        }*/
+
+        }
 
         BatchUpdate(false, 0, false, 0, true, turretForwardDegrees);
         BatchUpdate(false, 0, true, 0, false, 0);
