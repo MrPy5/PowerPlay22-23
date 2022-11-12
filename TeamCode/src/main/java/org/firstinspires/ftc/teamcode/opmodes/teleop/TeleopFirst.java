@@ -81,7 +81,7 @@ public class TeleopFirst extends LinearOpMode {
         //LIFT VARIABLES
 
         double liftSpeedUp = 1;
-        double liftSpeedDown = .5;
+        double liftSpeedDown = .7;
         double liftSpeedPower;
 
         double liftTicksPerInch = Robot.liftTicksPerInch;
@@ -98,7 +98,7 @@ public class TeleopFirst extends LinearOpMode {
         double liftHeightTarget = 0;
         double liftHeightPrevTarget = 0;
 
-        double manualLiftIncrement = 1.0;
+        double manualLiftIncrement = 2.5;
 
         boolean turretReturn = false;
 
@@ -207,7 +207,7 @@ public class TeleopFirst extends LinearOpMode {
             //-----------------------------------------------------------//
             //SCORE CODE
 
-            if (scoreTrigger > triggerSensitivity){
+            /*if (scoreTrigger > triggerSensitivity){
                 if (scoreTriggerReleased){
 
                     grabberServoCurrentPos = grabberServoOpenPos;
@@ -219,7 +219,7 @@ public class TeleopFirst extends LinearOpMode {
                 }
             } else {
                 scoreTriggerReleased = true;
-            }
+            }*/
 
             //----------------------------------------------------------//
             //LIFT MOTOR
@@ -292,12 +292,12 @@ public class TeleopFirst extends LinearOpMode {
                 turretButtonChoiceTargetDegrees = turretRightDegrees;
             }
 
-            if (turretPosBackButton) {
+            /*if (turretPosBackButton) {
                 turretButtonChoiceTargetDegrees = turretBackDegrees;
                 if (turretCurrentDegrees < 0) {
                     turretButtonChoiceTargetDegrees = -turretButtonChoiceTargetDegrees;
                 }
-            }
+            }*/
 
 
             if (liftCurrentHeight > liftMinHeightForTurning - 0.5) {
@@ -339,6 +339,27 @@ public class TeleopFirst extends LinearOpMode {
             }
 
 
+            //Tightening code
+
+            if (gamepad1.a) {
+                /*Robot.liftMotor.setTargetPosition(0);
+                Robot.liftMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+
+                Robot.liftMotor.setPower(liftSpeedUp);
+                while (Robot.liftMotor.isBusy()) {
+
+                }*/
+                Robot.liftMotor.setPower(0);
+                Robot.liftMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
+                Robot.liftMotor.setPower(0.05);
+                sleep(500);
+                Robot.liftMotor.setPower(0);
+                Robot.liftMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+                Robot.liftMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+                Robot.liftMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+
+
+            }
             //---------------------------------------------------------//
             //DRIVING CODE
 

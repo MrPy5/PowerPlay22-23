@@ -31,6 +31,7 @@ public class PipelineClassExample extends OpenCvPipeline {
     public static Mat edgesGreen;
     public static Mat threshGreen;
     public static Mat hierarchyGreen;
+    public static Mat inputMat;
 
 
 
@@ -53,7 +54,7 @@ public class PipelineClassExample extends OpenCvPipeline {
         // If both are regular stones, it returns NONE to tell the robot to keep looking
 
         // Make a working copy of the input matrix in HSV
-
+        inputMat = input.clone();
         matGreen = new Mat();
         Imgproc.cvtColor(input, matGreen, Imgproc.COLOR_RGB2HSV);
 
@@ -63,7 +64,7 @@ public class PipelineClassExample extends OpenCvPipeline {
         // We create a HSV range for yellow to detect regular stones
         // NOTE: In OpenCV's implementation,
         // Hue values are half the real value
-        Scalar lowHSVGreen = new Scalar(36, 50, 40); // lower bound HSV for yellow
+        Scalar lowHSVGreen = new Scalar(40, 50, 100); // lower bound HSV for yellow
         Scalar highHSVGreen = new Scalar(89, 255, 255); // higher bound HSV for yellow
         threshGreen = new Mat();
 
@@ -277,7 +278,7 @@ public class PipelineClassExample extends OpenCvPipeline {
         double[] color = new double[3];
         if (rectangleToDrawGreen != null) {
             Rect rect = rectangleToDrawGreen;
-            Mat cropedMat = new Mat(matGreen, rect);
+            Mat cropedMat = new Mat(inputMat, rect);
 
             Bitmap Cropedimage = Bitmap.createBitmap(cropedMat.cols(), cropedMat.rows(), Bitmap.Config.ARGB_8888);
 

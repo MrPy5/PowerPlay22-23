@@ -148,7 +148,7 @@ public class WebcamExample extends LinearOpMode
              * when it will be automatically stopped for you) *IS* supported. The "if" statement
              * below will stop streaming from the camera when the "A" button on gamepad 1 is pressed.
              */
-            if ((int) PipelineClassExample.getColorAtMiddleRect()[0] > 120) {
+            if ((int) PipelineClassExample.getColorAtMiddleRect()[0] > (int) PipelineClassExample.getColorAtMiddleRect()[1] && (int) PipelineClassExample.getColorAtMiddleRect()[0] > (int) PipelineClassExample.getColorAtMiddleRect()[2]) {
 
                 telemetry.addData("Color > ", "Red");
             }
@@ -158,15 +158,15 @@ public class WebcamExample extends LinearOpMode
 
 
             }*/
-    
-            else {
-                if ((int) PipelineClassExample.getColorAtMiddleRect()[1] + (int) PipelineClassExample.getColorAtMiddleRect()[2] >= 250) {
-                    telemetry.addData("Color > ", "Blue");
-                }
-                else {
-                    telemetry.addData("Color > ", "Green");
-                }
 
+            if ((int) PipelineClassExample.getColorAtMiddleRect()[1] > (int) PipelineClassExample.getColorAtMiddleRect()[0] && (int) PipelineClassExample.getColorAtMiddleRect()[1] > (int) PipelineClassExample.getColorAtMiddleRect()[2]) {
+
+                telemetry.addData("Color > ", "Green");
+            }
+
+            if ((int) PipelineClassExample.getColorAtMiddleRect()[2] > (int) PipelineClassExample.getColorAtMiddleRect()[1] && (int) PipelineClassExample.getColorAtMiddleRect()[2] > (int) PipelineClassExample.getColorAtMiddleRect()[0]) {
+
+                telemetry.addData("Color > ", "Blue");
             }
             telemetry.addData("Color > ", (int) PipelineClassExample.getColorAtMiddleRect()[0] + " " + (int) PipelineClassExample.getColorAtMiddleRect()[1] + " " + (int) PipelineClassExample.getColorAtMiddleRect()[2]);
 
@@ -201,7 +201,7 @@ public class WebcamExample extends LinearOpMode
              * excess CPU cycles for no reason. (By default, telemetry is only sent to the DS at 4Hz
              * anyway). Of course in a real OpMode you will likely not want to do this.
              */
-            sleep(1000);
+
         }
     }
 

@@ -201,15 +201,17 @@ public class Auto extends LinearOpMode {
         telemetry.addLine("Waiting for start");
         telemetry.update();
 
+        telemetry.addData("Color > ", (int) PipelineClassExample.getColorAtMiddleRect()[0] + " " + (int) PipelineClassExample.getColorAtMiddleRect()[1] + " " + (int) PipelineClassExample.getColorAtMiddleRect()[2]);
+
         waitForStart();
 
         angles = imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES);
         float currentHeading = Float.parseFloat(formatAngle(angles.angleUnit, angles.firstAngle));
         changeFromZero = (float) currentHeading;
-        sleep(1000);
+
 
         for (int i = 0; i < 15; i++) {
-            if ((int) PipelineClassExample.getColorAtMiddleRect()[0] > 120) {
+            if ((int) PipelineClassExample.getColorAtMiddleRect()[0] > (int) PipelineClassExample.getColorAtMiddleRect()[1] && (int) PipelineClassExample.getColorAtMiddleRect()[0] > (int) PipelineClassExample.getColorAtMiddleRect()[2]) {
 
                 telemetry.addData("Color > ", "Red");
                 rightTotal++;
@@ -221,22 +223,23 @@ public class Auto extends LinearOpMode {
 
             }*/
 
-            else {
-                if ((int) PipelineClassExample.getColorAtMiddleRect()[1] + (int) PipelineClassExample.getColorAtMiddleRect()[2] >= 250) {
-                    telemetry.addData("Color > ", "Blue");
-                    leftTotal++;
-                }
-                else {
-                    telemetry.addData("Color > ", "Green");
-                    midTotal++;
-                }
+            if ((int) PipelineClassExample.getColorAtMiddleRect()[1] > (int) PipelineClassExample.getColorAtMiddleRect()[0] && (int) PipelineClassExample.getColorAtMiddleRect()[1] > (int) PipelineClassExample.getColorAtMiddleRect()[2]) {
 
+                telemetry.addData("Color > ", "Green");
+                midTotal++;
             }
 
+
+            if ((int) PipelineClassExample.getColorAtMiddleRect()[2] > (int) PipelineClassExample.getColorAtMiddleRect()[1] && (int) PipelineClassExample.getColorAtMiddleRect()[2] > (int) PipelineClassExample.getColorAtMiddleRect()[0]) {
+
+                telemetry.addData("Color > ", "Blue");
+                leftTotal++;
+            }
+
+
             telemetry.addData("totals ", leftTotal + " " + midTotal + " " + rightTotal);
-            telemetry.addData("values", PipelineClassExample.blueArea + " " + PipelineClassExample.greenArea + " " + PipelineClassExample.redArea);
             telemetry.update();
-            sleep(500);
+            sleep(100);
         }
 
 
@@ -322,24 +325,31 @@ public class Auto extends LinearOpMode {
         BatchUpdate(false, 0, true, Robot.liftJunctionHighHeight,  false, 0);
 
         if (rightTotal > leftTotal && rightTotal > midTotal) {
-            BatchUpdate(true, -8, false, 0,false, 0);
+            BatchUpdate(true, -13, false, 0,false, 0);
         }
 
-        if (midTotal > leftTotal && midTotal > rightTotal) {
-            BatchUpdate(true, 8, false, 0,false, 0);
+        else if (midTotal > leftTotal && midTotal > rightTotal) {
+            BatchUpdate(true, 14, false, 0,false, 0);
         }
 
-        if (leftTotal > midTotal && leftTotal > rightTotal) {
+        else if (leftTotal > midTotal && leftTotal > rightTotal) {
             telemetry.addData("LEFT!!!!", "");
             telemetry.update();
-            BatchUpdate(true, 24, false, 0,false, 0);
+            BatchUpdate(true, 34, false, 0,false, 0);
 
 
         }
 
+        else {
+            BatchUpdate(true, 14, false, 0,false, 0);
+        }
+
+        Turn(180);
         BatchUpdate(false, 0, false, 0, true, turretForwardDegrees);
         BatchUpdate(false, 0, true, 0, false, 0);
-        Turn(180);
+
+
+
 
 
 
@@ -391,56 +401,58 @@ public class Auto extends LinearOpMode {
             turretMotorBusy = false;
         }
         while ((frontLeftBusy || frontRightBusy || backLeftBusy || backRightBusy|| liftMotorBusy || turretMotorBusy)) {
-            /*telemetry.addData("frontLeft:", Robot.frontLeft.isBusy());
-            telemetry.addData("frontRight:", Robot.frontRight.isBusy());
-            telemetry.addData("backLeft:", Robot.backLeft.isBusy());
-            telemetry.addData("backRight:", Robot.backRight.isBusy());
-            telemetry.addData("liftMotor:", Robot.liftMotor.isBusy());
-            telemetry.addData("turretMotor:", Robot.turretMotor.isBusy());
-            telemetry.update();*/
+                /*telemetry.addData("frontLeft:", Robot.frontLeft.isBusy());
+                telemetry.addData("frontRight:", Robot.frontRight.isBusy());
+                telemetry.addData("backLeft:", Robot.backLeft.isBusy());
+                telemetry.addData("backRight:", Robot.backRight.isBusy());
+                telemetry.addData("liftMotor:", Robot.liftMotor.isBusy());
+                telemetry.addData("turretMotor:", Robot.turretMotor.isBusy());
+                telemetry.update();*/
 
-            if (drive) {
-                frontLeftBusy = Robot.frontLeft.isBusy();
-                frontRightBusy = Robot.frontRight.isBusy();
-                backLeftBusy = Robot.backLeft.isBusy();
-                backRightBusy = Robot.backRight.isBusy();
-            }
-            else {
-                frontLeftBusy = false;
-                frontRightBusy = false;
-                backLeftBusy = false;
-                backRightBusy = false;
-            }
-            if (lift) {
-                liftMotorBusy = Robot.liftMotor.isBusy();
-            }
-            else {
-                liftMotorBusy = false;
-            }
-
-            if (turret) {
-                turretMotorBusy = Robot.turretMotor.isBusy();
-            }
-            else {
-                turretMotorBusy = false;
-            }
-
-            if (Robot.frontLeft.getCurrentPosition() / ((int) batchDriveTarget * countsPerInch) <= 0.3) {
-                if (driveSpeedCurrent < driveSpeedFast) {
-                    driveSpeedCurrent = driveSpeedCurrent + 0.01;
+                if (drive) {
+                    frontLeftBusy = Robot.frontLeft.isBusy();
+                    frontRightBusy = Robot.frontRight.isBusy();
+                    backLeftBusy = Robot.backLeft.isBusy();
+                    backRightBusy = Robot.backRight.isBusy();
                 }
-            }
-            if (Robot.frontLeft.getCurrentPosition() / ((int) batchDriveTarget * countsPerInch) >= 0.7) {
-                if (driveSpeedCurrent > 0.3) {
-                    driveSpeedCurrent = driveSpeedCurrent - 0.01;
-                } else {
-                    driveSpeedCurrent = 0.3;
+                else {
+                    frontLeftBusy = false;
+                    frontRightBusy = false;
+                    backLeftBusy = false;
+                    backRightBusy = false;
                 }
-            }
-            Robot.frontLeft.setPower(driveSpeedCurrent);
-            Robot.frontRight.setPower(driveSpeedCurrent);
-            Robot.backLeft.setPower(driveSpeedCurrent);
-            Robot.backRight.setPower(driveSpeedCurrent);
+                if (lift) {
+                    liftMotorBusy = Robot.liftMotor.isBusy();
+                }
+                else {
+                    liftMotorBusy = false;
+                }
+
+                if (turret) {
+                    turretMotorBusy = Robot.turretMotor.isBusy();
+                }
+                else {
+                    turretMotorBusy = false;
+                }
+
+                if (Robot.frontLeft.getCurrentPosition() / ((int) batchDriveTarget * countsPerInch) <= 0.3) {
+                    if (driveSpeedCurrent < driveSpeedFast) {
+                        driveSpeedCurrent = driveSpeedCurrent + 0.01;
+                    }
+                }
+                if (drive) {
+                    if (Robot.frontLeft.getCurrentPosition() / ((int) batchDriveTarget * countsPerInch) >= 0.7) {
+                        if (driveSpeedCurrent > 0.3) {
+                            driveSpeedCurrent = driveSpeedCurrent - 0.01;
+                        } else {
+                            driveSpeedCurrent = 0.3;
+                        }
+                    }
+                    Robot.frontLeft.setPower(driveSpeedCurrent);
+                    Robot.frontRight.setPower(driveSpeedCurrent);
+                    Robot.backLeft.setPower(driveSpeedCurrent);
+                    Robot.backRight.setPower(driveSpeedCurrent);
+                }
         }
         Robot.liftMotor.setPower(0);
         
