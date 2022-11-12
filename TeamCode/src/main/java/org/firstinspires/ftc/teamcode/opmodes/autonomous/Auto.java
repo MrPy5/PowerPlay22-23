@@ -36,36 +36,18 @@ import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
 
-import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.AxesOrder;
 import org.firstinspires.ftc.robotcore.external.navigation.AxesReference;
 import org.firstinspires.ftc.robotcore.external.navigation.Orientation;
 import org.firstinspires.ftc.teamcode.hardware.robot.Robot;
 import org.firstinspires.ftc.teamcode.opmodes.teleop.PipelineClassExample;
-import org.firstinspires.ftc.teamcode.opmodes.teleop.TeleopFirst;
 import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
-import org.opencv.core.Mat;
-import org.opencv.core.Point;
-import org.opencv.core.Scalar;
-import org.opencv.imgproc.Imgproc;
 import org.openftc.easyopencv.OpenCvCamera;
 import org.openftc.easyopencv.OpenCvCameraFactory;
 import org.openftc.easyopencv.OpenCvCameraRotation;
-import org.openftc.easyopencv.OpenCvPipeline;
 import org.openftc.easyopencv.OpenCvWebcam;
-import java.util.ArrayList;
-import org.opencv.core.Core;
-import org.opencv.core.Mat;
-import org.opencv.core.MatOfPoint;
-import org.opencv.core.MatOfPoint2f;
-import org.opencv.core.Point;
-import org.opencv.core.Rect;
-import org.opencv.core.Scalar;
-import org.opencv.core.Size;
-import org.opencv.imgproc.Imgproc;
-import org.openftc.easyopencv.OpenCvPipeline;
-import java.util.List;
+
 import java.util.Locale;
 
 
@@ -126,7 +108,7 @@ public class Auto extends LinearOpMode {
     
     //batchUpdate;
     
-    public double batchDriveTarget;
+    public double firstDriveTarget;
     public double batchLiftTarget;
 
     //
@@ -224,6 +206,7 @@ public class Auto extends LinearOpMode {
         float currentHeading = Float.parseFloat(formatAngle(angles.angleUnit, angles.firstAngle));
         changeFromZero = (float) currentHeading;
 
+        /**
         for (int i = 0; i < 15; i++) {
             telemetry.addData("Color > ", PipelineClassExample.getColorAtMiddleRect());
             telemetry.addData("Data > ", PipelineClassExample.colorAtMiddleRect[0] + " " + PipelineClassExample.colorAtMiddleRect[1] + " " + PipelineClassExample.colorAtMiddleRect[2]);
@@ -241,9 +224,10 @@ public class Auto extends LinearOpMode {
                 midTotal++;
             }
         }
+         **/
         /*telemetry.addData("totals ", leftTotal + " " + midTotal + " " + rightTotal);
         telemetry.update();*/
-        /*
+
         //Close servo to start match
         Robot.grabberServo.setPosition(Robot.grabberServoClosedPos);
         sleep(500);
@@ -251,14 +235,15 @@ public class Auto extends LinearOpMode {
         ZeroPowerToBrake();
 
         //Get to High cone and move turret Right
-        batchDriveTarget = 64;
+        firstDriveTarget = 63.5;
         batchLiftTarget = Robot.liftJunctionHighHeight;
         
-        BatchUpdate(true, batchDriveTarget, true, batchLiftTarget, true, turretRightDegrees);
+        BatchUpdate(true, firstDriveTarget, true, batchLiftTarget, true, turretRightDegrees);
 
 
         //Drop turret
         BatchUpdate(false, 0, true, Robot.liftJunctionHighHeight - 2, false, 0);
+        sleep(200);
 
         //Release servo
         Robot.grabberServo.setPosition(Robot.grabberServoOpenPos);
@@ -268,16 +253,17 @@ public class Auto extends LinearOpMode {
         BatchUpdate(false, 0, true, Robot.liftJunctionHighHeight, false, 0);
 
         //Reverse to 5 stack, forward, drop to one
-        BatchUpdate(true, -10, true, 1, true, Robot.turretForwardDegrees);
+        BatchUpdate(false, 0, false, 0, true, Robot.turretForwardDegrees);
+        BatchUpdate(true, -8.75, false, 0, false, 0);
 
-        //Turn to 90
-        Turn(93);
+        //Turn to face 5 stack
+        Turn(90);
 
         //Lower Drive Speed
         driveSpeedFast = 0.3;
 
         // Forward to 5 stack, raise to pickup height
-        BatchUpdate(true, 24.5, true, Robot.liftPickupHeight + 6, false, 0);
+        BatchUpdate(true, 24, true, 5.75, false, 0);
 
         //Close servo
         Robot.grabberServo.setPosition(Robot.grabberServoClosedPos);
@@ -288,7 +274,7 @@ public class Auto extends LinearOpMode {
         //Raise lift a bit
         BatchUpdate(false, 0, true, Robot.liftPickupHeight + 10, false, 0);
         //Raise lift rest of the way, back to high junction
-        BatchUpdate(true, -37, true, Robot.liftJunctionHighHeight, true, turretRightDegrees);
+        BatchUpdate(true, -36, true, Robot.liftJunctionHighHeight, true, turretRightDegrees);
 
         BatchUpdate(false, 0, true, Robot.liftJunctionHighHeight - 2, false, 0);
 
@@ -296,7 +282,7 @@ public class Auto extends LinearOpMode {
         Robot.grabberServo.setPosition(Robot.grabberServoOpenPos);
         //turn forward
         sleep(250);
-        */
+
         /*BatchUpdate(false, 0, true, Robot.liftJunctionHighHeight,  false, 0);
 
         BatchUpdate(false, 0, false, 0, true, turretForwardDegrees);
@@ -317,10 +303,10 @@ public class Auto extends LinearOpMode {
         Robot.grabberServo.setPosition(Robot.grabberServoOpenPos);
         //turn forward
         sleep(300);*/
-        /*
+
         BatchUpdate(false, 0, true, Robot.liftJunctionHighHeight,  false, 0);
 
-        if (rightTotal > leftTotal && rightTotal > midTotal) {
+        /*if (rightTotal > leftTotal && rightTotal > midTotal) {
             BatchUpdate(true, -8, false, 0,false, 0);
         }
 
@@ -334,12 +320,12 @@ public class Auto extends LinearOpMode {
             BatchUpdate(true, 8, false, 0,false, 0);
             BatchUpdate(true, 8, false, 0,false, 0);
 
-        }
+        }*/
 
         BatchUpdate(false, 0, false, 0, true, turretForwardDegrees);
         BatchUpdate(false, 0, true, 0, false, 0);
         Turn(180);
-        */
+
 
 
 
