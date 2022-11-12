@@ -55,6 +55,8 @@ public class TeleopFirst extends LinearOpMode {
         double grabberServoCurrentPos = 0.22;
         boolean grabberTriggerReleased = true;
 
+        boolean scoreTriggerReleased = true;
+
 
         //---------------------------------------------------------------//
         //TURRET VARIABLES
@@ -87,7 +89,7 @@ public class TeleopFirst extends LinearOpMode {
         double liftCurrentHeight; //all height variables are in inches
         double liftPickupHeight = 0;
         double liftJunctionGroundHeight = 2;
-        double liftJunctionLowHeight = 15;
+        double liftJunctionLowHeight = 14;
         double liftJunctionMediumHeight = 24;
         double liftJunctionHighHeight = 33;
         double liftMinHeightForTurning = 6;
@@ -142,7 +144,7 @@ public class TeleopFirst extends LinearOpMode {
             double grabberTrigger = gamepad2.right_trigger;
 
             boolean turretPosForwardButton = gamepad2.dpad_up;
-            boolean turretPosBackButton = gamepad2.dpad_down;
+            //boolean turretPosBackButton = gamepad2.dpad_down;
             boolean turretPosLeftButton = gamepad2.dpad_left;
             boolean turretPosRightButton = gamepad2.dpad_right;
 
@@ -156,9 +158,10 @@ public class TeleopFirst extends LinearOpMode {
 
 
             //----------------------------------------------------------------//
-            //GAMEPAD1 CONTROLS = Driving + slow mode + manual lift
+            //GAMEPAD1 CONTROLS = Driving + slow mode + manual lift + score button
 
-            double slowmoTrigger = gamepad1.right_trigger;
+            double slowmoTrigger = gamepad1.left_trigger;
+            double scoreTrigger = gamepad1.right_trigger;
 
             double leftStickY = gamepad1.left_stick_y * -1 * slowModeSpeed;
             double leftStickX = gamepad1.left_stick_x * -1 * slowModeSpeed;
@@ -199,6 +202,23 @@ public class TeleopFirst extends LinearOpMode {
                 }
             } else {
                 slowmoTriggerReleased = true;
+            }
+
+            //-----------------------------------------------------------//
+            //SCORE CODE
+
+            if (scoreTrigger > triggerSensitivity){
+                if (scoreTriggerReleased){
+
+                    grabberServoCurrentPos = grabberServoOpenPos;
+                    Robot.grabberServo.setPosition(grabberServoCurrentPos);
+
+                    liftHeightTarget = liftHeightPrevTarget + 2;
+                    liftPosReturn = true;
+                    scoreTriggerReleased = false;
+                }
+            } else {
+                scoreTriggerReleased = true;
             }
 
             //----------------------------------------------------------//
@@ -255,7 +275,10 @@ public class TeleopFirst extends LinearOpMode {
                 liftHeightPrevTarget = liftCurrentHeight;
             }
 
-
+            if (Robot.liftMotor.isBusy() == false && liftPosReturn) {
+                liftPosReturn = false;
+                turretButtonChoiceTargetDegrees = turretForwardDegrees;
+            }
             //---------------------------------------------------------------//
             //TURRET CODE
 
@@ -268,12 +291,14 @@ public class TeleopFirst extends LinearOpMode {
             if (turretPosRightButton) {
                 turretButtonChoiceTargetDegrees = turretRightDegrees;
             }
+
             if (turretPosBackButton) {
                 turretButtonChoiceTargetDegrees = turretBackDegrees;
                 if (turretCurrentDegrees < 0) {
                     turretButtonChoiceTargetDegrees = -turretButtonChoiceTargetDegrees;
                 }
             }
+
 
             if (liftCurrentHeight > liftMinHeightForTurning - 0.5) {
                 turretTargetDegrees = turretButtonChoiceTargetDegrees;
