@@ -62,6 +62,12 @@ public class MotorTest extends LinearOpMode {
     BNO055IMU imu;
     Orientation angles;
     public static float changeFromZero = 0;
+    public double driveSpeedCurrent = 0;
+
+    double countsPerInch = Robot.ticksPerInch;
+
+    double driveSpeedFast = 0.8;
+    double wheelPowerSpeedCurrent = 0.1;
     @Override
     public void runOpMode() {
         BNO055IMU.Parameters parameters = new BNO055IMU.Parameters();
@@ -100,15 +106,46 @@ public class MotorTest extends LinearOpMode {
         Turn(-360);
         sleep(1000);
         */
-        angles = imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES);
-        float currentHeading = angles.firstAngle;
-        changeFromZero = (float) currentHeading;
+        ResetEncoders();
+        int inches = 60;
+        Robot.frontLeft.setTargetPosition((int) (inches * countsPerInch));
+        Robot.frontRight.setTargetPosition((int) (inches * countsPerInch));
+        Robot.backLeft.setTargetPosition((int) (inches * countsPerInch));
+        Robot.backRight.setTargetPosition((int) (inches * countsPerInch));
 
-        Turn(270);
-        sleep(1000);
-        Turn(90);
-        sleep(1000);
-        Turn(180);
+        Robot.frontLeft.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        Robot.frontRight.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        Robot.backLeft.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        Robot.backRight.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+
+        Robot.frontLeft.setPower(driveSpeedCurrent);
+        Robot.frontRight.setPower(driveSpeedCurrent);
+        Robot.backLeft.setPower(driveSpeedCurrent);
+        Robot.backRight.setPower(driveSpeedCurrent);
+
+        while (Robot.frontLeft.isBusy()) {
+            double InchesRemaining = (Robot.frontLeft.getTargetPosition() * countsPerInch) - (Robot.frontLeft.getCurrentPosition() * countsPerInch);
+            double driveSpeedCurrentDesired = (Math.pow((InchesRemaining / 10), 3) + 5) / 100;
+
+            
+
+            if (wheelPowerSpeedCurrent < driveSpeedCurrentDesired) {
+                wheelPowerSpeedCurrent += 0.05;  // accelerate gradually
+                if (wheelPowerSpeedCurrent > driveSpeedCurrentDesired) {
+                    wheelPowerSpeedCurrent = driveSpeedCurrentDesired;
+                }
+            } else {
+                wheelPowerSpeedCurrent = driveSpeedCurrentDesired;  // decelerate it immediately
+            }
+
+            double driveSpeedSet = wheelPowerSpeedCurrent;
+            
+            Robot.frontLeft.setPower(driveSpeedSet);
+            Robot.frontRight.setPower(driveSpeedSet);
+            Robot.backLeft.setPower(driveSpeedSet);
+            Robot.backRight.setPower(driveSpeedSet);
+
+        }
     }
 
 

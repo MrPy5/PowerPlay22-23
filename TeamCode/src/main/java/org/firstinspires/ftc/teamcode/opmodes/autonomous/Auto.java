@@ -64,7 +64,7 @@ public class Auto extends LinearOpMode {
     //drive
     double countsPerInch = Robot.ticksPerInch;
     double driveSpeedCurrent = 0.3;
-    double driveSpeedFast = 0.4;
+    double driveSpeedFast = 0.8;
 
     //turret
     double turretSpeed = 0.5;
@@ -201,7 +201,6 @@ public class Auto extends LinearOpMode {
         telemetry.addLine("Waiting for start");
         telemetry.update();
 
-        telemetry.addData("Color > ", (int) PipelineClassExample.getColorAtMiddleRect()[0] + " " + (int) PipelineClassExample.getColorAtMiddleRect()[1] + " " + (int) PipelineClassExample.getColorAtMiddleRect()[2]);
 
         waitForStart();
 
@@ -239,7 +238,7 @@ public class Auto extends LinearOpMode {
 
             telemetry.addData("totals ", leftTotal + " " + midTotal + " " + rightTotal);
             telemetry.update();
-            sleep(100);
+            sleep(25);
         }
 
 
@@ -265,7 +264,7 @@ public class Auto extends LinearOpMode {
 
         //Release servo
         Robot.grabberServo.setPosition(Robot.grabberServoOpenPos);
-        sleep(500);
+        sleep(200);
 
         //Raise turret to original height
         BatchUpdate(false, 0, true, Robot.liftJunctionHighHeight, false, 0);
@@ -277,8 +276,6 @@ public class Auto extends LinearOpMode {
         //Turn to face 5 stack
         Turn(90);
 
-        //Lower Drive Speed
-        driveSpeedFast = 0.3;
 
         // Forward to 5 stack, raise to pickup height
         BatchUpdate(true, 24, true, 5.75, false, 0);
@@ -292,38 +289,40 @@ public class Auto extends LinearOpMode {
         //Raise lift a bit
         BatchUpdate(false, 0, true, Robot.liftPickupHeight + 10, false, 0);
         //Raise lift rest of the way, back to high junction
-        BatchUpdate(true, -36, true, Robot.liftJunctionHighHeight, true, turretRightDegrees);
+        BatchUpdate(true, -33, true, Robot.liftJunctionHighHeight, true, turretRightDegrees);
 
         BatchUpdate(false, 0, true, Robot.liftJunctionHighHeight - 2, false, 0);
 
         //open servo
         Robot.grabberServo.setPosition(Robot.grabberServoOpenPos);
         //turn forward
-        sleep(250);
+        sleep(200);
 
-        /*BatchUpdate(false, 0, true, Robot.liftJunctionHighHeight,  false, 0);
+        BatchUpdate(false, 0, true, Robot.liftJunctionHighHeight,  false, 0);
 
         BatchUpdate(false, 0, false, 0, true, turretForwardDegrees);
 
         //Forward to 5 stack, lift height
-        BatchUpdate(true, 37, true, Robot.liftPickupHeight + 4.5, false, 0);
+        BatchUpdate(true, 33, true, Robot.liftPickupHeight + 4.5, false, 0);
         //Close servo
         Robot.grabberServo.setPosition(Robot.grabberServoClosedPos);
         //Wait
-        sleep(300);
+        sleep(200);
         //10 height
         BatchUpdate(false, 0, true, Robot.liftPickupHeight + 10, false, 0);
         //Rest of the way, back to high junction
-        BatchUpdate(true, -37, true, Robot.liftJunctionHighHeight, true, turretRightDegrees);
+        BatchUpdate(true, -33, true, Robot.liftJunctionHighHeight, true, turretRightDegrees);
         BatchUpdate(false, 0, true, Robot.liftJunctionHighHeight - 2, false, 0);
 
         //open servo
         Robot.grabberServo.setPosition(Robot.grabberServoOpenPos);
         //turn forward
-        sleep(300);*/
+        sleep(200);
 
         BatchUpdate(false, 0, true, Robot.liftJunctionHighHeight,  false, 0);
 
+
+        //Driving
         if (rightTotal > leftTotal && rightTotal > midTotal) {
             BatchUpdate(true, -13, false, 0,false, 0);
         }
@@ -380,6 +379,20 @@ public class Auto extends LinearOpMode {
             frontRightBusy = Robot.frontRight.isBusy();
             backLeftBusy = Robot.backLeft.isBusy();
             backRightBusy = Robot.backRight.isBusy();
+
+            if (GetDistance(Robot.frontLeft.getCurrentPosition(), Robot.frontLeft.getTargetPosition()) > 0.95) {
+                frontLeftBusy = false;
+            }
+            if (GetDistance(Robot.frontRight.getCurrentPosition(), Robot.frontRight.getTargetPosition()) > 0.95) {
+                frontRightBusy = false;
+            }
+            if (GetDistance(Robot.backRight.getCurrentPosition(), Robot.backRight.getTargetPosition()) > 0.95) {
+                backRightBusy = false;
+            }
+            if (GetDistance(Robot.backLeft.getCurrentPosition(), Robot.backLeft.getTargetPosition()) > 0.95) {
+                backLeftBusy = false;
+            }
+
         }
         else {
             frontLeftBusy = false;
@@ -414,6 +427,19 @@ public class Auto extends LinearOpMode {
                     frontRightBusy = Robot.frontRight.isBusy();
                     backLeftBusy = Robot.backLeft.isBusy();
                     backRightBusy = Robot.backRight.isBusy();
+                    
+                    if (GetDistance(Robot.frontLeft.getCurrentPosition(), Robot.frontLeft.getTargetPosition()) > 0.98) {
+                        frontLeftBusy = false;
+                    }
+                    if (GetDistance(Robot.frontRight.getCurrentPosition(), Robot.frontRight.getTargetPosition()) > 0.98) {
+                        frontRightBusy = false;
+                    }
+                    if (GetDistance(Robot.backRight.getCurrentPosition(), Robot.backRight.getTargetPosition()) > 0.98) {
+                        backRightBusy = false;
+                    }
+                    if (GetDistance(Robot.backLeft.getCurrentPosition(), Robot.backLeft.getTargetPosition()) > 0.98) {
+                        backLeftBusy = false;
+                    }
                 }
                 else {
                     frontLeftBusy = false;
@@ -435,19 +461,10 @@ public class Auto extends LinearOpMode {
                     turretMotorBusy = false;
                 }
 
-                if (Robot.frontLeft.getCurrentPosition() / ((int) batchDriveTarget * countsPerInch) <= 0.3) {
-                    if (driveSpeedCurrent < driveSpeedFast) {
-                        driveSpeedCurrent = driveSpeedCurrent + 0.01;
-                    }
-                }
+
                 if (drive) {
-                    if (Robot.frontLeft.getCurrentPosition() / ((int) batchDriveTarget * countsPerInch) >= 0.7) {
-                        if (driveSpeedCurrent > 0.3) {
-                            driveSpeedCurrent = driveSpeedCurrent - 0.01;
-                        } else {
-                            driveSpeedCurrent = 0.3;
-                        }
-                    }
+                    //driveSpeedCurrent = Math.sin((GetDistance(Robot.frontLeft.getCurrentPosition(), Robot.frontLeft.getTargetPosition()) * 2)+0.5) / 1.25;
+                    driveSpeedCurrent = Math.sin((GetDistance(Robot.frontLeft.getCurrentPosition(), Robot.frontLeft.getTargetPosition()) * 3));
                     Robot.frontLeft.setPower(driveSpeedCurrent);
                     Robot.frontRight.setPower(driveSpeedCurrent);
                     Robot.backLeft.setPower(driveSpeedCurrent);
@@ -506,17 +523,17 @@ public class Auto extends LinearOpMode {
         }
 
         if (goRight) {
-            Robot.frontLeft.setPower(-0.2);
-            Robot.frontRight.setPower(0.2);
-            Robot.backLeft.setPower(-0.2);
-            Robot.backRight.setPower(0.2);
+            Robot.frontLeft.setPower(-0.3);
+            Robot.frontRight.setPower(0.3);
+            Robot.backLeft.setPower(-0.3);
+            Robot.backRight.setPower(0.3);
         }
 
         else {
-            Robot.frontLeft.setPower(0.2);
-            Robot.frontRight.setPower(-0.2);
-            Robot.backLeft.setPower(0.2);
-            Robot.backRight.setPower(-0.2);
+            Robot.frontLeft.setPower(0.3);
+            Robot.frontRight.setPower(-0.3);
+            Robot.backLeft.setPower(0.3);
+            Robot.backRight.setPower(-0.3);
         }
 
 
@@ -630,7 +647,9 @@ public class Auto extends LinearOpMode {
         Robot.backRight.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
         Robot.frontRight.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
     }
-
+    public double GetDistance(double current, double target) {
+        return current / target;
+    } 
     String formatAngle(AngleUnit angleUnit, double angle) {
         return formatDegrees(AngleUnit.DEGREES.fromUnit(angleUnit, angle));
     }

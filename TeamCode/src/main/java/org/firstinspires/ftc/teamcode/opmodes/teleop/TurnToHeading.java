@@ -1,6 +1,8 @@
 package org.firstinspires.ftc.teamcode.opmodes.teleop;
 
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 
+@Disabled
 public class TurnToHeading {
 
     public void turnToHeading(double targetHeading) {
@@ -12,7 +14,7 @@ public class TurnToHeading {
         double accelerationIncrement = 0.03;
         double desiredWheelPower;
 
-        currentHeading = getCurrentHeading();
+        currentHeading = 0;//getCurrentHeading();
 
         degreesToTurn = Math.abs(targetHeading - currentHeading);
 
@@ -23,7 +25,7 @@ public class TurnToHeading {
             degreesToTurn = 360 - degreesToTurn;
         }
 
-        while (degreesToTurn > .5 && opModeIsActive()) {
+        while (degreesToTurn > .5 ) {//&& opModeIsActive()) {
             desiredWheelPower = (Math.pow((degreesToTurn) / 35, 4) + 5) / 100;
 
             if (wheelPower < desiredWheelPower) {
@@ -40,12 +42,12 @@ public class TurnToHeading {
                 setWheelPower = -setWheelPower;
             }
 
-            Robot.frontLeft.setPower(-setWheelPower);
+            /*Robot.frontLeft.setPower(-setWheelPower);
             Robot.frontRight.setPower(setWheelPower);
             Robot.backLeft.setPower(-setWheelPower);
-            Robot.backRight.setPower(setWheelPower);
+            Robot.backRight.setPower(setWheelPower);*/
 
-            currentHeading = getCurrentHeading();
+            currentHeading = 0;//getCurrentHeading();
             degreesToTurn = Math.abs(targetHeading - currentHeading);
 
             turnLeft = targetHeading > currentHeading;
@@ -55,9 +57,9 @@ public class TurnToHeading {
             }
         }
 
-        Robot.frontLeft.setPower(0);
+        /*Robot.frontLeft.setPower(0);
         Robot.frontRight.setPower(0);
         Robot.backLeft.setPower(0);
-        Robot.backRight.setPower(0);
+        Robot.backRight.setPower(0);*/
     }
 }

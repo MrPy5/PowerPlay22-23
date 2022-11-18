@@ -9,7 +9,7 @@ import org.firstinspires.ftc.teamcode.hardware.robot.Robot;
 
 
 @TeleOp
-
+@Disabled
 public class SlowMecanum extends LinearOpMode {
 
 
