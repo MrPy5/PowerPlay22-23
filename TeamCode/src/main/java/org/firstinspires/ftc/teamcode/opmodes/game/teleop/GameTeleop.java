@@ -428,5 +428,6 @@ public class GameTeleop extends LinearOpMode {
         averageVelocity = (averageVelocity / ticksPerInch) / 12;
         return averageVelocity;
     }
+
 }
 

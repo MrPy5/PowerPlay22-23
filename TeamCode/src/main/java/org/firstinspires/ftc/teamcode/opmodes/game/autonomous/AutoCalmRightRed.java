@@ -33,6 +33,7 @@ import com.qualcomm.hardware.bosch.BNO055IMU;
 import com.qualcomm.hardware.bosch.JustLoggingAccelerationIntegrator;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
 
@@ -52,7 +53,7 @@ import java.util.Locale;
 
 
 @Autonomous(name="R Red GAME AUTO CALM")
-
+@Disabled
 public class AutoCalmRightRed extends LinearOpMode {
 
     /* Declare OpMode members. */
@@ -199,6 +200,7 @@ public class AutoCalmRightRed extends LinearOpMode {
         telemetry.update();
 
         PipelineClassExample.globalPosition = "right";
+
         waitForStart();
 
         angles = imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES);

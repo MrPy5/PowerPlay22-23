@@ -257,13 +257,14 @@ public class PipelineClassExample extends OpenCvPipeline {
 
          */
         if (globalPosition == "left") {
-            rectangleToDrawScreen = new Rect(100, 15, 90, 120);
+            rectangleToDrawScreen = new Rect(150, 15, 90, 120);
         }
         else {
             rectangleToDrawScreen = new Rect(170, 15, 90, 120);
         }
-        Imgproc.rectangle(input, rectangleToDrawScreen, new Scalar(64,64,64), 10);
 
+        Imgproc.rectangle(input, rectangleToDrawScreen, new Scalar(64,64,64), 10);
+        Imgproc.putText(input, globalPosition,new Point(10,50), 1, 4, new Scalar(0,0,0));
         inputMat = input.clone();
 
         return input;

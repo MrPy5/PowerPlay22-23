@@ -33,6 +33,7 @@ import com.qualcomm.hardware.bosch.BNO055IMU;
 import com.qualcomm.hardware.bosch.JustLoggingAccelerationIntegrator;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
 
@@ -52,7 +53,7 @@ import java.util.Locale;
 
 
 @Autonomous(name="L GAME AUTO AGGRESSIVE")
-
+@Disabled
 public class AutoAggressiveLeft extends LinearOpMode {
 
     /* Declare OpMode members. */
