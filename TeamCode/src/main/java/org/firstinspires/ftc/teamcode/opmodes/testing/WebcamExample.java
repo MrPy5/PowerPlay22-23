@@ -19,35 +19,19 @@
  * SOFTWARE.
  */
 
-package org.firstinspires.ftc.teamcode.opmodes.teleop;
+package org.firstinspires.ftc.teamcode.opmodes.testing;
 
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
 import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
-import org.opencv.core.Mat;
-import org.opencv.core.Point;
-import org.opencv.core.Scalar;
-import org.opencv.imgproc.Imgproc;
+import org.firstinspires.ftc.teamcode.hardware.robot.pipelines.PipelineClassExample;
 import org.openftc.easyopencv.OpenCvCamera;
 import org.openftc.easyopencv.OpenCvCameraFactory;
 import org.openftc.easyopencv.OpenCvCameraRotation;
-import org.openftc.easyopencv.OpenCvPipeline;
 import org.openftc.easyopencv.OpenCvWebcam;
-import java.util.ArrayList;
-import org.opencv.core.Core;
-import org.opencv.core.Mat;
-import org.opencv.core.MatOfPoint;
-import org.opencv.core.MatOfPoint2f;
-import org.opencv.core.Point;
-import org.opencv.core.Rect;
-import org.opencv.core.Scalar;
-import org.opencv.core.Size;
-import org.opencv.imgproc.Imgproc;
-import org.openftc.easyopencv.OpenCvPipeline;
-import java.util.List;
 
-@TeleOp(name = "webcam2")
+@TeleOp(name = "View Webcam")
 
 public class WebcamExample extends LinearOpMode
 {
@@ -148,31 +132,8 @@ public class WebcamExample extends LinearOpMode
              * when it will be automatically stopped for you) *IS* supported. The "if" statement
              * below will stop streaming from the camera when the "A" button on gamepad 1 is pressed.
              */
-            if ((int) PipelineClassExample.getColorAtMiddleRect()[0] > (int) PipelineClassExample.getColorAtMiddleRect()[1] && (int) PipelineClassExample.getColorAtMiddleRect()[0] > (int) PipelineClassExample.getColorAtMiddleRect()[2]) {
-
-                telemetry.addData("Color > ", "Red");
-            }
-    
-            /*if ((int) PipelineClassExample.getColorAtMiddleRect()[1] > (int) PipelineClassExample.getColorAtMiddleRect()[2] && (int) PipelineClassExample.getColorAtMiddleRect()[1] > (int) PipelineClassExample.getColorAtMiddleRect()[0]) {
-                telemetry.addData("Color > ", "Green");
 
 
-            }*/
-
-            if ((int) PipelineClassExample.getColorAtMiddleRect()[1] > (int) PipelineClassExample.getColorAtMiddleRect()[0] && (int) PipelineClassExample.getColorAtMiddleRect()[1] > (int) PipelineClassExample.getColorAtMiddleRect()[2]) {
-
-                telemetry.addData("Color > ", "Green");
-            }
-
-            if ((int) PipelineClassExample.getColorAtMiddleRect()[2] > (int) PipelineClassExample.getColorAtMiddleRect()[1] && (int) PipelineClassExample.getColorAtMiddleRect()[2] > (int) PipelineClassExample.getColorAtMiddleRect()[0]) {
-
-                telemetry.addData("Color > ", "Blue");
-            }
-            telemetry.addData("Color > ", (int) PipelineClassExample.getColorAtMiddleRect()[0] + " " + (int) PipelineClassExample.getColorAtMiddleRect()[1] + " " + (int) PipelineClassExample.getColorAtMiddleRect()[2]);
-
-            telemetry.update();
-            if(gamepad1.a)
-            {
                 /*
                  * IMPORTANT NOTE: calling stopStreaming() will indeed stop the stream of images
                  * from the camera (and, by extension, stop calling your vision pipeline). HOWEVER,
@@ -193,8 +154,30 @@ public class WebcamExample extends LinearOpMode
                  * the above "important note".
                  */
 
-                webcam.closeCameraDevice();
-            }
+                if ((int) PipelineClassExample.getColorAtMiddleRect()[0] > (int) PipelineClassExample.getColorAtMiddleRect()[1] && (int) PipelineClassExample.getColorAtMiddleRect()[0] > (int) PipelineClassExample.getColorAtMiddleRect()[2]) {
+
+                    telemetry.addData("Color > ", "Red");
+                }
+
+            /*if ((int) PipelineClassExample.getColorAtMiddleRect()[1] > (int) PipelineClassExample.getColorAtMiddleRect()[2] && (int) PipelineClassExample.getColorAtMiddleRect()[1] > (int) PipelineClassExample.getColorAtMiddleRect()[0]) {
+                telemetry.addData("Color > ", "Green");
+
+
+            }*/
+
+                if ((int) PipelineClassExample.getColorAtMiddleRect()[1] > (int) PipelineClassExample.getColorAtMiddleRect()[0] && (int) PipelineClassExample.getColorAtMiddleRect()[1] > (int) PipelineClassExample.getColorAtMiddleRect()[2]) {
+
+                    telemetry.addData("Color > ", "Green");
+                }
+
+                if ((int) PipelineClassExample.getColorAtMiddleRect()[2] > (int) PipelineClassExample.getColorAtMiddleRect()[1] && (int) PipelineClassExample.getColorAtMiddleRect()[2] > (int) PipelineClassExample.getColorAtMiddleRect()[0]) {
+
+                    telemetry.addData("Color > ", "Blue");
+                }
+                telemetry.addData("Color > ", (int) PipelineClassExample.getColorAtMiddleRect()[0] + " " + (int) PipelineClassExample.getColorAtMiddleRect()[1] + " " + (int) PipelineClassExample.getColorAtMiddleRect()[2]);
+
+                telemetry.update();
+
 
             /*
              * For the purposes of this sample, throttle ourselves to 10Hz loop to avoid burning

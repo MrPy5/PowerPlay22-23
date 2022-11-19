@@ -8,7 +8,7 @@
  */
 
 
-package org.firstinspires.ftc.teamcode.opmodes.teleop;
+package org.firstinspires.ftc.teamcode.opmodes.game.teleop;
 
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
@@ -17,9 +17,9 @@ import com.qualcomm.robotcore.hardware.DcMotor;
 import org.firstinspires.ftc.teamcode.hardware.robot.Robot;
 
 
-@TeleOp
+@TeleOp(name = "GAME TELEOP")
 
-public class TeleopFirst extends LinearOpMode {
+public class GameTeleop extends LinearOpMode {
 
 
     @Override

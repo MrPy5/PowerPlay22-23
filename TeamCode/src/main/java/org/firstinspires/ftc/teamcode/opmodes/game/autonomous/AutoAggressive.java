@@ -27,7 +27,7 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package org.firstinspires.ftc.teamcode.opmodes.autonomous;
+package org.firstinspires.ftc.teamcode.opmodes.game.autonomous;
 
 import com.qualcomm.hardware.bosch.BNO055IMU;
 import com.qualcomm.hardware.bosch.JustLoggingAccelerationIntegrator;
@@ -41,20 +41,19 @@ import org.firstinspires.ftc.robotcore.external.navigation.AxesOrder;
 import org.firstinspires.ftc.robotcore.external.navigation.AxesReference;
 import org.firstinspires.ftc.robotcore.external.navigation.Orientation;
 import org.firstinspires.ftc.teamcode.hardware.robot.Robot;
-import org.firstinspires.ftc.teamcode.opmodes.teleop.PipelineClassExample;
+import org.firstinspires.ftc.teamcode.hardware.robot.pipelines.PipelineClassExample;
 import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
 import org.openftc.easyopencv.OpenCvCamera;
 import org.openftc.easyopencv.OpenCvCameraFactory;
 import org.openftc.easyopencv.OpenCvCameraRotation;
 import org.openftc.easyopencv.OpenCvWebcam;
 
-import java.nio.channels.Pipe;
 import java.util.Locale;
 
 
-@Autonomous(name="Auto")
+@Autonomous(name="GAME AUTO AGGRESSIVE")
 
-public class Auto extends LinearOpMode {
+public class AutoAggressive extends LinearOpMode {
 
     /* Declare OpMode members. */
     OpenCvWebcam webcam;

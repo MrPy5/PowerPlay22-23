@@ -1,10 +1,11 @@
-package org.firstinspires.ftc.teamcode.opmodes.teleop;
+package org.firstinspires.ftc.teamcode.hardware.robot.pipelines;
 
 
 
 
 import android.graphics.Bitmap;
 import android.graphics.Color;
+import android.provider.ContactsContract;
 
 import org.opencv.android.Utils;
 import org.opencv.core.*;
@@ -25,7 +26,7 @@ public class PipelineClassExample extends OpenCvPipeline {
     public static double redArea = 0;
     public static double blueArea = 0;
     public static double greenArea = 0;
-    public static Rect rectangleToDrawGreen;
+    public static Rect rectangleToDrawScreen = null;
     public static double[] colorAtCenter = new double[3];
     public static Mat matGreen;
     public static Mat edgesGreen;
@@ -45,7 +46,7 @@ public class PipelineClassExample extends OpenCvPipeline {
 
     @Override
     public Mat processFrame(Mat input) {
-        // "Mat" stands for matrix, which is basically the image that the detector will process
+        /*// "Mat" stands for matrix, which is basically the image that the detector will process
         // the input matrix is the image coming from the camera
         // the function will return a matrix to be drawn on your phone's screen
 
@@ -123,7 +124,7 @@ public class PipelineClassExample extends OpenCvPipeline {
             return new Mat(input, rectangleToDrawGreen);
         }
         else {*/
-            return input;
+        //return input;
         //}
         /*
         // Make a working copy of the input matrix in HSV
@@ -254,6 +255,13 @@ public class PipelineClassExample extends OpenCvPipeline {
         return input;
 
          */
+        rectangleToDrawScreen = new Rect(135, 15, 90, 120);
+        Imgproc.rectangle(input, rectangleToDrawScreen, new Scalar(64,64,64), 10);
+
+        inputMat = input.clone();
+
+        return input;
+
     }
 
     
@@ -276,6 +284,7 @@ public class PipelineClassExample extends OpenCvPipeline {
             return "none";
         }*/
         double[] color = new double[3];
+        /*
         if (rectangleToDrawGreen != null) {
             Rect rect = rectangleToDrawGreen;
             Mat cropedMat = new Mat(inputMat, rect);
@@ -285,6 +294,35 @@ public class PipelineClassExample extends OpenCvPipeline {
             Utils.matToBitmap(cropedMat, Cropedimage);
 
             Bitmap bitmap = Cropedimage;
+            double redBucket = 0;
+            double greenBucket = 0;
+            double blueBucket = 0;
+            double pixelCount = 0;
+
+            for (int y = 0; y < bitmap.getHeight(); y++) {
+                for (int x = 0; x < bitmap.getWidth(); x++) {
+                    int c = bitmap.getPixel(x, y);
+
+                    pixelCount++;
+                    redBucket += Color.red(c);
+                    greenBucket += Color.green(c);
+                    blueBucket += Color.blue(c);
+                    // does alpha matter?
+                }
+            }
+
+            color[0] = redBucket / pixelCount;
+            color[1] = greenBucket / pixelCount;
+            color[2] = blueBucket / pixelCount;
+        }
+        return color;*/
+        if (inputMat != null && rectangleToDrawScreen != null) {
+            Mat workMat = new Mat(inputMat, rectangleToDrawScreen);
+            Bitmap Cropedimage = Bitmap.createBitmap(workMat.cols(), workMat.rows(), Bitmap.Config.ARGB_8888);
+
+            Utils.matToBitmap(workMat, Cropedimage);
+            Bitmap bitmap = Cropedimage;
+
             double redBucket = 0;
             double greenBucket = 0;
             double blueBucket = 0;
