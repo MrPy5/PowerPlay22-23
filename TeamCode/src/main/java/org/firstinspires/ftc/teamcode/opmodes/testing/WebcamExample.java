@@ -116,6 +116,7 @@ public class WebcamExample extends LinearOpMode
 
         while (opModeIsActive())
         {
+            PipelineClassExample.updatePosition("right");
             /*
              * Send some stats to the telemetry
              */
@@ -154,7 +155,7 @@ public class WebcamExample extends LinearOpMode
                  * the above "important note".
                  */
 
-                if ((int) PipelineClassExample.getColorAtMiddleRect()[0] > (int) PipelineClassExample.getColorAtMiddleRect()[1] && (int) PipelineClassExample.getColorAtMiddleRect()[0] > (int) PipelineClassExample.getColorAtMiddleRect()[2]) {
+                /*if ((int) PipelineClassExample.getColorAtMiddleRect()[0] > (int) PipelineClassExample.getColorAtMiddleRect()[1] && (int) PipelineClassExample.getColorAtMiddleRect()[0] > (int) PipelineClassExample.getColorAtMiddleRect()[2]) {
 
                     telemetry.addData("Color > ", "Red");
                 }
@@ -165,7 +166,7 @@ public class WebcamExample extends LinearOpMode
 
             }*/
 
-                if ((int) PipelineClassExample.getColorAtMiddleRect()[1] > (int) PipelineClassExample.getColorAtMiddleRect()[0] && (int) PipelineClassExample.getColorAtMiddleRect()[1] > (int) PipelineClassExample.getColorAtMiddleRect()[2]) {
+                /*if ((int) PipelineClassExample.getColorAtMiddleRect()[1] > (int) PipelineClassExample.getColorAtMiddleRect()[0] && (int) PipelineClassExample.getColorAtMiddleRect()[1] > (int) PipelineClassExample.getColorAtMiddleRect()[2]) {
 
                     telemetry.addData("Color > ", "Green");
                 }
@@ -173,11 +174,15 @@ public class WebcamExample extends LinearOpMode
                 if ((int) PipelineClassExample.getColorAtMiddleRect()[2] > (int) PipelineClassExample.getColorAtMiddleRect()[1] && (int) PipelineClassExample.getColorAtMiddleRect()[2] > (int) PipelineClassExample.getColorAtMiddleRect()[0]) {
 
                     telemetry.addData("Color > ", "Blue");
+                }*/
+
+                if (PipelineClassExample.color != null) {
+                    telemetry.addData("Color > ", (int) PipelineClassExample.color[0] + " " + (int) PipelineClassExample.color[1] + " " + (int) PipelineClassExample.color[2]);
                 }
-                telemetry.addData("Color > ", (int) PipelineClassExample.getColorAtMiddleRect()[0] + " " + (int) PipelineClassExample.getColorAtMiddleRect()[1] + " " + (int) PipelineClassExample.getColorAtMiddleRect()[2]);
+
+                telemetry.addData("> ", PipelineClassExample.getColorAtMiddleRect("blue"));
 
                 telemetry.update();
-
 
             /*
              * For the purposes of this sample, throttle ourselves to 10Hz loop to avoid burning

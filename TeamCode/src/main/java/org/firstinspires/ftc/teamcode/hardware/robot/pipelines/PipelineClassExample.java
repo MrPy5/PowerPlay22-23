@@ -34,7 +34,8 @@ public class PipelineClassExample extends OpenCvPipeline {
     public static Mat hierarchyGreen;
     public static Mat inputMat;
 
-
+    public static String globalPosition = "null";
+    public static double[] color;
 
     /**
      * @param width The width of the image (check your camera)
@@ -255,7 +256,12 @@ public class PipelineClassExample extends OpenCvPipeline {
         return input;
 
          */
-        rectangleToDrawScreen = new Rect(135, 15, 90, 120);
+        if (globalPosition == "left") {
+            rectangleToDrawScreen = new Rect(100, 15, 90, 120);
+        }
+        else {
+            rectangleToDrawScreen = new Rect(170, 15, 90, 120);
+        }
         Imgproc.rectangle(input, rectangleToDrawScreen, new Scalar(64,64,64), 10);
 
         inputMat = input.clone();
@@ -267,8 +273,10 @@ public class PipelineClassExample extends OpenCvPipeline {
     
 
 
-
-    public static double[] getColorAtMiddleRect() {
+    public static void updatePosition(String newPosition) {
+        globalPosition = newPosition;
+    }
+    public static int getColorAtMiddleRect(String side) {
 
         /*if (redArea > blueArea && redArea > greenArea) {
             return "right";
@@ -283,7 +291,7 @@ public class PipelineClassExample extends OpenCvPipeline {
         else {
             return "none";
         }*/
-        double[] color = new double[3];
+        color = new double[3];
         /*
         if (rectangleToDrawGreen != null) {
             Rect rect = rectangleToDrawGreen;
@@ -344,7 +352,31 @@ public class PipelineClassExample extends OpenCvPipeline {
             color[1] = greenBucket / pixelCount;
             color[2] = blueBucket / pixelCount;
         }
-        return color;
+        //always
+        color[2] = color[2] *0.95;
+
+        if (side == "red") {
+            color[0] = color[0] * 0.94;
+        }
+
+        else {
+            color[2] = color[2] * 0.94;
+        }
+
+        //blue cone
+
+
+
+        if (((color[0] / color[1]) * 100) > 104 && ((color[0] / color[2]) * 100) > 104) {
+            return 3;
+        }
+        else if (((color[1] / color[2]) * 100) > 104 && ((color[1] / color[0]) * 100) > 104) {
+            return 2;
+        }
+        else {
+            return 1;
+        }
+
 
     }
 

@@ -51,9 +51,9 @@ import org.openftc.easyopencv.OpenCvWebcam;
 import java.util.Locale;
 
 
-@Autonomous(name="GAME AUTO AGGRESSIVE")
+@Autonomous(name="L Red GAME AUTO CALM")
 
-public class AutoAggressive extends LinearOpMode {
+public class AutoCalmLeftRed extends LinearOpMode {
 
     /* Declare OpMode members. */
     OpenCvWebcam webcam;
@@ -63,7 +63,7 @@ public class AutoAggressive extends LinearOpMode {
     //drive
     double countsPerInch = Robot.ticksPerInch;
     double driveSpeedCurrent = 0.3;
-    double driveSpeedFast = 0.8;
+    double driveSpeedFast = 0.4;
 
     //turret
     double turretSpeed = 0.5;
@@ -104,17 +104,15 @@ public class AutoAggressive extends LinearOpMode {
     double grabberServoOpenPos = Robot.grabberServoOpenPos;
     double grabberServoCurrentPos = 0.22;
     float changeFromZero = 0;
-    
-    
+
+
     //batchUpdate;
-    
+
     public double firstDriveTarget;
     public double batchLiftTarget;
 
     //
-    public int leftTotal = 0;
-    public int midTotal = 0;
-    public int rightTotal = 0;
+    public int endParkingPosition = 1;
     @Override
     public void runOpMode() {
 
@@ -207,41 +205,10 @@ public class AutoAggressive extends LinearOpMode {
         float currentHeading = Float.parseFloat(formatAngle(angles.angleUnit, angles.firstAngle));
         changeFromZero = (float) currentHeading;
 
-
-        for (int i = 0; i < 15; i++) {
-            if ((int) PipelineClassExample.getColorAtMiddleRect()[0] > (int) PipelineClassExample.getColorAtMiddleRect()[1] && (int) PipelineClassExample.getColorAtMiddleRect()[0] > (int) PipelineClassExample.getColorAtMiddleRect()[2]) {
-
-                telemetry.addData("Color > ", "Red");
-                rightTotal++;
-            }
-
-            /*if ((int) PipelineClassExample.getColorAtMiddleRect()[1] > (int) PipelineClassExample.getColorAtMiddleRect()[2] && (int) PipelineClassExample.getColorAtMiddleRect()[1] > (int) PipelineClassExample.getColorAtMiddleRect()[0]) {
-                telemetry.addData("Color > ", "Green");
-
-
-            }*/
-
-            if ((int) PipelineClassExample.getColorAtMiddleRect()[1] > (int) PipelineClassExample.getColorAtMiddleRect()[0] && (int) PipelineClassExample.getColorAtMiddleRect()[1] > (int) PipelineClassExample.getColorAtMiddleRect()[2]) {
-
-                telemetry.addData("Color > ", "Green");
-                midTotal++;
-            }
-
-
-            if ((int) PipelineClassExample.getColorAtMiddleRect()[2] > (int) PipelineClassExample.getColorAtMiddleRect()[1] && (int) PipelineClassExample.getColorAtMiddleRect()[2] > (int) PipelineClassExample.getColorAtMiddleRect()[0]) {
-
-                telemetry.addData("Color > ", "Blue");
-                leftTotal++;
-            }
-
-
-            telemetry.addData("totals ", leftTotal + " " + midTotal + " " + rightTotal);
-            telemetry.update();
-            sleep(25);
-        }
-
-
-        telemetry.addData("totals ", leftTotal + " " + midTotal + " " + rightTotal);
+        endParkingPosition = PipelineClassExample.getColorAtMiddleRect("red");
+        endParkingPosition = PipelineClassExample.getColorAtMiddleRect("red");
+        endParkingPosition = PipelineClassExample.getColorAtMiddleRect("red");
+        telemetry.addData("park ", endParkingPosition);
         telemetry.update();
 
         //Close servo to start match
@@ -251,9 +218,9 @@ public class AutoAggressive extends LinearOpMode {
         ZeroPowerToBrake();
 
         //Get to High cone and move turret Right
-        firstDriveTarget = 63.5;
+        firstDriveTarget = 64.5;
         batchLiftTarget = Robot.liftJunctionHighHeight;
-        
+
         BatchUpdate(true, firstDriveTarget, true, batchLiftTarget, true, turretRightDegrees);
 
 
@@ -263,21 +230,23 @@ public class AutoAggressive extends LinearOpMode {
 
         //Release servo
         Robot.grabberServo.setPosition(Robot.grabberServoOpenPos);
-        sleep(200);
+        sleep(500);
 
         //Raise turret to original height
         BatchUpdate(false, 0, true, Robot.liftJunctionHighHeight, false, 0);
 
         //Reverse to 5 stack, forward, drop to one
         BatchUpdate(false, 0, false, 0, true, Robot.turretForwardDegrees);
-        BatchUpdate(true, -8.75, false, 0, false, 0);
+        BatchUpdate(true, -9.75, false, 0, false, 0);
 
         //Turn to face 5 stack
         Turn(90);
 
+        //Lower Drive Speed
+        driveSpeedFast = 0.3;
 
         // Forward to 5 stack, raise to pickup height
-        BatchUpdate(true, 24, true, 5.75, false, 0);
+        BatchUpdate(true, 24, true, 6.25, false, 0);
 
         //Close servo
         Robot.grabberServo.setPosition(Robot.grabberServoClosedPos);
@@ -288,49 +257,47 @@ public class AutoAggressive extends LinearOpMode {
         //Raise lift a bit
         BatchUpdate(false, 0, true, Robot.liftPickupHeight + 10, false, 0);
         //Raise lift rest of the way, back to high junction
-        BatchUpdate(true, -33, true, Robot.liftJunctionHighHeight, true, turretRightDegrees);
+        BatchUpdate(true, -36, true, Robot.liftJunctionHighHeight, true, turretRightDegrees);
 
         BatchUpdate(false, 0, true, Robot.liftJunctionHighHeight - 2, false, 0);
-
+        sleep(200);
         //open servo
         Robot.grabberServo.setPosition(Robot.grabberServoOpenPos);
         //turn forward
-        sleep(200);
+        sleep(350);
 
-        BatchUpdate(false, 0, true, Robot.liftJunctionHighHeight,  false, 0);
+        /*BatchUpdate(false, 0, true, Robot.liftJunctionHighHeight,  false, 0);
 
         BatchUpdate(false, 0, false, 0, true, turretForwardDegrees);
 
         //Forward to 5 stack, lift height
-        BatchUpdate(true, 33, true, Robot.liftPickupHeight + 4.5, false, 0);
+        BatchUpdate(true, 37, true, Robot.liftPickupHeight + 4.5, false, 0);
         //Close servo
         Robot.grabberServo.setPosition(Robot.grabberServoClosedPos);
         //Wait
-        sleep(200);
+        sleep(300);
         //10 height
         BatchUpdate(false, 0, true, Robot.liftPickupHeight + 10, false, 0);
         //Rest of the way, back to high junction
-        BatchUpdate(true, -33, true, Robot.liftJunctionHighHeight, true, turretRightDegrees);
+        BatchUpdate(true, -37, true, Robot.liftJunctionHighHeight, true, turretRightDegrees);
         BatchUpdate(false, 0, true, Robot.liftJunctionHighHeight - 2, false, 0);
 
         //open servo
         Robot.grabberServo.setPosition(Robot.grabberServoOpenPos);
         //turn forward
-        sleep(200);
+        sleep(300);*/
 
         BatchUpdate(false, 0, true, Robot.liftJunctionHighHeight,  false, 0);
 
-
-        //Driving
-        if (rightTotal > leftTotal && rightTotal > midTotal) {
+        if (endParkingPosition == 3) {
             BatchUpdate(true, -13, false, 0,false, 0);
         }
 
-        else if (midTotal > leftTotal && midTotal > rightTotal) {
+        else if (endParkingPosition == 2) {
             BatchUpdate(true, 14, false, 0,false, 0);
         }
 
-        else if (leftTotal > midTotal && leftTotal > rightTotal) {
+        else if (endParkingPosition == 1) {
             telemetry.addData("LEFT!!!!", "");
             telemetry.update();
             BatchUpdate(true, 34, false, 0,false, 0);
@@ -378,20 +345,6 @@ public class AutoAggressive extends LinearOpMode {
             frontRightBusy = Robot.frontRight.isBusy();
             backLeftBusy = Robot.backLeft.isBusy();
             backRightBusy = Robot.backRight.isBusy();
-
-            if (GetDistance(Robot.frontLeft.getCurrentPosition(), Robot.frontLeft.getTargetPosition()) > 0.95) {
-                frontLeftBusy = false;
-            }
-            if (GetDistance(Robot.frontRight.getCurrentPosition(), Robot.frontRight.getTargetPosition()) > 0.95) {
-                frontRightBusy = false;
-            }
-            if (GetDistance(Robot.backRight.getCurrentPosition(), Robot.backRight.getTargetPosition()) > 0.95) {
-                backRightBusy = false;
-            }
-            if (GetDistance(Robot.backLeft.getCurrentPosition(), Robot.backLeft.getTargetPosition()) > 0.95) {
-                backLeftBusy = false;
-            }
-
         }
         else {
             frontLeftBusy = false;
@@ -421,64 +374,60 @@ public class AutoAggressive extends LinearOpMode {
                 telemetry.addData("turretMotor:", Robot.turretMotor.isBusy());
                 telemetry.update();*/
 
-                if (drive) {
-                    frontLeftBusy = Robot.frontLeft.isBusy();
-                    frontRightBusy = Robot.frontRight.isBusy();
-                    backLeftBusy = Robot.backLeft.isBusy();
-                    backRightBusy = Robot.backRight.isBusy();
-                    
-                    if (GetDistance(Robot.frontLeft.getCurrentPosition(), Robot.frontLeft.getTargetPosition()) > 0.98) {
-                        frontLeftBusy = false;
-                    }
-                    if (GetDistance(Robot.frontRight.getCurrentPosition(), Robot.frontRight.getTargetPosition()) > 0.98) {
-                        frontRightBusy = false;
-                    }
-                    if (GetDistance(Robot.backRight.getCurrentPosition(), Robot.backRight.getTargetPosition()) > 0.98) {
-                        backRightBusy = false;
-                    }
-                    if (GetDistance(Robot.backLeft.getCurrentPosition(), Robot.backLeft.getTargetPosition()) > 0.98) {
-                        backLeftBusy = false;
-                    }
-                }
-                else {
-                    frontLeftBusy = false;
-                    frontRightBusy = false;
-                    backLeftBusy = false;
-                    backRightBusy = false;
-                }
-                if (lift) {
-                    liftMotorBusy = Robot.liftMotor.isBusy();
-                }
-                else {
-                    liftMotorBusy = false;
-                }
+            if (drive) {
+                frontLeftBusy = Robot.frontLeft.isBusy();
+                frontRightBusy = Robot.frontRight.isBusy();
+                backLeftBusy = Robot.backLeft.isBusy();
+                backRightBusy = Robot.backRight.isBusy();
+            }
+            else {
+                frontLeftBusy = false;
+                frontRightBusy = false;
+                backLeftBusy = false;
+                backRightBusy = false;
+            }
+            if (lift) {
+                liftMotorBusy = Robot.liftMotor.isBusy();
+            }
+            else {
+                liftMotorBusy = false;
+            }
 
-                if (turret) {
-                    turretMotorBusy = Robot.turretMotor.isBusy();
-                }
-                else {
-                    turretMotorBusy = false;
-                }
+            if (turret) {
+                turretMotorBusy = Robot.turretMotor.isBusy();
+            }
+            else {
+                turretMotorBusy = false;
+            }
 
-
-                if (drive) {
-                    //driveSpeedCurrent = Math.sin((GetDistance(Robot.frontLeft.getCurrentPosition(), Robot.frontLeft.getTargetPosition()) * 2)+0.5) / 1.25;
-                    driveSpeedCurrent = Math.sin((GetDistance(Robot.frontLeft.getCurrentPosition(), Robot.frontLeft.getTargetPosition()) * 3));
-                    Robot.frontLeft.setPower(driveSpeedCurrent);
-                    Robot.frontRight.setPower(driveSpeedCurrent);
-                    Robot.backLeft.setPower(driveSpeedCurrent);
-                    Robot.backRight.setPower(driveSpeedCurrent);
+            if (Robot.frontLeft.getCurrentPosition() / ((int) batchDriveTarget * countsPerInch) <= 0.3) {
+                if (driveSpeedCurrent < driveSpeedFast) {
+                    driveSpeedCurrent = driveSpeedCurrent + 0.01;
                 }
+            }
+            if (drive) {
+                if (Robot.frontLeft.getCurrentPosition() / ((int) batchDriveTarget * countsPerInch) >= 0.7) {
+                    if (driveSpeedCurrent > 0.3) {
+                        driveSpeedCurrent = driveSpeedCurrent - 0.01;
+                    } else {
+                        driveSpeedCurrent = 0.3;
+                    }
+                }
+                Robot.frontLeft.setPower(driveSpeedCurrent);
+                Robot.frontRight.setPower(driveSpeedCurrent);
+                Robot.backLeft.setPower(driveSpeedCurrent);
+                Robot.backRight.setPower(driveSpeedCurrent);
+            }
         }
         Robot.liftMotor.setPower(0);
-        
+
         Robot.turretMotor.setPower(0);
         Robot.frontLeft.setPower(0);
         Robot.frontRight.setPower(0);
         Robot.backLeft.setPower(0);
         Robot.backRight.setPower(0);
     }
-        
+
 
     public void Drive(int inches) {
         ResetEncoders();
@@ -497,7 +446,7 @@ public class AutoAggressive extends LinearOpMode {
         Robot.backLeft.setPower(driveSpeedCurrent);
         Robot.backRight.setPower(driveSpeedCurrent);
 
-        
+
     }
 
     public void Turn(double targetAngle) {
@@ -522,17 +471,17 @@ public class AutoAggressive extends LinearOpMode {
         }
 
         if (goRight) {
-            Robot.frontLeft.setPower(-0.3);
-            Robot.frontRight.setPower(0.3);
-            Robot.backLeft.setPower(-0.3);
-            Robot.backRight.setPower(0.3);
+            Robot.frontLeft.setPower(-0.2);
+            Robot.frontRight.setPower(0.2);
+            Robot.backLeft.setPower(-0.2);
+            Robot.backRight.setPower(0.2);
         }
 
         else {
-            Robot.frontLeft.setPower(0.3);
-            Robot.frontRight.setPower(-0.3);
-            Robot.backLeft.setPower(0.3);
-            Robot.backRight.setPower(-0.3);
+            Robot.frontLeft.setPower(0.2);
+            Robot.frontRight.setPower(-0.2);
+            Robot.backLeft.setPower(0.2);
+            Robot.backRight.setPower(-0.2);
         }
 
 
@@ -610,7 +559,7 @@ public class AutoAggressive extends LinearOpMode {
 
 
 
-        
+
     }
     public void ChangeGripperState(double gripperTarget) {
         if (grabberServoCurrentPos == grabberServoOpenPos) {
@@ -639,16 +588,14 @@ public class AutoAggressive extends LinearOpMode {
         Robot.backRight.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         Robot.frontRight.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
     }
-    
+
     public void ZeroPowerToFloat() {
         Robot.backLeft.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
         Robot.frontLeft.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
         Robot.backRight.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
         Robot.frontRight.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
     }
-    public double GetDistance(double current, double target) {
-        return current / target;
-    } 
+
     String formatAngle(AngleUnit angleUnit, double angle) {
         return formatDegrees(AngleUnit.DEGREES.fromUnit(angleUnit, angle));
     }
