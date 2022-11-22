@@ -42,7 +42,7 @@ import org.firstinspires.ftc.robotcore.external.navigation.AxesOrder;
 import org.firstinspires.ftc.robotcore.external.navigation.AxesReference;
 import org.firstinspires.ftc.robotcore.external.navigation.Orientation;
 import org.firstinspires.ftc.teamcode.hardware.robot.Robot;
-import org.firstinspires.ftc.teamcode.hardware.robot.pipelines.PipelineClassExample;
+import org.firstinspires.ftc.teamcode.hardware.robot.pipelines.PipelineColorCounting;
 import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
 import org.openftc.easyopencv.OpenCvCamera;
 import org.openftc.easyopencv.OpenCvCameraFactory;
@@ -153,7 +153,7 @@ public class AutoAggressiveLeft extends LinearOpMode {
          * of a frame from the camera. Note that switching pipelines on-the-fly
          * (while a streaming session is in flight) *IS* supported.
          */
-        webcam.setPipeline(new PipelineClassExample(640, 320));
+        webcam.setPipeline(new PipelineColorCounting(640, 320));
 
         /*
          * Open the connection to the camera device. New in v1.4.0 is the ability

@@ -25,7 +25,7 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
 import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
-import org.firstinspires.ftc.teamcode.hardware.robot.pipelines.PipelineClassExample;
+import org.firstinspires.ftc.teamcode.hardware.robot.pipelines.PipelineColorCounting;
 import org.openftc.easyopencv.OpenCvCamera;
 import org.openftc.easyopencv.OpenCvCameraFactory;
 import org.openftc.easyopencv.OpenCvCameraRotation;
@@ -61,7 +61,7 @@ public class WebcamExampleRight extends LinearOpMode
          * of a frame from the camera. Note that switching pipelines on-the-fly
          * (while a streaming session is in flight) *IS* supported.
          */
-        webcam.setPipeline(new PipelineClassExample(640, 360));
+        webcam.setPipeline(new PipelineColorCounting(640, 360));
 
         /*
          * Open the connection to the camera device. New in v1.4.0 is the ability
@@ -116,7 +116,7 @@ public class WebcamExampleRight extends LinearOpMode
 
         while (opModeIsActive())
         {
-            PipelineClassExample.updatePosition("right");
+            PipelineColorCounting.updatePosition("right");
             /*
              * Send some stats to the telemetry
              */
@@ -176,11 +176,11 @@ public class WebcamExampleRight extends LinearOpMode
                     telemetry.addData("Color > ", "Blue");
                 }*/
 
-                if (PipelineClassExample.color != null) {
-                    telemetry.addData("Color > ", (int) PipelineClassExample.color[0] + " " + (int) PipelineClassExample.color[1] + " " + (int) PipelineClassExample.color[2]);
+                if (PipelineColorCounting.color != null) {
+                    telemetry.addData("Color > ", (int) PipelineColorCounting.color[0] + " " + (int) PipelineColorCounting.color[1] + " " + (int) PipelineColorCounting.color[2]);
                 }
 
-                telemetry.addData("> ", PipelineClassExample.getColorAtMiddleRect("blue"));
+                telemetry.addData("> ", PipelineColorCounting.getColorAtMiddleRect("blue"));
 
                 telemetry.update();
 
