@@ -27,7 +27,7 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package org.firstinspires.ftc.teamcode.opmodes.game.autonomous;
+package org.firstinspires.ftc.teamcode.opmodes.game.autonomous.First;
 
 import com.qualcomm.hardware.bosch.BNO055IMU;
 import com.qualcomm.hardware.bosch.JustLoggingAccelerationIntegrator;
@@ -52,9 +52,9 @@ import org.openftc.easyopencv.OpenCvWebcam;
 import java.util.Locale;
 
 
-@Autonomous(name="R Red GAME AUTO CALM")
+@Autonomous(name="R Blue GAME AUTO CALM")
 @Disabled
-public class AutoCalmRightRed extends LinearOpMode {
+public class AutoCalmRightBlue extends LinearOpMode {
 
     /* Declare OpMode members. */
     OpenCvWebcam webcam;
@@ -207,9 +207,9 @@ public class AutoCalmRightRed extends LinearOpMode {
         float currentHeading = Float.parseFloat(formatAngle(angles.angleUnit, angles.firstAngle));
         changeFromZero = (float) currentHeading;
 
-        endParkingPosition = PipelineColorCounting.getColorAtMiddleRect("red");
-        endParkingPosition = PipelineColorCounting.getColorAtMiddleRect("red");
-        endParkingPosition = PipelineColorCounting.getColorAtMiddleRect("red");
+        endParkingPosition = PipelineColorCounting.getColorAtMiddleRect("blue");
+        endParkingPosition = PipelineColorCounting.getColorAtMiddleRect("blue");
+        endParkingPosition = PipelineColorCounting.getColorAtMiddleRect("blue");
         telemetry.addData("park ", endParkingPosition);
         telemetry.update();
 
@@ -220,7 +220,7 @@ public class AutoCalmRightRed extends LinearOpMode {
         ZeroPowerToBrake();
 
         //Get to High cone and move turret Right
-        firstDriveTarget = 63.5;
+        firstDriveTarget = 66.5;
         batchLiftTarget = Robot.liftJunctionHighHeight;
 
         BatchUpdate(true, firstDriveTarget, true, batchLiftTarget, true, turretLeftDegrees);
@@ -239,7 +239,7 @@ public class AutoCalmRightRed extends LinearOpMode {
 
         //Reverse to 5 stack, forward, drop to one
         BatchUpdate(false, 0, false, 0, true, Robot.turretForwardDegrees);
-        BatchUpdate(true, -8.75, false, 0, false, 0);
+        BatchUpdate(true, -10.25, false, 0, false, 0);
 
         //Turn to face 5 stack
         Turn(268);
@@ -248,7 +248,7 @@ public class AutoCalmRightRed extends LinearOpMode {
         driveSpeedFast = 0.3;
 
         // Forward to 5 stack, raise to pickup height
-        BatchUpdate(true, 23, true, 6.25, false, 0);
+        BatchUpdate(true, 23.5, true, 6.25, false, 0);
 
         //Close servo
         Robot.grabberServo.setPosition(Robot.grabberServoClosedPos);

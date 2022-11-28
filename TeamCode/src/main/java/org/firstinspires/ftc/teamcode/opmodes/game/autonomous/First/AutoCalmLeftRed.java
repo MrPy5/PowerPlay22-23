@@ -27,7 +27,7 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package org.firstinspires.ftc.teamcode.opmodes.game.autonomous;
+package org.firstinspires.ftc.teamcode.opmodes.game.autonomous.First;
 
 import com.qualcomm.hardware.bosch.BNO055IMU;
 import com.qualcomm.hardware.bosch.JustLoggingAccelerationIntegrator;
@@ -52,9 +52,9 @@ import org.openftc.easyopencv.OpenCvWebcam;
 import java.util.Locale;
 
 
-@Autonomous(name="R Blue GAME AUTO CALM")
+@Autonomous(name="L Red GAME AUTO CALM")
 @Disabled
-public class AutoCalmRightBlue extends LinearOpMode {
+public class AutoCalmLeftRed extends LinearOpMode {
 
     /* Declare OpMode members. */
     OpenCvWebcam webcam;
@@ -199,6 +199,7 @@ public class AutoCalmRightBlue extends LinearOpMode {
         telemetry.addLine("Waiting for start");
         telemetry.update();
 
+
         PipelineColorCounting.globalPosition = "right";
 
         waitForStart();
@@ -207,9 +208,9 @@ public class AutoCalmRightBlue extends LinearOpMode {
         float currentHeading = Float.parseFloat(formatAngle(angles.angleUnit, angles.firstAngle));
         changeFromZero = (float) currentHeading;
 
-        endParkingPosition = PipelineColorCounting.getColorAtMiddleRect("blue");
-        endParkingPosition = PipelineColorCounting.getColorAtMiddleRect("blue");
-        endParkingPosition = PipelineColorCounting.getColorAtMiddleRect("blue");
+        for (int x = 0; x < 10; x++) {
+            endParkingPosition = PipelineColorCounting.getColorAtMiddleRect("red");
+        }
         telemetry.addData("park ", endParkingPosition);
         telemetry.update();
 
@@ -220,14 +221,14 @@ public class AutoCalmRightBlue extends LinearOpMode {
         ZeroPowerToBrake();
 
         //Get to High cone and move turret Right
-        firstDriveTarget = 66.5;
+        firstDriveTarget = 64.5;
         batchLiftTarget = Robot.liftJunctionHighHeight;
 
-        BatchUpdate(true, firstDriveTarget, true, batchLiftTarget, true, turretLeftDegrees);
+        BatchUpdate(true, firstDriveTarget, true, batchLiftTarget, true, turretRightDegrees);
 
 
         //Drop turret
-        BatchUpdate(false, 0, true, Robot.liftJunctionHighHeight - 2, false, 0);
+        BatchUpdate(false, 0, true, Robot.liftJunctionHighHeight - 4, false, 0);
         sleep(200);
 
         //Release servo
@@ -239,10 +240,10 @@ public class AutoCalmRightBlue extends LinearOpMode {
 
         //Reverse to 5 stack, forward, drop to one
         BatchUpdate(false, 0, false, 0, true, Robot.turretForwardDegrees);
-        BatchUpdate(true, -10.25, false, 0, false, 0);
+        BatchUpdate(true, -10, false, 0, false, 0);
 
         //Turn to face 5 stack
-        Turn(268);
+        Turn(90);
 
         //Lower Drive Speed
         driveSpeedFast = 0.3;
@@ -259,10 +260,9 @@ public class AutoCalmRightBlue extends LinearOpMode {
         //Raise lift a bit
         BatchUpdate(false, 0, true, Robot.liftPickupHeight + 10, false, 0);
         //Raise lift rest of the way, back to high junction
-        BatchUpdate(true, -36, true, Robot.liftJunctionHighHeight, true, turretLeftDegrees);
+        BatchUpdate(true, -34, true, Robot.liftJunctionHighHeight, true, turretRightDegrees);
 
-        BatchUpdate(false, 0, true, Robot.liftJunctionHighHeight - 2, false, 0);
-
+        BatchUpdate(false, 0, true, Robot.liftJunctionHighHeight - 4, false, 0);
         sleep(200);
         //open servo
         Robot.grabberServo.setPosition(Robot.grabberServoOpenPos);
@@ -292,7 +292,7 @@ public class AutoCalmRightBlue extends LinearOpMode {
 
         BatchUpdate(false, 0, true, Robot.liftJunctionHighHeight,  false, 0);
 
-        if (endParkingPosition == 1) {
+        if (endParkingPosition == 3) {
             BatchUpdate(true, -13, false, 0,false, 0);
         }
 
@@ -300,10 +300,10 @@ public class AutoCalmRightBlue extends LinearOpMode {
             BatchUpdate(true, 14, false, 0,false, 0);
         }
 
-        else if (endParkingPosition == 3) {
+        else if (endParkingPosition == 1) {
             telemetry.addData("LEFT!!!!", "");
             telemetry.update();
-            BatchUpdate(true, 34, false, 0,false, 0);
+            BatchUpdate(true, 33, false, 0,false, 0);
 
 
         }
@@ -597,6 +597,64 @@ public class AutoCalmRightBlue extends LinearOpMode {
         Robot.frontLeft.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
         Robot.backRight.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
         Robot.frontRight.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
+    }
+
+    public void turnToHeading(double targetHeading) {
+        boolean turnLeft;
+        double currentHeading;
+        double degreesToTurn;
+        double wheelPower = 0;
+        double setWheelPower = 0;
+        double accelerationIncrement = 0.03;
+        double desiredWheelPower;
+
+        currentHeading = 0;//getCurrentHeading();
+
+        degreesToTurn = Math.abs(targetHeading - currentHeading);
+
+        turnLeft = targetHeading > currentHeading;
+
+        if (degreesToTurn > 180) {
+            turnLeft = !turnLeft;
+            degreesToTurn = 360 - degreesToTurn;
+        }
+
+        while (degreesToTurn > .5 ) {//&& opModeIsActive()) {
+            desiredWheelPower = (Math.pow((degreesToTurn) / 35, 4) + 5) / 100;
+
+            if (wheelPower < desiredWheelPower) {
+                wheelPower += accelerationIncrement;  // accelerate gradually
+                if (wheelPower > desiredWheelPower) {
+                    wheelPower = desiredWheelPower;
+                }
+            } else {
+                wheelPower = desiredWheelPower;  // decelerate it immediately
+            }
+
+            setWheelPower = wheelPower;
+            if (turnLeft) {
+                setWheelPower = -setWheelPower;
+            }
+
+            /*Robot.frontLeft.setPower(-setWheelPower);
+            Robot.frontRight.setPower(setWheelPower);
+            Robot.backLeft.setPower(-setWheelPower);
+            Robot.backRight.setPower(setWheelPower);*/
+
+            currentHeading = 0;//getCurrentHeading();
+            degreesToTurn = Math.abs(targetHeading - currentHeading);
+
+            turnLeft = targetHeading > currentHeading;
+            if (degreesToTurn > 180) {
+                turnLeft = !turnLeft;
+                degreesToTurn = 360 - degreesToTurn;
+            }
+        }
+
+        /*Robot.frontLeft.setPower(0);
+        Robot.frontRight.setPower(0);
+        Robot.backLeft.setPower(0);
+        Robot.backRight.setPower(0);*/
     }
 
     String formatAngle(AngleUnit angleUnit, double angle) {

@@ -1,13 +1,18 @@
-package org.firstinspires.ftc.teamcode.opmodes.game.autonomous;
+package org.firstinspires.ftc.teamcode.opmodes.game.autonomous.Second;
 
+import com.qualcomm.hardware.bosch.BNO055IMU;
+import com.qualcomm.hardware.bosch.JustLoggingAccelerationIntegrator;
+import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.hardware.HardwareMap;
 
-import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
-import org.firstinspires.ftc.robotcore.external.navigation.AxesOrder;
-import org.firstinspires.ftc.robotcore.external.navigation.AxesReference;
 import org.firstinspires.ftc.teamcode.hardware.robot.Robot;
 
-public class AutoControls {
+public abstract class AutoControls extends LinearOpMode {
+
+
+    Robot robot;
+    BNO055IMU imu;
 
     double countsPerInch = Robot.ticksPerInch;
     double driveSpeedCurrent = 0.3;
@@ -53,7 +58,39 @@ public class AutoControls {
     double grabberServoCurrentPos = 0.22;
     float changeFromZero = 0;
 
-    public void BatchUpdate(boolean drive, double batchDriveTarget, boolean lift, double batchLiftTarget, boolean turret, double batchTurretTarget) {
+    public void init(HardwareMap hwMap){
+        Robot robot = new Robot(hwMap);
+        initIMU();
+        //Camera Stuff
+    }
+    public void initIMU() {
+        BNO055IMU.Parameters parameters = new BNO055IMU.Parameters();
+        parameters.angleUnit           = BNO055IMU.AngleUnit.DEGREES;
+        parameters.accelUnit           = BNO055IMU.AccelUnit.METERS_PERSEC_PERSEC;
+        parameters.calibrationDataFile = "BNO055IMUCalibration.json"; // see the calibration sample opmode
+        parameters.loggingEnabled      = true;
+        parameters.loggingTag          = "IMU";
+        parameters.accelerationIntegrationAlgorithm = new JustLoggingAccelerationIntegrator();
+
+        // Retrieve and initialize the IMU. We expect the IMU to be attached to an I2C port
+        // on a Core Device Interface Module, configured to be a sensor of type "AdaFruit IMU",
+        // and named "imu".
+        imu = hardwareMap.get(BNO055IMU.class, "imu");
+        imu.initialize(parameters);
+
+        byte AXIS_MAP_SIGN_BYTE = 0x1; //This is what to write to the AXIS_MAP_SIGN register to negate the z axis
+        imu.write8(BNO055IMU.Register.OPR_MODE,BNO055IMU.SensorMode.CONFIG.bVal & 0x0F);  // puts it in config mode
+        sleep(100);
+        imu.write8(BNO055IMU.Register.AXIS_MAP_SIGN,AXIS_MAP_SIGN_BYTE & 0x0F);
+        imu.write8(BNO055IMU.Register.OPR_MODE,BNO055IMU.SensorMode.IMU.bVal & 0x0F);
+    }
+
+    public void performAction(double driveInches, double liftHeightTarget, double liftPerformWithInchesLeft, double turretTargetDegrees, double turretPerformWithInchesLeft, char adjustForColor) {
+        ResetEncoders();
+
+
+    }
+    /*public void BatchUpdate(boolean drive, double batchDriveTarget, boolean lift, double batchLiftTarget, boolean turret, double batchTurretTarget) {
         if (drive) {
             Drive((int) batchDriveTarget);
         }
@@ -106,7 +143,7 @@ public class AutoControls {
                 telemetry.addData("turretMotor:", Robot.turretMotor.isBusy());
                 telemetry.update();*/
 
-            if (drive) {
+            /*if (drive) {
                 frontLeftBusy = Robot.frontLeft.isBusy();
                 frontRightBusy = Robot.frontRight.isBusy();
                 backLeftBusy = Robot.backLeft.isBusy();
@@ -158,7 +195,7 @@ public class AutoControls {
         Robot.frontRight.setPower(0);
         Robot.backLeft.setPower(0);
         Robot.backRight.setPower(0);
-    }
+    }*/
 
 
     public void Drive(int inches) {
@@ -276,9 +313,6 @@ public class AutoControls {
         turretPrevTargetDegrees = turretTargetDegrees;
 
 
-
-
-
     }
 
     public void RaiseLift(double liftHeightTarget) {
@@ -291,8 +325,6 @@ public class AutoControls {
         Robot.liftMotor.setPower(liftSpeedUp);
 
 
-
-
     }
     public void ChangeGripperState(double gripperTarget) {
         if (grabberServoCurrentPos == grabberServoOpenPos) {
@@ -302,6 +334,8 @@ public class AutoControls {
         }
         Robot.grabberServo.setPosition(grabberServoCurrentPos);
     }
+
+
 
     public static void ResetEncoders() {
         Robot.frontLeft.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
