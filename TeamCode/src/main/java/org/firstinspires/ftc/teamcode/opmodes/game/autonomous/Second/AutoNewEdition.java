@@ -11,8 +11,16 @@ public class AutoNewEdition extends AutoControls {
     public void runOpMode() throws InterruptedException {
         init(hardwareMap);
         waitForStart();
-        performAction(64, liftJunctionHighHeight, 50, turretRightDegrees, 50, 'n');
+        ChangeGripperState(grabberServoClosedPos);
+        performAction(40, liftJunctionMediumHeight, 35, turretRightDegrees, 22, 'n');
+        performAction(0, liftJunctionMediumHeight - 4, 1, -1, -1, 'n');
 
+        ChangeGripperState(grabberServoOpenPos);
+        sleep(500);
+        performAction(0, liftJunctionMediumHeight, 1, -1, 0, 'n');
+        performAction(12, liftJunctionGroundHeight, 8, turretForwardDegrees, 11, 'n');
+
+        Turn(90);
 
     }
 }
