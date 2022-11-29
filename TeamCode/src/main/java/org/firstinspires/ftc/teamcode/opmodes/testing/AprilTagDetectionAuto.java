@@ -21,20 +21,22 @@
 
 package org.firstinspires.ftc.teamcode.opmodes.testing;
 
+import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
-import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
 import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
+import org.firstinspires.ftc.teamcode.hardware.robot.pipelines.AprilTagDetectionPipeline;
 import org.openftc.apriltag.AprilTagDetection;
 import org.openftc.easyopencv.OpenCvCamera;
 import org.openftc.easyopencv.OpenCvCameraFactory;
 import org.openftc.easyopencv.OpenCvCameraRotation;
-import org.openftc.easyopencv.OpenCvInternalCamera;
 
 import java.util.ArrayList;
 
-@TeleOp
-public class AprilTagAutonomousInitDetectionExample extends LinearOpMode
+@Autonomous
+@Disabled
+public class AprilTagDetectionAuto extends LinearOpMode
 {
     OpenCvCamera camera;
     AprilTagDetectionPipeline aprilTagDetectionPipeline;
@@ -43,8 +45,6 @@ public class AprilTagAutonomousInitDetectionExample extends LinearOpMode
 
     // Lens intrinsics
     // UNITS ARE PIXELS
-    // NOTE: this calibration is for the C920 webcam at 800x448.
-    // You will need to do your own calibration for other configurations!
     double fx = 578.272;
     double fy = 578.272;
     double cx = 402.145;
@@ -53,10 +53,10 @@ public class AprilTagAutonomousInitDetectionExample extends LinearOpMode
     // UNITS ARE METERS
     double tagsize = 0.166;
 
-    // Tag ID 1, 2, 3 from the 36h11 family
-    int LEFT = 1;
-    int MIDDLE = 2;
-    int RIGHT = 3;
+    // Tag ID 13, 14, 15 from 25h9 family
+    int LEFT = 13;
+    int MIDDLE = 14;
+    int RIGHT = 15;
 
     AprilTagDetection tagOfInterest = null;
 
@@ -111,25 +111,13 @@ public class AprilTagAutonomousInitDetectionExample extends LinearOpMode
                 }
                 else
                 {
-                    telemetry.addLine("Don't see tag of interest :(");
-
-                    /*
-                    if(tagOfInterest == null)
-                    {
-                        telemetry.addLine("(The tag has never been seen)");
-                    }
-                    else
-                    {
-                        telemetry.addLine("\nBut we HAVE seen the tag before; last seen at:");
-                        tagToTelemetry(tagOfInterest);
-                    }
-                    */
+                    telemetry.addLine("Don't see tag of interest");
                 }
 
             }
             else
             {
-                telemetry.addLine("Don't see tag of interest :(");
+                telemetry.addLine("Don't see tag of interest");
 
                 if(tagOfInterest == null)
                 {
@@ -160,27 +148,23 @@ public class AprilTagAutonomousInitDetectionExample extends LinearOpMode
             telemetry.update();
         }
 
+        /*
         if(tagOfInterest == null)
         {
-            //Run auto anyway
-            //We might want to put this inside one of the conditions so it parks in the most convenient spot
+
         }
         else
         {
-            //Autonomous here
-
             if (tagOfInterest.id == LEFT){
-                //Position 1 park
+
             } else if (tagOfInterest.id == MIDDLE){
-                //Position 2 park
+
             } else if (tagOfInterest.id == RIGHT){
-                //Position 3 park
+;
             }
         }
+         */
 
-
-        //Not for auto
-        while (opModeIsActive()) {sleep(20);}
     }
 
     void tagToTelemetry(AprilTagDetection detection)
