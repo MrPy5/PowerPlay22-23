@@ -29,10 +29,6 @@ public class MotorTestWithDpad extends LinearOpMode {
         Robot robot = new Robot(hardwareMap);
         waitForStart();
 
-
-        waitForStart();
-
-
         while (opModeIsActive()) {
             if (gamepad1.left_trigger > triggerSensitivity) {
                 Robot.frontLeft.setPower(.3);
