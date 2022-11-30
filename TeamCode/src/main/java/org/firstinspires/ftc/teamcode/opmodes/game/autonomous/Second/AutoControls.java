@@ -1,5 +1,7 @@
 package org.firstinspires.ftc.teamcode.opmodes.game.autonomous.Second;
 
+import android.graphics.Color;
+
 import com.qualcomm.hardware.bosch.BNO055IMU;
 import com.qualcomm.hardware.bosch.JustLoggingAccelerationIntegrator;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
@@ -65,6 +67,22 @@ public abstract class AutoControls extends LinearOpMode {
 
     double startingTicks;
 
+
+    // hsvValues is an array that will hold the hue, saturation, and value information.
+    float hsvValuesLeft[] = {0F, 0F, 0F};
+
+    // values is a reference to the hsvValues array.
+    final float valuesLeft[] = hsvValuesLeft;
+
+    float hsvValuesRight[] = {0F, 0F, 0F};
+
+    // values is a reference to the hsvValues array.
+    final float valuesRight[] = hsvValuesRight;
+
+    // sometimes it helps to multiply the raw RGB values with a scale factor
+    // to amplify/attentuate the measured values.
+    final double SCALE_FACTOR = 255;
+    
     public void init(HardwareMap hwMap){
         Robot robot = new Robot(hwMap);
         initIMU();
@@ -171,7 +189,73 @@ public abstract class AutoControls extends LinearOpMode {
             telemetry.update();
 
         }
+        Robot.frontLeft.setPower(0);
+        Robot.frontRight.setPower(0);
+        Robot.backLeft.setPower(0);
+        Robot.backRight.setPower(0);
+        if (adjustForColor == 'b') {
+            StopEncoders();
+            telemetry.addData("started sampling", "");
 
+            Color.RGBToHSV((int) (Robot.colorSensorLeft.red() * SCALE_FACTOR),
+                    (int) (Robot.colorSensorRight.green() * SCALE_FACTOR),
+                    (int) (Robot.colorSensorLeft.blue() * SCALE_FACTOR),
+                    hsvValuesLeft);
+
+            Color.RGBToHSV((int) (Robot.colorSensorLeft.red() * SCALE_FACTOR),
+                    (int) (Robot.colorSensorRight.green() * SCALE_FACTOR),
+                    (int) (Robot.colorSensorRight.blue() * SCALE_FACTOR),
+                    hsvValuesRight);
+
+            telemetry.addData("Hue Left", hsvValuesLeft[0]);
+            telemetry.addData("Hue Right", hsvValuesRight[0]);
+            telemetry.update();
+            sleep(5000);
+            while (hsvValuesLeft[0] > hsvValuesRight[0] || hsvValuesRight[0] > hsvValuesLeft[0]) {
+
+                Color.RGBToHSV((int) (Robot.colorSensorLeft.red() * SCALE_FACTOR),
+                        (int) (Robot.colorSensorRight.green() * SCALE_FACTOR),
+                        (int) (Robot.colorSensorLeft.blue() * SCALE_FACTOR),
+                        hsvValuesLeft);
+
+                Color.RGBToHSV((int) (Robot.colorSensorLeft.red() * SCALE_FACTOR),
+                        (int) (Robot.colorSensorRight.green() * SCALE_FACTOR),
+                        (int) (Robot.colorSensorRight.blue() * SCALE_FACTOR),
+                        hsvValuesRight);
+
+                if (hsvValuesLeft[0] < hsvValuesRight[0]) {
+                    //MoveLeft
+                    Robot.frontLeft.setPower(-0.15);
+                    Robot.frontRight.setPower(0.15);
+                    Robot.backLeft.setPower(0.15);
+                    Robot.backRight.setPower(-0.15);
+
+                }
+
+                if (hsvValuesRight[0] < hsvValuesLeft[0]) {
+                    //MoveRight
+                    Robot.frontLeft.setPower(0.1);
+                    Robot.frontRight.setPower(-0.1);
+                    Robot.backLeft.setPower(-0.1);
+                    Robot.backRight.setPower(0.1);
+                }
+
+
+                /*if (Math.abs(hsvValuesRight[0]  - hsvValuesLeft[0]) < 10) {
+                    Robot.frontLeft.setPower(0);
+                    Robot.frontRight.setPower(-0);
+                    Robot.backLeft.setPower(-0);
+                    Robot.backRight.setPower(0);
+                    break;
+                }*/
+                telemetry.addData("Hue Left", hsvValuesLeft[0]);
+                telemetry.addData("Hue Right", hsvValuesRight[0]);
+                telemetry.update();
+            }
+
+
+
+        }
         Robot.liftMotor.setPower(0);
         Robot.turretMotor.setPower(0);
 
@@ -429,6 +513,14 @@ public abstract class AutoControls extends LinearOpMode {
         Robot.frontRight.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         Robot.backLeft.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         Robot.backRight.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+    }
+    
+    public static void StopEncoders() {
+
+        Robot.frontLeft.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        Robot.frontRight.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        Robot.backLeft.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        Robot.backRight.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
     }
 
     public static void ZeroPowerToBrake() {

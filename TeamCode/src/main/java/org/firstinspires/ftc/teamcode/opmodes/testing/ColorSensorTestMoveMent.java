@@ -128,7 +128,7 @@ public class ColorSensorTestMoveMent extends LinearOpMode {
                     (int) (sensorColorRight.blue() * SCALE_FACTOR),
                     hsvValuesRight);
             
-            while (hsvValuesLeft[0] < hsvValuesRight[0] || hsvValuesRight[0] < hsvValuesRight[0]) {
+            /*while (hsvValuesLeft[0] < hsvValuesRight[0] || hsvValuesRight[0] < hsvValuesLeft[0]) {
 
                 Color.RGBToHSV((int) (sensorColorLeft.red() * SCALE_FACTOR),
                         (int) (sensorColorLeft.green() * SCALE_FACTOR),
@@ -148,8 +148,9 @@ public class ColorSensorTestMoveMent extends LinearOpMode {
                     Robot.backRight.setPower(-0.1);
 
                 }
-
-                if (hsvValuesRight[0] > hsvValuesLeft[0]) {
+*/
+            while (true) {
+                if (Robot.colorSensorLeft.blue() > Robot.colorSensorRight.blue()) {
                     //MoveRight
                     Robot.frontLeft.setPower(0.1);
                     Robot.frontRight.setPower(-0.1);
@@ -157,16 +158,22 @@ public class ColorSensorTestMoveMent extends LinearOpMode {
                     Robot.backRight.setPower(0.1);
                 }
 
+                if (Robot.colorSensorRight.blue() < Robot.colorSensorLeft.blue()) {
+                    Robot.frontLeft.setPower(-0.1);
+                    Robot.frontRight.setPower(0.1);
+                    Robot.backLeft.setPower(0.1);
+                    Robot.backRight.setPower(-0.1);
+                }
 
-                if (Math.abs(hsvValuesRight[0]  - hsvValuesLeft[0]) < 10) {
+                if (Math.abs(Robot.colorSensorRight.blue() - Robot.colorSensorLeft.blue()) < 20) {
                     Robot.frontLeft.setPower(0);
                     Robot.frontRight.setPower(-0);
                     Robot.backLeft.setPower(-0);
                     Robot.backRight.setPower(0);
                     break;
                 }
-                telemetry.addData("Hue Left", hsvValuesLeft[0]);
-                telemetry.addData("Hue Right", hsvValuesRight[0]);
+                telemetry.addData("Left", Robot.colorSensorLeft.blue());
+                telemetry.addData("Right", Robot.colorSensorRight.blue());
                 telemetry.update();
             }
 

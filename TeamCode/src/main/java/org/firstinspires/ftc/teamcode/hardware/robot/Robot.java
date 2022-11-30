@@ -1,5 +1,6 @@
 package org.firstinspires.ftc.teamcode.hardware.robot;
 
+import com.qualcomm.robotcore.hardware.ColorSensor;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
@@ -55,6 +56,9 @@ public class Robot {
     public static double grabberServoClosedPos = 0.18;
     public static double grabberServoOpenPos = 0.7;
 
+    public static ColorSensor colorSensorLeft;
+    public static ColorSensor colorSensorRight;
+
 
     public Robot(HardwareMap robot_hardwareMap) {
         hardwareMap = robot_hardwareMap;
@@ -91,9 +95,10 @@ public class Robot {
         liftMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
 
 
-
-
         grabberServo = hardwareMap.get(Servo.class, "gripperServo");
+
+        colorSensorLeft = hardwareMap.get(ColorSensor.class, "sensorColorLeft");
+        colorSensorRight = hardwareMap.get(ColorSensor.class, "sensorColorRight");
 
 
     }
