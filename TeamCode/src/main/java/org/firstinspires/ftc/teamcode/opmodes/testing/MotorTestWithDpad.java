@@ -17,7 +17,7 @@ import com.qualcomm.robotcore.hardware.DcMotor;
 import org.firstinspires.ftc.teamcode.hardware.robot.Robot;
 
 
-@TeleOp(name = "GAME TELEOP")
+@TeleOp(name = "Trigger/Bumper Motor/Encoder test")
 
 public class MotorTestWithDpad extends LinearOpMode {
 
