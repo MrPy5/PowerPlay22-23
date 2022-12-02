@@ -30,7 +30,8 @@ public class AutoNewEdition extends AutoControls {
 
             ChangeGripperState(grabberServoClosedPos);
             sleep(500);
-            performAction(-33, liftJunctionMediumHeight, 22, turretLeftDegrees, 11, 'n');
+            performAction(-33, liftJunctionMediumHeight, 22, -1, 0, 'n');
+            performAction(0, -1, 0, turretLeftDegrees, 11, 'n');
             performAction(0, liftJunctionMediumHeight - 4, 1, -1, 1, 'n');
             ChangeGripperState(grabberServoOpenPos);
 
