@@ -10,7 +10,8 @@ public class AutoNewEdition extends AutoControls {
     @Override
     public void runOpMode() throws InterruptedException {
         init(hardwareMap);
-        waitForStart();
+        int pos = DetectAprilTags();
+
         ChangeGripperState(grabberServoClosedPos);
         performAction(40, liftJunctionMediumHeight, 35, turretRightDegrees, 22, 'n');
         performAction(0, liftJunctionMediumHeight - 4, 1, -1, -1, 'n');

@@ -47,7 +47,7 @@ import java.util.Locale;
 
 
 @Autonomous(name="MotorTest")
-@Disabled
+
 public class MotorTest extends LinearOpMode {
 
     /* Declare OpMode members. */
@@ -107,45 +107,13 @@ public class MotorTest extends LinearOpMode {
         Turn(-360);
         sleep(1000);
         */
-        ResetEncoders();
-        int inches = 60;
-        Robot.frontLeft.setTargetPosition((int) (inches * countsPerInch));
-        Robot.frontRight.setTargetPosition((int) (inches * countsPerInch));
-        Robot.backLeft.setTargetPosition((int) (inches * countsPerInch));
-        Robot.backRight.setTargetPosition((int) (inches * countsPerInch));
 
-        Robot.frontLeft.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-        Robot.frontRight.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-        Robot.backLeft.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-        Robot.backRight.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-
-        Robot.frontLeft.setPower(driveSpeedCurrent);
-        Robot.frontRight.setPower(driveSpeedCurrent);
-        Robot.backLeft.setPower(driveSpeedCurrent);
-        Robot.backRight.setPower(driveSpeedCurrent);
-
-        while (Robot.frontLeft.isBusy()) {
-            double InchesRemaining = (Robot.frontLeft.getTargetPosition() * countsPerInch) - (Robot.frontLeft.getCurrentPosition() * countsPerInch);
-            double driveSpeedCurrentDesired = (Math.pow((InchesRemaining / 10), 3) + 5) / 100;
-
-            
-
-            if (wheelPowerSpeedCurrent < driveSpeedCurrentDesired) {
-                wheelPowerSpeedCurrent += 0.05;  // accelerate gradually
-                if (wheelPowerSpeedCurrent > driveSpeedCurrentDesired) {
-                    wheelPowerSpeedCurrent = driveSpeedCurrentDesired;
-                }
-            } else {
-                wheelPowerSpeedCurrent = driveSpeedCurrentDesired;  // decelerate it immediately
-            }
-
-            double driveSpeedSet = wheelPowerSpeedCurrent;
-            
-            Robot.frontLeft.setPower(driveSpeedSet);
-            Robot.frontRight.setPower(driveSpeedSet);
-            Robot.backLeft.setPower(driveSpeedSet);
-            Robot.backRight.setPower(driveSpeedSet);
-
+        while (opModeIsActive()) {
+            telemetry.addData("FrontLeft", Robot.frontLeft.getCurrentPosition());
+            telemetry.addData("FrontRight", Robot.frontRight.getCurrentPosition());
+            telemetry.addData("BackLeft", Robot.backLeft.getCurrentPosition());
+            telemetry.addData("BackRight", Robot.backRight.getCurrentPosition());
+            telemetry.update();
         }
     }
 
