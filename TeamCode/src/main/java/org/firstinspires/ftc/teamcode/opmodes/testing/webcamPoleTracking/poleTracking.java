@@ -2,6 +2,7 @@ package org.firstinspires.ftc.teamcode.opmodes.testing.webcamPoleTracking;
 
 
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 
 import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
@@ -15,7 +16,7 @@ import java.nio.channels.Pipe;
 
 
 @Autonomous(name="PoleTracking")
-
+@Disabled
 public class poleTracking extends LinearOpMode {
     private OpenCvCamera webcam;
 
