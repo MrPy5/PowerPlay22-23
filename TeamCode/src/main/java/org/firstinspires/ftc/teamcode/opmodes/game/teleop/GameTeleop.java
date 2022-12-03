@@ -306,6 +306,7 @@ public class GameTeleop extends LinearOpMode {
 
                 if (turretPosBackButton) {
                     turretButtonChoiceTargetDegrees = turretBackDegrees;
+                    turretSpeed = 0.75;
                     if (turretCurrentDegrees < 0) {
                         turretButtonChoiceTargetDegrees = -turretButtonChoiceTargetDegrees;
                     }
@@ -326,6 +327,7 @@ public class GameTeleop extends LinearOpMode {
                     Robot.turretMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
                     Robot.turretMotor.setPower(turretSpeed);
                     turretPrevTargetDegrees = turretTargetDegrees;
+                    turretSpeed = 0.5;
                 }
 
             }
