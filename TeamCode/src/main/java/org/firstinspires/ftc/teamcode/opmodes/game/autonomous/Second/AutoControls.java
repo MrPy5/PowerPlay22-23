@@ -70,6 +70,8 @@ public abstract class AutoControls extends LinearOpMode {
 
     public static double turretTargetDegrees = 0;
     double turretPrevTargetDegrees = 0;
+    double turretToleranceDegrees = 0.8;
+
 
     //lift
     double liftSpeedUp = 1;
@@ -90,9 +92,11 @@ public abstract class AutoControls extends LinearOpMode {
     double liftHeightTarget = 0;
     double liftHeightPrevTarget = 0;
 
+    double liftToleranceInches = 0.1;
     //grabber
     double grabberServoClosedPos = Robot.grabberServoClosedPos;
     double grabberServoOpenPos = Robot.grabberServoOpenPos;
+    double grabberServoHalfwayPos = Robot.grabberServoHalfwayPos;
     double grabberServoCurrentPos = 0.22;
     float changeFromZero = 0;
 
@@ -113,20 +117,21 @@ public abstract class AutoControls extends LinearOpMode {
     // sometimes it helps to multiply the raw RGB values with a scale factor
     // to amplify/attentuate the measured values.
     final double SCALE_FACTOR = 255;
-    
-    public void init(HardwareMap hwMap){
+
+    public void init(HardwareMap hwMap) {
         Robot robot = new Robot(hwMap);
         initIMU();
         initCamera();
         //Camera Stuff
     }
+
     public void initIMU() {
         BNO055IMU.Parameters parameters = new BNO055IMU.Parameters();
-        parameters.angleUnit           = BNO055IMU.AngleUnit.DEGREES;
-        parameters.accelUnit           = BNO055IMU.AccelUnit.METERS_PERSEC_PERSEC;
+        parameters.angleUnit = BNO055IMU.AngleUnit.DEGREES;
+        parameters.accelUnit = BNO055IMU.AccelUnit.METERS_PERSEC_PERSEC;
         parameters.calibrationDataFile = "BNO055IMUCalibration.json"; // see the calibration sample opmode
-        parameters.loggingEnabled      = true;
-        parameters.loggingTag          = "IMU";
+        parameters.loggingEnabled = true;
+        parameters.loggingTag = "IMU";
         parameters.accelerationIntegrationAlgorithm = new JustLoggingAccelerationIntegrator();
 
         // Retrieve and initialize the IMU. We expect the IMU to be attached to an I2C port
@@ -136,32 +141,32 @@ public abstract class AutoControls extends LinearOpMode {
         imu.initialize(parameters);
 
         byte AXIS_MAP_SIGN_BYTE = 0x1; //This is what to write to the AXIS_MAP_SIGN register to negate the z axis
-        imu.write8(BNO055IMU.Register.OPR_MODE,BNO055IMU.SensorMode.CONFIG.bVal & 0x0F);  // puts it in config mode
+        imu.write8(BNO055IMU.Register.OPR_MODE, BNO055IMU.SensorMode.CONFIG.bVal & 0x0F);  // puts it in config mode
         sleep(100);
-        imu.write8(BNO055IMU.Register.AXIS_MAP_SIGN,AXIS_MAP_SIGN_BYTE & 0x0F);
-        imu.write8(BNO055IMU.Register.OPR_MODE,BNO055IMU.SensorMode.IMU.bVal & 0x0F);
+        imu.write8(BNO055IMU.Register.AXIS_MAP_SIGN, AXIS_MAP_SIGN_BYTE & 0x0F);
+        imu.write8(BNO055IMU.Register.OPR_MODE, BNO055IMU.SensorMode.IMU.bVal & 0x0F);
 
     }
+
     public void initCamera() {
         int cameraMonitorViewId = hardwareMap.appContext.getResources().getIdentifier("cameraMonitorViewId", "id", hardwareMap.appContext.getPackageName());
         webcam = OpenCvCameraFactory.getInstance().createWebcam(hardwareMap.get(WebcamName.class, "Webcam 1"), cameraMonitorViewId);
 
         webcam.setMillisecondsPermissionTimeout(2500); // Timeout for obtaining permission is configurable. Set before opening.
-        webcam.openCameraDeviceAsync(new OpenCvCamera.AsyncCameraOpenListener()
-        {
+        webcam.openCameraDeviceAsync(new OpenCvCamera.AsyncCameraOpenListener() {
             @Override
-            public void onOpened()
-            {
+            public void onOpened() {
 
                 webcam.startStreaming(640, 480, OpenCvCameraRotation.UPRIGHT);
             }
 
             @Override
-            public void onError(int errorCode)
-            {}
+            public void onError(int errorCode) {
+            }
         });
 
     }
+
     public int DetectAprilTags() {
         //April Tag Vision
         aprilTagDetectionPipeline = new AprilTagDetectionPipeline(tagsize, fx, fy, cx, cy);
@@ -171,45 +176,33 @@ public abstract class AutoControls extends LinearOpMode {
         telemetry.setMsTransmissionInterval(50);
 
         //Init loop INSTEAD OF waitForStart
-        while (!isStarted() && !isStopRequested())
-        {
+        while (!isStarted() && !isStopRequested()) {
             ArrayList<AprilTagDetection> currentDetections = aprilTagDetectionPipeline.getLatestDetections();
 
-            if(currentDetections.size() != 0)
-            {
+            if (currentDetections.size() != 0) {
                 boolean tagFound = false;
 
-                for(AprilTagDetection tag : currentDetections)
-                {
-                    if(tag.id == LEFT || tag.id == MIDDLE || tag.id == RIGHT)
-                    {
+                for (AprilTagDetection tag : currentDetections) {
+                    if (tag.id == LEFT || tag.id == MIDDLE || tag.id == RIGHT) {
                         tagOfInterest = tag;
                         tagFound = true;
                         break;
                     }
                 }
 
-                if(tagFound)
-                {
+                if (tagFound) {
                     telemetry.addLine("Tag of interest is in sight!\n\nLocation data:");
                     tagToTelemetry(tagOfInterest);
-                }
-                else
-                {
+                } else {
                     telemetry.addLine("Don't see tag of interest");
                 }
 
-            }
-            else
-            {
+            } else {
                 telemetry.addLine("Don't see tag of interest");
 
-                if(tagOfInterest == null)
-                {
+                if (tagOfInterest == null) {
                     telemetry.addLine("(The tag has never been seen)");
-                }
-                else
-                {
+                } else {
                     telemetry.addLine("\nBut we HAVE seen the tag before; last seen at:");
                     tagToTelemetry(tagOfInterest);
                 }
@@ -220,7 +213,7 @@ public abstract class AutoControls extends LinearOpMode {
             sleep(20);
         }
 
-        if (tagOfInterest.id == LEFT){
+        if (tagOfInterest.id == LEFT) {
             return 1;
         } else if (tagOfInterest.id == MIDDLE) {
             return 2;
@@ -231,55 +224,51 @@ public abstract class AutoControls extends LinearOpMode {
 
     public void performAction(double driveInches, double liftHeightTarget, double liftPerformWithInchesLeft, double turretTargetDegrees, double turretPerformWithInchesLeft, char adjustForColor) {
 
+        double currentFrontLeftTicks;
+        double driveInchesRemaining = 0;
+        double driveCurrentVelocity = 0;
+
+        double currentTurretTicks;
+        double currentTurretDegrees;
+        double turretDegreesRemaining = 0;
+
+        double currentLiftInches;
+        double liftInchesRemaining = 0;
+
+
         ResetEncoders();
+
         if (driveInches != 0) {
             Drive(driveInches);
+            currentFrontLeftTicks = Robot.frontLeft.getCurrentPosition();
+            driveInchesRemaining = driveInches - ((currentFrontLeftTicks) / countsPerInch);
+            driveCurrentVelocity = Robot.frontLeft.getVelocity() / countsPerInch;
         }
 
         if (liftHeightTarget != -1) {
             RaiseLift(liftHeightTarget);
+            currentLiftInches = Robot.liftMotor.getCurrentPosition() / liftTicksPerInch;
+            liftInchesRemaining = Math.abs(liftHeightTarget - currentLiftInches);
         }
 
         if (turretTargetDegrees != -1) {
             TurnTurret(turretTargetDegrees);
+            currentTurretTicks = Robot.turretMotor.getCurrentPosition();
+            currentTurretDegrees = currentTurretTicks / turretTicksPerDegree;
+            turretDegreesRemaining = Math.abs(turretTargetDegrees - currentTurretDegrees);
         }
 
-        boolean frontLeftBusy = driveInches != 0.0 && Robot.frontLeft.isBusy();
-        boolean frontRightBusy = driveInches != 0.0 && Robot.frontRight.isBusy();
-        boolean backLeftBusy = driveInches != 0.0 && Robot.backLeft.isBusy();
-        boolean backRightBusy = driveInches != 0.0 && Robot.backRight.isBusy();
 
-        boolean liftMotorBusy = liftHeightTarget != -1 && Robot.liftMotor.isBusy();
-        boolean turretMotorBusy = turretTargetDegrees != -1 && Robot.turretMotor.isBusy();
-
-        while (frontLeftBusy || frontRightBusy || backLeftBusy || backRightBusy || liftMotorBusy || turretMotorBusy) {
-
-            frontLeftBusy = driveInches != 0.0 && Robot.frontLeft.isBusy();
-            frontRightBusy = driveInches != 0.0 && Robot.frontRight.isBusy();
-            backLeftBusy = driveInches != 0.0 && Robot.backLeft.isBusy();
-            backRightBusy = driveInches != 0.0 && Robot.backRight.isBusy();
-
-            liftMotorBusy = liftHeightTarget != -1 && Robot.liftMotor.isBusy();
-            turretMotorBusy = turretTargetDegrees != -1 && Robot.turretMotor.isBusy();
-
-            double currentFrontLeftTicks = Robot.frontLeft.getCurrentPosition();
-            double driveInchesRemaining = driveInches - ((currentFrontLeftTicks) / countsPerInch);
-
-            telemetry.addData("Inches Remaining", driveInchesRemaining);
+        while (Math.abs(driveInchesRemaining) > 0.25 || driveCurrentVelocity < 2 || liftInchesRemaining > liftToleranceInches || turretDegreesRemaining > turretToleranceDegrees) {
 
             if (driveInches != 0.0) {
-                if (driveInchesRemaining / driveInches >= 0.7) {
+                if (driveInchesRemaining / driveInches > 0.7) {
                     if (driveSpeedCurrent < driveSpeedFast) {
                         driveSpeedCurrent = driveSpeedCurrent + 0.01;
                     }
                 }
 
                 if (driveInchesRemaining / driveInches <= 0.3) {
-                    /*if (driveSpeedCurrent > 0.3) {
-                        driveSpeedCurrent = driveSpeedCurrent - 0.01;
-                    } else {
-                        driveSpeedCurrent = 0.3;
-                    }*/
                     driveSpeedCurrent = 0.3;
                 }
                 Robot.frontLeft.setPower(driveSpeedCurrent);
@@ -288,87 +277,48 @@ public abstract class AutoControls extends LinearOpMode {
                 Robot.backRight.setPower(driveSpeedCurrent);
             }
 
-            if (turretTargetDegrees != -1 && driveInchesRemaining < turretPerformWithInchesLeft) {
+            if (turretTargetDegrees != -1 && driveInchesRemaining <= turretPerformWithInchesLeft) {
                 telemetry.addData("turretMoving", "");
-
                 Robot.turretMotor.setPower(turretSpeed);
             }
 
-            if (liftHeightTarget != -1 && driveInchesRemaining < liftPerformWithInchesLeft) {
+            if (liftHeightTarget != -1 && driveInchesRemaining <= liftPerformWithInchesLeft) {
                 Robot.liftMotor.setPower(liftSpeedUp);
                 telemetry.addData("liftMoving", "");
-
             }
+
+            if (driveInches != 0) {
+                currentFrontLeftTicks = Robot.frontLeft.getCurrentPosition();
+                driveInchesRemaining = driveInches - ((currentFrontLeftTicks) / countsPerInch);
+                driveCurrentVelocity = Robot.frontLeft.getVelocity() / countsPerInch;
+            }
+
+            if (liftHeightTarget != -1) {
+                currentLiftInches = Robot.liftMotor.getCurrentPosition() / liftTicksPerInch;
+                liftInchesRemaining = Math.abs(liftHeightTarget - currentLiftInches);
+            }
+
+            if (turretTargetDegrees != -1) {
+                currentTurretTicks = Robot.turretMotor.getCurrentPosition();
+                currentTurretDegrees = currentTurretTicks / turretTicksPerDegree;
+                turretDegreesRemaining = Math.abs(turretTargetDegrees - currentTurretDegrees);
+            }
+
+            telemetry.addData("Lift Inches Remaining", liftInchesRemaining);
+            telemetry.addData("Drive Remaining", driveInchesRemaining);
+            telemetry.addData("Turret Degrees Remaining", turretDegreesRemaining);
             telemetry.update();
 
         }
+
         Robot.frontLeft.setPower(0);
         Robot.frontRight.setPower(0);
         Robot.backLeft.setPower(0);
         Robot.backRight.setPower(0);
-        if (adjustForColor == 'b') {
-            StopEncoders();
-            telemetry.addData("started sampling", "");
 
-            Color.RGBToHSV((int) (Robot.colorSensorLeft.red() * SCALE_FACTOR),
-                    (int) (Robot.colorSensorRight.green() * SCALE_FACTOR),
-                    (int) (Robot.colorSensorLeft.blue() * SCALE_FACTOR),
-                    hsvValuesLeft);
-
-            Color.RGBToHSV((int) (Robot.colorSensorLeft.red() * SCALE_FACTOR),
-                    (int) (Robot.colorSensorRight.green() * SCALE_FACTOR),
-                    (int) (Robot.colorSensorRight.blue() * SCALE_FACTOR),
-                    hsvValuesRight);
-
-            telemetry.addData("Hue Left", hsvValuesLeft[0]);
-            telemetry.addData("Hue Right", hsvValuesRight[0]);
-            telemetry.update();
-            sleep(5000);
-            while (hsvValuesLeft[0] > hsvValuesRight[0] || hsvValuesRight[0] > hsvValuesLeft[0]) {
-
-                Color.RGBToHSV((int) (Robot.colorSensorLeft.red() * SCALE_FACTOR),
-                        (int) (Robot.colorSensorRight.green() * SCALE_FACTOR),
-                        (int) (Robot.colorSensorLeft.blue() * SCALE_FACTOR),
-                        hsvValuesLeft);
-
-                Color.RGBToHSV((int) (Robot.colorSensorLeft.red() * SCALE_FACTOR),
-                        (int) (Robot.colorSensorRight.green() * SCALE_FACTOR),
-                        (int) (Robot.colorSensorRight.blue() * SCALE_FACTOR),
-                        hsvValuesRight);
-
-                if (hsvValuesLeft[0] < hsvValuesRight[0]) {
-                    //MoveLeft
-                    Robot.frontLeft.setPower(-0.15);
-                    Robot.frontRight.setPower(0.15);
-                    Robot.backLeft.setPower(0.15);
-                    Robot.backRight.setPower(-0.15);
-
-                }
-
-                if (hsvValuesRight[0] < hsvValuesLeft[0]) {
-                    //MoveRight
-                    Robot.frontLeft.setPower(0.1);
-                    Robot.frontRight.setPower(-0.1);
-                    Robot.backLeft.setPower(-0.1);
-                    Robot.backRight.setPower(0.1);
-                }
+        AdjustForColor(adjustForColor);
 
 
-                /*if (Math.abs(hsvValuesRight[0]  - hsvValuesLeft[0]) < 10) {
-                    Robot.frontLeft.setPower(0);
-                    Robot.frontRight.setPower(-0);
-                    Robot.backLeft.setPower(-0);
-                    Robot.backRight.setPower(0);
-                    break;
-                }*/
-                telemetry.addData("Hue Left", hsvValuesLeft[0]);
-                telemetry.addData("Hue Right", hsvValuesRight[0]);
-                telemetry.update();
-            }
-
-
-
-        }
         Robot.liftMotor.setPower(0);
         Robot.turretMotor.setPower(0);
 
@@ -376,116 +326,10 @@ public abstract class AutoControls extends LinearOpMode {
         Robot.frontRight.setPower(0);
         Robot.backLeft.setPower(0);
         Robot.backRight.setPower(0);
+
 
 
     }
-    /*public void BatchUpdate(boolean drive, double batchDriveTarget, boolean lift, double batchLiftTarget, boolean turret, double batchTurretTarget) {
-        if (drive) {
-            Drive((int) batchDriveTarget);
-        }
-
-        if (lift) {
-            RaiseLift((int) batchLiftTarget);
-        }
-
-        if (turret) {
-            TurnTurret((int) batchTurretTarget);
-        }
-
-        boolean frontLeftBusy = false;
-        boolean frontRightBusy = false;
-        boolean backLeftBusy = false;
-        boolean backRightBusy = false;
-        boolean liftMotorBusy = false;
-        boolean turretMotorBusy = false;
-        if (drive) {
-            frontLeftBusy = Robot.frontLeft.isBusy();
-            frontRightBusy = Robot.frontRight.isBusy();
-            backLeftBusy = Robot.backLeft.isBusy();
-            backRightBusy = Robot.backRight.isBusy();
-        }
-        else {
-            frontLeftBusy = false;
-            frontRightBusy = false;
-            backLeftBusy = false;
-            backRightBusy = false;
-        }
-        if (lift) {
-            liftMotorBusy = Robot.liftMotor.isBusy();
-        }
-        else {
-            liftMotorBusy = false;
-        }
-
-        if (turret) {
-            turretMotorBusy = Robot.turretMotor.isBusy();
-        }
-        else {
-            turretMotorBusy = false;
-        }
-        while ((frontLeftBusy || frontRightBusy || backLeftBusy || backRightBusy|| liftMotorBusy || turretMotorBusy)) {
-                /*telemetry.addData("frontLeft:", Robot.frontLeft.isBusy());
-                telemetry.addData("frontRight:", Robot.frontRight.isBusy());
-                telemetry.addData("backLeft:", Robot.backLeft.isBusy());
-                telemetry.addData("backRight:", Robot.backRight.isBusy());
-                telemetry.addData("liftMotor:", Robot.liftMotor.isBusy());
-                telemetry.addData("turretMotor:", Robot.turretMotor.isBusy());
-                telemetry.update();*/
-
-            /*if (drive) {
-                frontLeftBusy = Robot.frontLeft.isBusy();
-                frontRightBusy = Robot.frontRight.isBusy();
-                backLeftBusy = Robot.backLeft.isBusy();
-                backRightBusy = Robot.backRight.isBusy();
-            }
-            else {
-                frontLeftBusy = false;
-                frontRightBusy = false;
-                backLeftBusy = false;
-                backRightBusy = false;
-            }
-            if (lift) {
-                liftMotorBusy = Robot.liftMotor.isBusy();
-            }
-            else {
-                liftMotorBusy = false;
-            }
-
-            if (turret) {
-                turretMotorBusy = Robot.turretMotor.isBusy();
-            }
-            else {
-                turretMotorBusy = false;
-            }
-
-            if (Robot.frontLeft.getCurrentPosition() / ((int) batchDriveTarget * countsPerInch) <= 0.3) {
-                if (driveSpeedCurrent < driveSpeedFast) {
-                    driveSpeedCurrent = driveSpeedCurrent + 0.01;
-                }
-            }
-            if (drive) {
-                if (Robot.frontLeft.getCurrentPosition() / ((int) batchDriveTarget * countsPerInch) >= 0.7) {
-                    if (driveSpeedCurrent > 0.3) {
-                        driveSpeedCurrent = driveSpeedCurrent - 0.01;
-                    } else {
-                        driveSpeedCurrent = 0.3;
-                    }
-                }
-                Robot.frontLeft.setPower(driveSpeedCurrent);
-                Robot.frontRight.setPower(driveSpeedCurrent);
-                Robot.backLeft.setPower(driveSpeedCurrent);
-                Robot.backRight.setPower(driveSpeedCurrent);
-            }
-        }
-        Robot.liftMotor.setPower(0);
-
-        Robot.turretMotor.setPower(0);
-        Robot.frontLeft.setPower(0);
-        Robot.frontRight.setPower(0);
-        Robot.backLeft.setPower(0);
-        Robot.backRight.setPower(0);
-    }*/
-
 
     public void Drive(double inches) {
 
@@ -590,19 +434,13 @@ public abstract class AutoControls extends LinearOpMode {
 
 
     public void TurnTurret(double turretTargetDegrees) {
-        liftCurrentHeight = Robot.liftMotor.getCurrentPosition() / liftTicksPerInch;
-        turretCurrentDegrees = Robot.turretMotor.getCurrentPosition() / turretTicksPerDegree;
 
         Robot.turretMotor.setTargetPosition((int) (turretTargetDegrees * turretTicksPerDegree));
         Robot.turretMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
 
-
-
     }
 
     public void RaiseLift(double liftHeightTarget) {
-        liftCurrentHeight = Robot.liftMotor.getCurrentPosition() / liftTicksPerInch;
-        turretCurrentDegrees = Robot.turretMotor.getCurrentPosition() / turretTicksPerDegree;
 
         Robot.liftMotor.setTargetPosition((int) (liftHeightTarget * liftTicksPerInch));
         Robot.liftMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
@@ -643,6 +481,68 @@ public abstract class AutoControls extends LinearOpMode {
         Robot.frontRight.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
     }
 
+    public void AdjustForColor(char allianceColor) {
+        if (allianceColor == 'b') {
+            StopEncoders();
+            telemetry.addData("started sampling", "");
+
+            Color.RGBToHSV((int) (Robot.colorSensorLeft.red() * SCALE_FACTOR),
+                    (int) (Robot.colorSensorRight.green() * SCALE_FACTOR),
+                    (int) (Robot.colorSensorLeft.blue() * SCALE_FACTOR),
+                    hsvValuesLeft);
+
+            Color.RGBToHSV((int) (Robot.colorSensorLeft.red() * SCALE_FACTOR),
+                    (int) (Robot.colorSensorRight.green() * SCALE_FACTOR),
+                    (int) (Robot.colorSensorRight.blue() * SCALE_FACTOR),
+                    hsvValuesRight);
+
+            telemetry.addData("Hue Left", hsvValuesLeft[0]);
+            telemetry.addData("Hue Right", hsvValuesRight[0]);
+            telemetry.update();
+            sleep(5000);
+            while (hsvValuesLeft[0] > hsvValuesRight[0] || hsvValuesRight[0] > hsvValuesLeft[0]) {
+
+                Color.RGBToHSV((int) (Robot.colorSensorLeft.red() * SCALE_FACTOR),
+                        (int) (Robot.colorSensorRight.green() * SCALE_FACTOR),
+                        (int) (Robot.colorSensorLeft.blue() * SCALE_FACTOR),
+                        hsvValuesLeft);
+
+                Color.RGBToHSV((int) (Robot.colorSensorLeft.red() * SCALE_FACTOR),
+                        (int) (Robot.colorSensorRight.green() * SCALE_FACTOR),
+                        (int) (Robot.colorSensorRight.blue() * SCALE_FACTOR),
+                        hsvValuesRight);
+
+                if (hsvValuesLeft[0] < hsvValuesRight[0]) {
+                    //MoveLeft
+                    Robot.frontLeft.setPower(-0.15);
+                    Robot.frontRight.setPower(0.15);
+                    Robot.backLeft.setPower(0.15);
+                    Robot.backRight.setPower(-0.15);
+
+                }
+
+                if (hsvValuesRight[0] < hsvValuesLeft[0]) {
+                    //MoveRight
+                    Robot.frontLeft.setPower(0.1);
+                    Robot.frontRight.setPower(-0.1);
+                    Robot.backLeft.setPower(-0.1);
+                    Robot.backRight.setPower(0.1);
+                }
+
+
+                /*if (Math.abs(hsvValuesRight[0]  - hsvValuesLeft[0]) < 10) {
+                    Robot.frontLeft.setPower(0);
+                    Robot.frontRight.setPower(-0);
+                    Robot.backLeft.setPower(-0);
+                    Robot.backRight.setPower(0);
+                    break;
+                }*/
+                telemetry.addData("Hue Left", hsvValuesLeft[0]);
+                telemetry.addData("Hue Right", hsvValuesRight[0]);
+                telemetry.update();
+            }
+        }
+    }
     void tagToTelemetry(AprilTagDetection detection)
     {
         telemetry.addLine(String.format("\nDetected tag ID=%d", detection.id));

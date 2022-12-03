@@ -54,6 +54,7 @@ public class Robot {
 
     public static Servo grabberServo;
     public static double grabberServoClosedPos = 0.18;
+    public static double grabberServoHalfwayPos = 0.55;
     public static double grabberServoOpenPos = 0.7;
 
     public static ColorSensor colorSensorLeft;

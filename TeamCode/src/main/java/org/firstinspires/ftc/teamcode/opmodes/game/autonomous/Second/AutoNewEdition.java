@@ -11,7 +11,7 @@ public class AutoNewEdition extends AutoControls {
     public void runOpMode() throws InterruptedException {
         init(hardwareMap);
         //int pos = DetectAprilTags();
-
+        waitForStart();
         ChangeGripperState(grabberServoClosedPos);
         performAction(40, liftJunctionMediumHeight, 35, turretRightDegrees, 22, 'n');
         performAction(0, liftJunctionMediumHeight - 4, 1, -1, -1, 'n');
@@ -20,10 +20,11 @@ public class AutoNewEdition extends AutoControls {
 
         sleep(500);
         performAction(0, liftJunctionMediumHeight, 1, -1, 0, 'n');
-        performAction(12, liftJunctionGroundHeight + 5.5, 8, turretForwardDegrees, 11, 'n');
+        performAction(13, liftJunctionGroundHeight + 5.5, 8, turretForwardDegrees, 11, 'n');
 
-        Turn(90);
+        Turn(87);
 
+        ChangeGripperState(grabberServoHalfwayPos);
         performAction(23.5, 5.5, 21, -1, 0, 'n');
 
         for (int i = 0; i < 2; i++) {
@@ -31,16 +32,16 @@ public class AutoNewEdition extends AutoControls {
             ChangeGripperState(grabberServoClosedPos);
             sleep(500);
             performAction(0, liftJunctionMediumHeight, 0, -1, 0, 'n');
-            performAction(-33.5, -1, 0, turretLeftDegrees, 11, 'n');
+            performAction(-33, -1, 0, turretLeftDegrees, 11, 'n');
             performAction(0, liftJunctionMediumHeight - 4, 1, -1, 1, 'n');
             ChangeGripperState(grabberServoOpenPos);
 
             sleep(500);
             performAction(0, liftJunctionMediumHeight, 1, -1, 0, 'n');
-            ChangeGripperState(grabberServoOpenPos);
-
-            performAction(33.5, 5.5 - (i * 1.1), 22, turretForwardDegrees, 22, 'n');
-
+            if (i < 1) {
+                ChangeGripperState(grabberServoHalfwayPos);
+                performAction(33, 5.5 - (i * 1.1), 22, turretForwardDegrees, 22, 'n');
+            }
         }
 
     }
