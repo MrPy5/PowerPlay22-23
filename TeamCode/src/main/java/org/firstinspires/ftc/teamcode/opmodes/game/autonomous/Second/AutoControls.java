@@ -92,7 +92,7 @@ public abstract class AutoControls extends LinearOpMode {
     double liftHeightTarget = 0;
     double liftHeightPrevTarget = 0;
 
-    double liftToleranceInches = 0.1;
+    double liftToleranceInches = 0.07;
     //grabber
     double grabberServoClosedPos = Robot.grabberServoClosedPos;
     double grabberServoOpenPos = Robot.grabberServoOpenPos;
