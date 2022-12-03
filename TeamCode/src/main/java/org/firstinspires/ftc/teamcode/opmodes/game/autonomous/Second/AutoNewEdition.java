@@ -10,7 +10,7 @@ public class AutoNewEdition extends AutoControls {
     @Override
     public void runOpMode() throws InterruptedException {
         init(hardwareMap);
-        //int pos = DetectAprilTags();
+        //int endParkingPosition = DetectAprilTags();
         waitForStart();
         ChangeGripperState(grabberServoClosedPos);
         performAction(40, liftJunctionMediumHeight, 35, turretRightDegrees, 22, 'n');
@@ -43,6 +43,30 @@ public class AutoNewEdition extends AutoControls {
                 performAction(33, 5.5 - (i * 1.1), 22, turretForwardDegrees, 22, 'n');
             }
         }
+        /*
+        if (endParkingPosition == 3) {
+
+            performAction(-13, -1, 0, -1, 0, 'n');
+        }
+
+        else if (endParkingPosition == 2) {
+            performAction(14, -1, 0, -1, 0, 'n');
+        }
+
+        else if (endParkingPosition == 1) {
+
+            performAction(33, -1, 0, -1, 0, 'n');
+
+
+        }
+
+        else {
+            performAction(14, -1, 0, -1, 0, 'n');
+        }
+
+        Turn(180);
+        */
+
 
     }
 }

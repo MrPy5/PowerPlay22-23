@@ -66,15 +66,19 @@ public class poleTracking extends LinearOpMode {
 
         while (opModeIsActive())
         {
-            myPipeline.configureBorders(borderLeftX, borderRightX, borderTopY, borderBottomY);
-
-
-
-            telemetry.addData("RectArea: ", myPipeline.getRectArea());
-            telemetry.update();
-
 
         }
     }
+
+    public double FocalLengthFinder(double measured_distance, double real_width, double width_in_rf_image) {
+
+        double focal_length = (width_in_rf_image * measured_distance) / real_width;
+        return focal_length;
+
+    }
+
+
+
+
 
 }

@@ -102,14 +102,18 @@ public abstract class AutoControls extends LinearOpMode {
 
     double startingTicks;
 
+    //turning
+    double startingTurnSpeed = 0.4;
+    double preciseTurnSpeed = 0.05;
+
 
     // hsvValues is an array that will hold the hue, saturation, and value information.
-    float hsvValuesLeft[] = {0F, 0F, 0F};
+    float[] hsvValuesLeft = {0F, 0F, 0F};
 
     // values is a reference to the hsvValues array.
     final float valuesLeft[] = hsvValuesLeft;
 
-    float hsvValuesRight[] = {0F, 0F, 0F};
+    float[] hsvValuesRight = {0F, 0F, 0F};
 
     // values is a reference to the hsvValues array.
     final float valuesRight[] = hsvValuesRight;
@@ -259,7 +263,7 @@ public abstract class AutoControls extends LinearOpMode {
         }
 
 
-        while (Math.abs(driveInchesRemaining) > 0.25 || driveCurrentVelocity < 2 || liftInchesRemaining > liftToleranceInches || turretDegreesRemaining > turretToleranceDegrees) {
+        while (Math.abs(driveInchesRemaining) > 0.25 || driveCurrentVelocity > 2 || liftInchesRemaining > liftToleranceInches || turretDegreesRemaining > turretToleranceDegrees) {
 
             if (driveInches != 0.0) {
                 if (driveInchesRemaining / driveInches > 0.7) {
@@ -371,20 +375,15 @@ public abstract class AutoControls extends LinearOpMode {
             goRight = !goRight;
             degreesToTurn = 360 - degreesToTurn;
         }
+        double turnMultiplier;
+        if (goRight) { turnMultiplier = 1;} else {turnMultiplier = -1;}
 
-        if (goRight) {
-            Robot.frontLeft.setPower(-0.2);
-            Robot.frontRight.setPower(0.2);
-            Robot.backLeft.setPower(-0.2);
-            Robot.backRight.setPower(0.2);
-        }
 
-        else {
-            Robot.frontLeft.setPower(0.2);
-            Robot.frontRight.setPower(-0.2);
-            Robot.backLeft.setPower(0.2);
-            Robot.backRight.setPower(-0.2);
-        }
+        Robot.frontLeft.setPower(-startingTurnSpeed * turnMultiplier);
+        Robot.frontRight.setPower(startingTurnSpeed * turnMultiplier);
+        Robot.backLeft.setPower(-startingTurnSpeed * turnMultiplier);
+        Robot.backRight.setPower(startingTurnSpeed * turnMultiplier);
+
 
 
         while ((currentAngle > targetAngle + 30 || currentAngle < targetAngle - 30) && opModeIsActive()) {
@@ -393,26 +392,15 @@ public abstract class AutoControls extends LinearOpMode {
             if (currentAngle < 0) {
                 currentAngle = 360 + currentAngle;
             }
-
-
-
-
-
         }
 
-        if (goRight) {
-            Robot.frontLeft.setPower(-0.05);
-            Robot.frontRight.setPower(0.05);
-            Robot.backLeft.setPower(-0.05);
-            Robot.backRight.setPower(0.05);
-        }
+        if (goRight) { turnMultiplier = 1;} else {turnMultiplier = -1;}
 
-        else {
-            Robot.frontLeft.setPower(0.05);
-            Robot.frontRight.setPower(-0.05);
-            Robot.backLeft.setPower(0.05);
-            Robot.backRight.setPower(-0.05);
-        }
+
+        Robot.frontLeft.setPower(-preciseTurnSpeed * turnMultiplier);
+        Robot.frontRight.setPower(preciseTurnSpeed * turnMultiplier);
+        Robot.backLeft.setPower(-preciseTurnSpeed * turnMultiplier);
+        Robot.backRight.setPower(preciseTurnSpeed * turnMultiplier);
 
         while ((currentAngle > targetAngle + 0.5 || currentAngle < targetAngle - 0.5) && opModeIsActive()) {
             angles = imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES);
@@ -420,9 +408,6 @@ public abstract class AutoControls extends LinearOpMode {
             if (currentAngle < 0) {
                 currentAngle = 360 + currentAngle;
             }
-            /*telemetry.addData("> ", currentAngle);
-            telemetry.addData("> ", angles.firstAngle - changeFromZero);
-            telemetry.update();*/
 
         }
 
