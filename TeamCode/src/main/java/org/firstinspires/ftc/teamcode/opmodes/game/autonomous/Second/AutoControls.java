@@ -106,6 +106,9 @@ public abstract class AutoControls extends LinearOpMode {
     double startingTurnSpeed = 0.4;
     double preciseTurnSpeed = 0.05;
 
+    //strafe per inch
+    double strafeTicksPerInch = 100.0 / (7.0/4.0);
+
 
     // hsvValues is an array that will hold the hue, saturation, and value information.
     float[] hsvValuesLeft = {0F, 0F, 0F};

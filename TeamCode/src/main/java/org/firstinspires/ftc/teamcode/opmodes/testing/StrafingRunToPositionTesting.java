@@ -32,7 +32,7 @@ public class StrafingRunToPositionTesting extends LinearOpMode {
         double triggerSensitivity = 0.01;
         
         double targetPosition = 0;
-        double driveSpeedCurrent = 0.3;
+        double driveSpeedCurrent = 0.5;
 
         boolean gamepadAReleased = true;
         boolean gamepadBReleased = true;
@@ -67,8 +67,8 @@ public class StrafingRunToPositionTesting extends LinearOpMode {
 
 
                     Robot.frontLeft.setTargetPosition((int) targetPosition);
-                    Robot.frontRight.setTargetPosition((int) targetPosition);
-                    Robot.backLeft.setTargetPosition((int) targetPosition);
+                    Robot.frontRight.setTargetPosition(-(int) targetPosition);
+                    Robot.backLeft.setTargetPosition(-(int) targetPosition);
                     Robot.backRight.setTargetPosition((int) targetPosition);
 
                     Robot.frontLeft.setMode(DcMotor.RunMode.RUN_TO_POSITION);
@@ -90,10 +90,10 @@ public class StrafingRunToPositionTesting extends LinearOpMode {
                 telemetry.addData("Moving left to", targetPosition);
 
 
-                Robot.frontLeft.setTargetPosition((int) targetPosition);
+                Robot.frontLeft.setTargetPosition(-(int) targetPosition);
                 Robot.frontRight.setTargetPosition((int) targetPosition);
                 Robot.backLeft.setTargetPosition((int) targetPosition);
-                Robot.backRight.setTargetPosition((int) targetPosition);
+                Robot.backRight.setTargetPosition(-(int) targetPosition);
 
                 Robot.frontLeft.setMode(DcMotor.RunMode.RUN_TO_POSITION);
                 Robot.frontRight.setMode(DcMotor.RunMode.RUN_TO_POSITION);

@@ -37,12 +37,10 @@ import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.ColorSensor;
-import com.qualcomm.robotcore.hardware.DistanceSensor;
+import com.qualcomm.robotcore.hardware.NormalizedColorSensor;
+import com.qualcomm.robotcore.hardware.NormalizedRGBA;
 
-import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 import org.firstinspires.ftc.teamcode.hardware.robot.Robot;
-
-import java.util.Locale;
 
 /*
  * This is an example LinearOpMode that shows how to use
@@ -53,9 +51,9 @@ import java.util.Locale;
  * Use Android Studio to Copy this Class, and Paste it into your team's code folder with a new name.
  * Remove or comment out the @Disabled line to add this opmode to the Driver Station OpMode list.
  */
-@TeleOp(name = "Sensor: REVColorDistance", group = "Sensor")
+@TeleOp(name = "Color Sensor Test", group = "Sensor")
 // Comment this out to add to the opmode list
-@Disabled
+
 public class ColorSensorTestMoveMent extends LinearOpMode {
 
     /**
@@ -75,117 +73,34 @@ public class ColorSensorTestMoveMent extends LinearOpMode {
      * to the target object.  Note that the distance sensor saturates at around 2" (5 cm).
      *
      */
-    ColorSensor sensorColorLeft;
-    ColorSensor sensorColorRight;
+    ColorSensor colorSensor;
+
+
 
 
     @Override
     public void runOpMode() {
-        Robot robot = new Robot(hardwareMap);
+        //Robot robot = new Robot(hardwareMap);
 
         // get a reference to the color sensor.
-        sensorColorLeft = hardwareMap.get(ColorSensor.class, "sensorColorLeft");
-        sensorColorRight = hardwareMap.get(ColorSensor.class, "sensorColorRight");
-        // get a reference to the distance sensor that shares the same name.
+        colorSensor = hardwareMap.get(ColorSensor.class, "colorSensor");
+
+        float hsvValues[] = {0F, 0F, 0F};
+
+        final float values[] = hsvValues;
+
+        final double SCALE_FACTOR = 8;
 
 
-        // hsvValues is an array that will hold the hue, saturation, and value information.
-        float hsvValuesLeft[] = {0F, 0F, 0F};
 
-        // values is a reference to the hsvValues array.
-        final float valuesLeft[] = hsvValuesLeft;
-
-        float hsvValuesRight[] = {0F, 0F, 0F};
-
-        // values is a reference to the hsvValues array.
-        final float valuesRight[] = hsvValuesRight;
-
-        // sometimes it helps to multiply the raw RGB values with a scale factor
-        // to amplify/attentuate the measured values.
-        final double SCALE_FACTOR = 255;
-
-        // get a reference to the RelativeLayout so we can change the background
-        // color of the Robot Controller app to match the hue detected by the RGB sensor.
-        int relativeLayoutId = hardwareMap.appContext.getResources().getIdentifier("RelativeLayout", "id", hardwareMap.appContext.getPackageName());
-        final View relativeLayout = ((Activity) hardwareMap.appContext).findViewById(relativeLayoutId);
-
-        // wait for the start button to be pressed.
         waitForStart();
 
-        // loop and read the RGB and distance data.
-        // Note we use opModeIsActive() as our loop condition because it is an interruptible method.
         while (opModeIsActive()) {
-            // convert the RGB values to HSV values.
-            // multiply by the SCALE_FACTOR.
-            // then cast it back to int (SCALE_FACTOR is a double)
 
-            Color.RGBToHSV((int) (sensorColorLeft.red() * SCALE_FACTOR),
-                    (int) (sensorColorLeft.green() * SCALE_FACTOR),
-                    (int) (sensorColorLeft.blue() * SCALE_FACTOR),
-                    hsvValuesLeft);
+            telemetry.addData("distance", colorSensor.green());
 
-            Color.RGBToHSV((int) (sensorColorRight.red() * SCALE_FACTOR),
-                    (int) (sensorColorRight.green() * SCALE_FACTOR),
-                    (int) (sensorColorRight.blue() * SCALE_FACTOR),
-                    hsvValuesRight);
-            
-            /*while (hsvValuesLeft[0] < hsvValuesRight[0] || hsvValuesRight[0] < hsvValuesLeft[0]) {
 
-                Color.RGBToHSV((int) (sensorColorLeft.red() * SCALE_FACTOR),
-                        (int) (sensorColorLeft.green() * SCALE_FACTOR),
-                        (int) (sensorColorLeft.blue() * SCALE_FACTOR),
-                        hsvValuesLeft);
-
-                Color.RGBToHSV((int) (sensorColorRight.red() * SCALE_FACTOR),
-                        (int) (sensorColorRight.green() * SCALE_FACTOR),
-                        (int) (sensorColorRight.blue() * SCALE_FACTOR),
-                        hsvValuesRight);
-
-                if (hsvValuesLeft[0] > hsvValuesRight[0]) {
-                    //MoveLeft
-                    Robot.frontLeft.setPower(-0.1);
-                    Robot.frontRight.setPower(0.1);
-                    Robot.backLeft.setPower(0.1);
-                    Robot.backRight.setPower(-0.1);
-
-                }
-*/
-            while (true) {
-                if (Robot.colorSensorLeft.blue() > Robot.colorSensorRight.blue()) {
-                    //MoveRight
-                    Robot.frontLeft.setPower(0.1);
-                    Robot.frontRight.setPower(-0.1);
-                    Robot.backLeft.setPower(-0.1);
-                    Robot.backRight.setPower(0.1);
-                }
-
-                if (Robot.colorSensorRight.blue() < Robot.colorSensorLeft.blue()) {
-                    Robot.frontLeft.setPower(-0.1);
-                    Robot.frontRight.setPower(0.1);
-                    Robot.backLeft.setPower(0.1);
-                    Robot.backRight.setPower(-0.1);
-                }
-
-                if (Math.abs(Robot.colorSensorRight.blue() - Robot.colorSensorLeft.blue()) < 20) {
-                    Robot.frontLeft.setPower(0);
-                    Robot.frontRight.setPower(-0);
-                    Robot.backLeft.setPower(-0);
-                    Robot.backRight.setPower(0);
-                    break;
-                }
-                telemetry.addData("Left", Robot.colorSensorLeft.blue());
-                telemetry.addData("Right", Robot.colorSensorRight.blue());
-                telemetry.update();
-            }
-
-                
-
-            
-
-            // change the background color to match the color detected by the RGB sensor.
-            // pass a reference to the hue, saturation, and value array as an argument
-            // to the HSVToColor method.
-
+            telemetry.update();
 
 
         }
@@ -195,4 +110,3 @@ public class ColorSensorTestMoveMent extends LinearOpMode {
 }
 
 
-            
