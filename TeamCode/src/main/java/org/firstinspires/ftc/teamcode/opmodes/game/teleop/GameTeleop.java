@@ -30,6 +30,7 @@ public class GameTeleop extends LinearOpMode {
 
 
         double triggerSensitivity = 0.01;
+
         //---------------------------------------------------------------//
         //Mode
         boolean manualMode = false;
@@ -235,7 +236,9 @@ public class GameTeleop extends LinearOpMode {
                 manualModeReleased = true;
             }
 
-            if (manualMode != true) {
+
+            if (!manualMode) {
+
                 //----------------------------------------------------------//
                 //LIFT MOTOR
 
@@ -243,6 +246,8 @@ public class GameTeleop extends LinearOpMode {
                     liftHeightTarget = liftPickupHeight;
 
                     turretButtonChoiceTargetDegrees = turretForwardDegrees;
+
+                    Robot.guideServo.setPosition(Robot.guideServoUp);
                 }
                 if (liftPosGroundJunctionButton) {
                     liftHeightTarget = liftJunctionGroundHeight;
@@ -288,6 +293,10 @@ public class GameTeleop extends LinearOpMode {
                     Robot.liftMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
                     Robot.liftMotor.setPower(liftSpeedUp);
                     liftHeightPrevTarget = liftCurrentHeight;
+                }
+
+                if (liftCurrentHeight > Robot.guideServoDeployHeight & liftHeightTarget != liftPickupHeight) {
+                    Robot.guideServo.setPosition(Robot.guideServoDown);
                 }
 
 

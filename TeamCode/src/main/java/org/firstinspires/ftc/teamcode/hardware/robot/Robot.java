@@ -57,6 +57,11 @@ public class Robot {
     public static double grabberServoHalfwayPos = 0.55;
     public static double grabberServoOpenPos = 0.7;
 
+    public static Servo guideServo;
+    public static double guideServoDown = 0.5;
+    public static double guideServoUp = 0.1;
+    public static double guideServoDeployHeight = 12;
+
     public static ColorSensor colorSensorLeft;
     public static ColorSensor colorSensorRight;
 
@@ -98,6 +103,7 @@ public class Robot {
 
 
         grabberServo = hardwareMap.get(Servo.class, "gripperServo");
+        guideServo = hardwareMap.get(Servo.class, "guideServo");
 
         colorSensorLeft = hardwareMap.get(ColorSensor.class, "sensorColorLeft");
         colorSensorRight = hardwareMap.get(ColorSensor.class, "sensorColorRight");
