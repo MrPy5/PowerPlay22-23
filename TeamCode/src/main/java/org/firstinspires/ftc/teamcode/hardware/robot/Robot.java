@@ -31,17 +31,17 @@ public class Robot {
 
     public static DcMotorEx liftMotor;
     public static double liftMotorTicksPerRevolution = 537;
-    public static double liftSpoolDiameter = 0.94; //inches - if you have the correct spool diameter, everything else should just work
+    public static double liftSpoolDiameter = 1; //inches - if you have the correct spool diameter, everything else should just work
     public static double liftCascadeMultiplier = 3; // 3 stages of cascade stringing
     public static double liftTicksPerInch = liftMotorTicksPerRevolution / (liftSpoolDiameter * Math.PI * liftCascadeMultiplier);
 
     public static double liftPickupHeight = 0;
     public static double liftJunctionGroundHeight = 2;
-    public static double liftJunctionLowHeight = 15;
+    public static double liftJunctionLowHeight = 14.5;
     public static double liftJunctionMediumHeight = 24;
-    public static double liftJunctionHighHeight = 34;
+    public static double liftJunctionHighHeight = 33.5;
     public static double liftMinHeightForTurning = 6;
-    public static double liftMaximumHeight = 36;
+    public static double liftMaximumHeight = 34;
 
     public static DcMotorEx turretMotor;
     public static double turretTicksPerRevolution = 2786.0;
@@ -58,9 +58,9 @@ public class Robot {
     public static double grabberServoOpenPos = 0.7;
 
     public static Servo guideServo;
-    public static double guideServoDown = 0.5;
-    public static double guideServoUp = 0.1;
-    public static double guideServoDeployHeight = 12;
+    public static double guideServoDown = 0.02;
+    public static double guideServoUp = 0.86;
+    public static double guideServoDeployHeight = 10;
 
     public static ColorSensor colorSensorLeft;
     public static ColorSensor colorSensorRight;

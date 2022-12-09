@@ -10,12 +10,14 @@ public class LeftAuto extends AutoControls {
         init(hardwareMap);
         int endParkingPosition = DetectAprilTags();
         //waitForStart();
+        //Deliver first cone
         ChangeGripperState(grabberServoClosedPos);
         performAction(40, liftJunctionMediumHeight, 35, turretRightDegrees, 22, 'n');
         performAction(0, liftJunctionMediumHeight - 4, 1, -1, -1, 'n');
 
         ChangeGripperState(grabberServoOpenPos);
 
+        //Return
         sleep(500);
         performAction(0, liftJunctionMediumHeight, 1, -1, 0, 'n');
         performAction(12, liftJunctionGroundHeight + 5.5, 8, turretForwardDegrees, 11, 'n');
@@ -25,15 +27,16 @@ public class LeftAuto extends AutoControls {
         ChangeGripperState(grabberServoHalfwayPos);
         performAction(24.5, 5.5, 21, -1, 0, 'n');
 
-
+        //Deliver Second Cone
         ChangeGripperState(grabberServoClosedPos);
         sleep(500);
         performAction(0, liftJunctionMediumHeight, 0, -1, 0, 'n');
-        performAction(-32, liftJunctionMediumHeight, 31, turretLeftDegrees, 11, 'n');
+        performAction(-32, liftJunctionMediumHeight, 31, turretLeftDegrees, 11, 'b');
         sleep(250);
         performAction(0, liftJunctionMediumHeight - 4, 1, -1, 1, 'n');
         ChangeGripperState(grabberServoOpenPos);
 
+        //Return
         sleep(500);
 
         performAction(0, liftJunctionMediumHeight, 1, -1, 0, 'n');
@@ -41,11 +44,11 @@ public class LeftAuto extends AutoControls {
         ChangeGripperState(grabberServoHalfwayPos);
         performAction(34, 5.5 - (1 * 1.3), 22, turretForwardDegrees, 22, 'n');
 
-
+        //Deliver Third Cone
         ChangeGripperState(grabberServoClosedPos);
         sleep(500);
         performAction(0, liftJunctionMediumHeight, 0, -1, 0, 'n');
-        performAction(-32, liftJunctionMediumHeight, 31, turretLeftDegrees, 11, 'n');
+        performAction(-32, liftJunctionMediumHeight, 31, turretLeftDegrees, 11, 'b');
         sleep(250);
         performAction(0, liftJunctionMediumHeight - 4, 1, -1, 1, 'n');
         ChangeGripperState(grabberServoOpenPos);

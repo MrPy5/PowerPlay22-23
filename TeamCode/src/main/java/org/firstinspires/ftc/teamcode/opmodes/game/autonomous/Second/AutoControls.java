@@ -518,13 +518,13 @@ public abstract class AutoControls extends LinearOpMode {
                 }
 
 
-                /*if (Math.abs(hsvValuesRight[0]  - hsvValuesLeft[0]) < 10) {
+                if (Math.abs(hsvValuesRight[0]  - hsvValuesLeft[0]) < 10) {
                     Robot.frontLeft.setPower(0);
                     Robot.frontRight.setPower(-0);
                     Robot.backLeft.setPower(-0);
                     Robot.backRight.setPower(0);
                     break;
-                }*/
+                }
                 telemetry.addData("Hue Left", hsvValuesLeft[0]);
                 telemetry.addData("Hue Right", hsvValuesRight[0]);
                 telemetry.update();

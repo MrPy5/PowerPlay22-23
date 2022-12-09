@@ -47,178 +47,38 @@ import java.util.Locale;
 
 
 @Autonomous(name="MotorTest")
-@Disabled
+
 public class MotorTest extends LinearOpMode {
 
     /* Declare OpMode members. */
 
 
 
-    static final double     COUNTS_PER_MOTOR_REV    = 537.6;
-    static final double     WHEEL_DIAMETER_INCHES   = 3.77;
-    static final double     COUNTS_PER_INCH         = (COUNTS_PER_MOTOR_REV) /
-            (WHEEL_DIAMETER_INCHES * Math.PI);
-    double     driveSpeed             = 0.3;
 
-    BNO055IMU imu;
-    Orientation angles;
-    public static float changeFromZero = 0;
-    public double driveSpeedCurrent = 0;
-
-    double countsPerInch = Robot.ticksPerInch;
-
-    double driveSpeedFast = 0.8;
-    double wheelPowerSpeedCurrent = 0.1;
     @Override
     public void runOpMode() {
-        BNO055IMU.Parameters parameters = new BNO055IMU.Parameters();
-        parameters.angleUnit           = BNO055IMU.AngleUnit.DEGREES;
-        parameters.accelUnit           = BNO055IMU.AccelUnit.METERS_PERSEC_PERSEC;
-        parameters.calibrationDataFile = "BNO055IMUCalibration.json"; // see the calibration sample opmode
-        parameters.loggingEnabled      = true;
-        parameters.loggingTag          = "IMU";
-        parameters.accelerationIntegrationAlgorithm = new JustLoggingAccelerationIntegrator();
-
-        imu = hardwareMap.get(BNO055IMU.class, "imu");
-        imu.initialize(parameters);
-
         Robot robot = new Robot(hardwareMap);
-
         waitForStart();
-
-        ResetEncoders();
-        /*while (opModeIsActive()) {
-            Robot.frontLeft.setPower(driveSpeed);
-            Robot.frontRight.setPower(driveSpeed);
-            Robot.backLeft.setPower(driveSpeed);
-            Robot.backRight.setPower(driveSpeed);
-            telemetry.addData("FrontLeft", Robot.frontLeft.getCurrentPosition());
-            telemetry.addData("FrontRight", Robot.frontRight.getCurrentPosition());
-            telemetry.addData("BackLeft", Robot.backLeft.getCurrentPosition());
-            telemetry.addData("BackRight", Robot.backRight.getCurrentPosition());
-            telemetry.update();
-        }*/
-        /*Turn(180);
-        sleep(1000);
-        Turn(90);
-        sleep(1000);
-        Turn(-90);
-        sleep(1000);
-        Turn(-360);
-        sleep(1000);
-        */
-
+        double targetPos = 0.5;
         while (opModeIsActive()) {
-            telemetry.addData("FrontLeft", Robot.frontLeft.getCurrentPosition());
-            telemetry.addData("FrontRight", Robot.frontRight.getCurrentPosition());
-            telemetry.addData("BackLeft", Robot.backLeft.getCurrentPosition());
-            telemetry.addData("BackRight", Robot.backRight.getCurrentPosition());
+            if (gamepad1.right_bumper) {
+                targetPos += 0.01;
+                sleep(1000);
+            }
+            if (gamepad1.left_bumper) {
+                targetPos -= 0.01;
+                sleep(1000);
+            }
+            Robot.guideServo.setPosition(targetPos);
+            telemetry.addData("", targetPos);
             telemetry.update();
         }
+
     }
 
 
 
 
-    public void Turn(double targetAngle) {
-        ResetEncoders();
 
-        boolean goRight = false;
-        angles   = imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES);
-        double distance = Math.abs(angles.firstAngle - changeFromZero - targetAngle);
-        double currentAngle =  angles.firstAngle - changeFromZero;
-        if (currentAngle < 0) {
-            currentAngle = 360 + currentAngle;
-        }
-        telemetry.addData(">", currentAngle - targetAngle);
-        telemetry.update();
-        double degreesToTurn = Math.abs(targetAngle - currentAngle);
-
-        goRight = targetAngle > currentAngle;
-
-        if (degreesToTurn > 180) {
-            goRight = !goRight;
-            degreesToTurn = 360 - degreesToTurn;
-        }
-
-        if (goRight) {
-            Robot.frontLeft.setPower(-0.2);
-            Robot.frontRight.setPower(0.2);
-            Robot.backLeft.setPower(-0.2);
-            Robot.backRight.setPower(0.2);
-        }
-
-        else {
-            Robot.frontLeft.setPower(0.2);
-            Robot.frontRight.setPower(-0.2);
-            Robot.backLeft.setPower(0.2);
-            Robot.backRight.setPower(-0.2);
-        }
-
-
-        while ((currentAngle > targetAngle + 30 || currentAngle < targetAngle - 30) && opModeIsActive()) {
-            angles = imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES);
-            currentAngle =  angles.firstAngle - changeFromZero;
-            if (currentAngle < 0) {
-                currentAngle = 360 + currentAngle;
-            }
-
-
-
-
-
-        }
-        
-        if (goRight) {
-            Robot.frontLeft.setPower(-0.05);
-            Robot.frontRight.setPower(0.05);
-            Robot.backLeft.setPower(-0.05);
-            Robot.backRight.setPower(0.05);
-        }
-
-        else {
-            Robot.frontLeft.setPower(0.05);
-            Robot.frontRight.setPower(-0.05);
-            Robot.backLeft.setPower(0.05);
-            Robot.backRight.setPower(-0.05);
-        }
-        
-        while ((currentAngle > targetAngle + 0.5 || currentAngle < targetAngle - 0.5) && opModeIsActive()) {
-            angles = imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES);
-            currentAngle =  angles.firstAngle- changeFromZero;
-            if (currentAngle < 0) {
-                currentAngle = 360 + currentAngle;
-            }
-            telemetry.addData("> ", currentAngle);
-            telemetry.addData("> ", angles.firstAngle - changeFromZero);
-            telemetry.update();
-
-        }
-
-        Robot.frontLeft.setPower(0);
-        Robot.frontRight.setPower(0);
-        Robot.backLeft.setPower(0);
-        Robot.backRight.setPower(0);
-    }
-
-
-    public void ResetEncoders() {
-        Robot.frontLeft.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        Robot.frontRight.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        Robot.backLeft.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        Robot.backRight.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-
-        Robot.frontLeft.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        Robot.frontRight.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        Robot.backLeft.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        Robot.backRight.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-    }
-    String formatAngle(AngleUnit angleUnit, double angle) {
-        return formatDegrees(AngleUnit.DEGREES.fromUnit(angleUnit, angle));
-    }
-
-    String formatDegrees(double degrees){
-        return String.format(Locale.getDefault(), "%.1f", AngleUnit.DEGREES.normalize(degrees));
-    }
 
 }

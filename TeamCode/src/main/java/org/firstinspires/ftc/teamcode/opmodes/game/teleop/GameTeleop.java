@@ -38,7 +38,6 @@ public class GameTeleop extends LinearOpMode {
 
         //---------------------------------------------------------------//
         //SLOW VARIABLES
-
         double slowModeSpeed = .8;
         double slowModeSlow = .4;
         double slowModeFast = .8;
@@ -54,7 +53,6 @@ public class GameTeleop extends LinearOpMode {
 
         //---------------------------------------------------------------//
         //GRABBER SERVO VARIABLES
-
         double grabberServoClosedPos = Robot.grabberServoClosedPos;
         double grabberServoOpenPos = Robot.grabberServoOpenPos;
         double grabberServoCurrentPos = 0.22;
@@ -92,9 +90,9 @@ public class GameTeleop extends LinearOpMode {
         double liftCurrentHeight; //all height variables are in inches
         double liftPickupHeight = 0;
         double liftJunctionGroundHeight = 2;
-        double liftJunctionLowHeight = 14;
+        double liftJunctionLowHeight = 14.5;
         double liftJunctionMediumHeight = 24;
-        double liftJunctionHighHeight = 33;
+        double liftJunctionHighHeight = 33.5;
         double liftMinHeightForTurning = 6;
         double liftMaximumHeight = 34;
 
@@ -103,6 +101,9 @@ public class GameTeleop extends LinearOpMode {
 
         double manualLiftIncrement = 2.5;
 
+        double lastHeightTargetNoReset = 0;
+        int timerToResetHeight = 70;
+        boolean startTiming = false;
 
 
         //---------------------------------------------------------//
@@ -246,20 +247,34 @@ public class GameTeleop extends LinearOpMode {
                     liftHeightTarget = liftPickupHeight;
 
                     turretButtonChoiceTargetDegrees = turretForwardDegrees;
+                    lastHeightTargetNoReset = liftPickupHeight;
 
-                    Robot.guideServo.setPosition(Robot.guideServoUp);
+
                 }
                 if (liftPosGroundJunctionButton) {
                     liftHeightTarget = liftJunctionGroundHeight;
+                    lastHeightTargetNoReset = liftJunctionGroundHeight;
+
                 }
                 if (liftPosLowButton) {
                     liftHeightTarget = liftJunctionLowHeight;
+                    lastHeightTargetNoReset = liftJunctionLowHeight;
                 }
                 if (liftPosMediumButton) {
                     liftHeightTarget = liftJunctionMediumHeight;
+                    lastHeightTargetNoReset = liftJunctionMediumHeight;
                 }
                 if (liftPosHighButton) {
                     liftHeightTarget = liftJunctionHighHeight;
+                    lastHeightTargetNoReset = liftJunctionHighHeight;
+                }
+                if (startTiming) {
+                    timerToResetHeight -= 1;
+                    if (timerToResetHeight == 0) {
+                        startTiming = false;
+                        liftHeightTarget = lastHeightTargetNoReset;
+                        timerToResetHeight = 70;
+                    }
                 }
 
                 //manual lift
@@ -295,9 +310,11 @@ public class GameTeleop extends LinearOpMode {
                     liftHeightPrevTarget = liftCurrentHeight;
                 }
 
-                if (liftCurrentHeight > Robot.guideServoDeployHeight & liftHeightTarget != liftPickupHeight) {
+                //GUIDE SERVO CODE
+                if (liftCurrentHeight > Robot.guideServoDeployHeight && liftHeightTarget != liftPickupHeight && grabberServoCurrentPos == Robot.grabberServoClosedPos) {
                     Robot.guideServo.setPosition(Robot.guideServoDown);
                 }
+                else Robot.guideServo.setPosition(Robot.guideServoUp);
 
 
                 //---------------------------------------------------------------//
@@ -358,6 +375,8 @@ public class GameTeleop extends LinearOpMode {
                         grabberServoCurrentPos = grabberServoClosedPos;
                     } else {
                         grabberServoCurrentPos = grabberServoOpenPos;
+                        startTiming = true;
+                        timerToResetHeight = 70;
                     }
                     Robot.grabberServo.setPosition(grabberServoCurrentPos);
                     grabberTriggerReleased = false;
