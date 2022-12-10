@@ -28,81 +28,46 @@ public class GameTeleop extends LinearOpMode {
         Robot robot = new Robot(hardwareMap);
         waitForStart();
 
+        //---------------------------------------------------------------//
+        //Manual Mode
+        boolean autoScore = false;
+        int scoreSteps = 0;
 
-        double triggerSensitivity = 0.01;
 
         //---------------------------------------------------------------//
-        //Mode
+        //Manual Mode
         boolean manualMode = false;
         boolean manualModeReleased = true;
 
+
         //---------------------------------------------------------------//
-        //SLOW VARIABLES
-        double slowModeSpeed = .8;
-        double slowModeSlow = .4;
-        double slowModeFast = .8;
-        double slowModeGroundJuctionSlow = .2;
-
-        double slowModeTurnSpeed = 0.6;
-        double slowModeTurnSlow = 0.5;
-        double slowModeTurnFast = 0.6;
-
+        //SLOW Mode
         boolean slowMode = false;
         boolean slowmoTriggerReleased = true;
 
 
         //---------------------------------------------------------------//
         //GRABBER SERVO VARIABLES
-        double grabberServoClosedPos = Robot.grabberServoClosedPos;
-        double grabberServoOpenPos = Robot.grabberServoOpenPos;
         double grabberServoCurrentPos = 0.22;
         boolean grabberTriggerReleased = true;
 
 
         //---------------------------------------------------------------//
         //TURRET VARIABLES
-
-        double turretSpeed = 0.5;
         double turretCurrentDegrees;
         double turretButtonChoiceTargetDegrees = 0;
-        double turretCloseToZero = 70;
-
-        double turretTicksPerDegree = Robot.turretTicksPerDegree;
-
-        double turretForwardDegrees = 0; //all rotation variables in degrees
-        double turretRightDegrees = 90;
-        double turretLeftDegrees = -90;
-        double turretBackDegrees = 180;
-
         double turretTargetDegrees = 0;
         double turretPrevTargetDegrees = 0;
 
 
         //---------------------------------------------------------------//
         //LIFT VARIABLES
-
-        double liftSpeedUp = 1;
-        double liftSpeedDown = .7;
+        double liftCurrentHeight;
         double liftSpeedPower;
-
-        double liftTicksPerInch = Robot.liftTicksPerInch;
-
-        double liftCurrentHeight; //all height variables are in inches
-        double liftPickupHeight = 0;
-        double liftJunctionGroundHeight = 2;
-        double liftJunctionLowHeight = 14.5;
-        double liftJunctionMediumHeight = 24;
-        double liftJunctionHighHeight = 33.5;
-        double liftMinHeightForTurning = 6;
-        double liftMaximumHeight = 34;
-
         double liftHeightTarget = 0;
         double liftHeightPrevTarget = 0;
-
-        double manualLiftIncrement = 2.5;
-
         double lastHeightTargetNoReset = 0;
-        int timerToResetHeight = 70;
+        int timerToResetHeight = Robot.liftTimerForGuide;
         boolean startTiming = false;
 
 
@@ -119,15 +84,10 @@ public class GameTeleop extends LinearOpMode {
         double lrPower;
         double rrPower;
 
-        double deadStickZone = 0.01;
-        double wheelPowerMinToMove = 0.05;
-
-
-        double ticksPerInch = Robot.ticksPerInch;
 
         //---------------------------------------------------------//
         //INIT SERVOS
-        Robot.grabberServo.setPosition(grabberServoOpenPos);
+        Robot.grabberServo.setPosition(Robot.grabberServoOpenPos);
 
         waitForStart();
 
@@ -143,7 +103,6 @@ public class GameTeleop extends LinearOpMode {
 
             //---------------------------------------------------------------//
             //GAMEPAD2 CONTROLS = Lift + turret + grabbing
-
             double grabberTrigger = gamepad2.right_trigger;
 
             boolean turretPosForwardButton = gamepad2.dpad_up;
@@ -165,40 +124,42 @@ public class GameTeleop extends LinearOpMode {
 
             double slowmoTrigger = gamepad1.left_trigger;
 
-            double leftStickY = gamepad1.left_stick_y * -1 * slowModeSpeed;
-            double leftStickX = gamepad1.left_stick_x * slowModeSpeed;
-            double rightStickX = gamepad1.right_stick_x * slowModeTurnSpeed * .8;
+            double leftStickY = gamepad1.left_stick_y * -1 * Robot.slowModeSpeed;
+            double leftStickX = gamepad1.left_stick_x * Robot.slowModeSpeed * 0.5;
+            double rightStickX = gamepad1.right_stick_x * Robot.slowModeTurnSpeed * .8;
 
             boolean liftPosUpManualButton = gamepad1.right_bumper;
             boolean liftPosDownManualButton = gamepad1.left_bumper;
+
+            double scoreButton = gamepad1.right_trigger;
 
 
             //---------------------------------------------------------------//
             //READ HARDWARE VALUES
 
-            liftCurrentHeight = Robot.liftMotor.getCurrentPosition() / liftTicksPerInch;
-            turretCurrentDegrees = Robot.turretMotor.getCurrentPosition() / turretTicksPerDegree;
+            liftCurrentHeight = Robot.liftMotor.getCurrentPosition() / Robot.liftTicksPerInch;
+            turretCurrentDegrees = Robot.turretMotor.getCurrentPosition() / Robot.turretTicksPerDegree;
 
 
             //-----------------------------------------------------------//
             //SLO-MO CODE
 
-            if (slowmoTrigger > triggerSensitivity) {
+            if (slowmoTrigger > Robot.triggerSensitivity) {
                 if (slowmoTriggerReleased) {
                     if (!slowMode) {
-                        if (liftJunctionGroundHeight == liftHeightPrevTarget) {
-                            slowModeSpeed = slowModeGroundJuctionSlow;
-                            slowModeTurnSpeed = slowModeTurnSlow;
+                        if (Robot.liftJunctionGroundHeight == liftHeightPrevTarget) {
+                            Robot.slowModeSpeed = Robot.slowModeGroundJuctionSlow;
+                            Robot.slowModeTurnSpeed = Robot.slowModeTurnSlow;
                             slowMode = true;
                         } else {
-                            slowModeSpeed = slowModeSlow;
-                            slowModeTurnSpeed = slowModeTurnSlow;
+                            Robot.slowModeSpeed = Robot.slowModeSlow;
+                            Robot.slowModeTurnSpeed = Robot.slowModeTurnSlow;
                             slowMode = true;
                         }
 
                     } else {
-                        slowModeSpeed = slowModeFast;
-                        slowModeTurnSpeed = slowModeTurnFast;
+                        Robot.slowModeSpeed = Robot.slowModeFast;
+                        Robot.slowModeTurnSpeed = Robot.slowModeTurnFast;
                         slowMode = false;
                     }
                     slowmoTriggerReleased = false;
@@ -244,119 +205,140 @@ public class GameTeleop extends LinearOpMode {
                 //LIFT MOTOR
 
                 if (liftPosGroundButton) {
-                    liftHeightTarget = liftPickupHeight;
+                    liftHeightTarget = Robot.liftPickupHeight;
 
-                    turretButtonChoiceTargetDegrees = turretForwardDegrees;
-                    lastHeightTargetNoReset = liftPickupHeight;
+                    turretButtonChoiceTargetDegrees = Robot.turretForwardDegrees;
+                    lastHeightTargetNoReset = Robot.liftPickupHeight;
 
 
                 }
                 if (liftPosGroundJunctionButton) {
-                    liftHeightTarget = liftJunctionGroundHeight;
-                    lastHeightTargetNoReset = liftJunctionGroundHeight;
+                    liftHeightTarget = Robot.liftJunctionGroundHeight;
+                    lastHeightTargetNoReset = Robot.liftJunctionGroundHeight;
 
                 }
                 if (liftPosLowButton) {
-                    liftHeightTarget = liftJunctionLowHeight;
-                    lastHeightTargetNoReset = liftJunctionLowHeight;
+                    liftHeightTarget = Robot.liftJunctionLowHeight;
+                    lastHeightTargetNoReset = Robot.liftJunctionLowHeight;
                 }
                 if (liftPosMediumButton) {
-                    liftHeightTarget = liftJunctionMediumHeight;
-                    lastHeightTargetNoReset = liftJunctionMediumHeight;
+                    liftHeightTarget = Robot.liftJunctionMediumHeight;
+                    lastHeightTargetNoReset = Robot.liftJunctionMediumHeight;
                 }
                 if (liftPosHighButton) {
-                    liftHeightTarget = liftJunctionHighHeight;
-                    lastHeightTargetNoReset = liftJunctionHighHeight;
-                }
-                if (startTiming) {
-                    timerToResetHeight -= 1;
-                    if (timerToResetHeight == 0) {
-                        startTiming = false;
-                        liftHeightTarget = lastHeightTargetNoReset;
-                        timerToResetHeight = 70;
-                    }
+                    liftHeightTarget = Robot.liftJunctionHighHeight;
+                    lastHeightTargetNoReset = Robot.liftJunctionHighHeight;
                 }
 
                 //manual lift
                 if (liftPosDownManualButton) {
-                    if (liftCurrentHeight > manualLiftIncrement) {
-                        liftHeightTarget = liftCurrentHeight - manualLiftIncrement;
+                    if (liftCurrentHeight > Robot.manualLiftIncrement) {
+                        liftHeightTarget = liftCurrentHeight - Robot.manualLiftIncrement;
                     }
                 }
                 if (liftPosUpManualButton) {
-                    if (liftCurrentHeight < liftMaximumHeight - manualLiftIncrement) {
-                        liftHeightTarget = liftCurrentHeight + manualLiftIncrement;
+                    if (liftCurrentHeight < Robot.liftMaximumHeight - Robot.manualLiftIncrement) {
+                        liftHeightTarget = liftCurrentHeight + Robot.manualLiftIncrement;
                     }
                 }
 
 
                 // Allow lift to move when:  1) going up  2) Turret near the zero position  3) It won't go too low for Turret turning
-                if (liftCurrentHeight < liftHeightTarget || Math.abs(turretCurrentDegrees) < turretCloseToZero || liftHeightTarget > liftMinHeightForTurning) {
+                if (liftCurrentHeight < liftHeightTarget || Math.abs(turretCurrentDegrees) < Robot.turretCloseToZero || liftHeightTarget > Robot.liftMinHeightForTurning) {
                     if (liftHeightTarget != liftHeightPrevTarget) {
-                        Robot.liftMotor.setTargetPosition((int) (liftHeightTarget * liftTicksPerInch));
+                        Robot.liftMotor.setTargetPosition((int) (liftHeightTarget * Robot.liftTicksPerInch));
                         Robot.liftMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
                         if (liftCurrentHeight < liftHeightTarget) {
-                            liftSpeedPower = liftSpeedUp;
+                            liftSpeedPower = Robot.liftSpeedUp;
                         } else {
-                            liftSpeedPower = liftSpeedDown;
+                            liftSpeedPower = Robot.liftSpeedDown;
                         }
                         Robot.liftMotor.setPower(liftSpeedPower);
                         liftHeightPrevTarget = liftHeightTarget;
+
+
                     }
                 } else {  // keep lift where is is
-                    Robot.liftMotor.setTargetPosition((int) (liftCurrentHeight * liftTicksPerInch));
+                    Robot.liftMotor.setTargetPosition((int) (liftCurrentHeight * Robot.liftTicksPerInch));
                     Robot.liftMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-                    Robot.liftMotor.setPower(liftSpeedUp);
+                    Robot.liftMotor.setPower(Robot.liftSpeedUp);
                     liftHeightPrevTarget = liftCurrentHeight;
                 }
 
                 //GUIDE SERVO CODE
-                if (liftCurrentHeight > Robot.guideServoDeployHeight && liftHeightTarget != liftPickupHeight && grabberServoCurrentPos == Robot.grabberServoClosedPos) {
+                if (liftCurrentHeight > Robot.guideServoDeployHeight && liftHeightTarget != Robot.liftPickupHeight && grabberServoCurrentPos == Robot.grabberServoClosedPos && scoreSteps == 0) {
                     Robot.guideServo.setPosition(Robot.guideServoDown);
+                    autoScore = true;
                 }
-                else Robot.guideServo.setPosition(Robot.guideServoUp);
+                else {
+                    Robot.guideServo.setPosition(Robot.guideServoUp);
+                    autoScore = false;
+                    if (scoreSteps == 1) {
+                        scoreSteps = 2;
+                    }
+
+                }
+
+                if (Robot.liftMotor.getCurrentPosition() / Robot.liftTicksPerInch <= (3.0/2.0) + (lastHeightTargetNoReset - 3) && scoreSteps == 2) {
+                    Robot.grabberServo.setPosition(Robot.grabberServoOpenPos);
+                }
+
+                if (!Robot.liftMotor.isBusy() && scoreSteps == 2) {
+                    liftHeightTarget = lastHeightTargetNoReset;
+                    scoreSteps = 3;
+                }
+
+                else if (!Robot.liftMotor.isBusy() && scoreSteps == 3) {
+                    liftHeightTarget = Robot.liftPickupHeight;
+                    turretButtonChoiceTargetDegrees = Robot.turretForwardDegrees;
+                    scoreSteps = 0;
+                }
+
+
+
 
 
                 //---------------------------------------------------------------//
                 //TURRET CODE
 
                 if (turretPosForwardButton) {
-                    turretButtonChoiceTargetDegrees = turretForwardDegrees;
+                    turretButtonChoiceTargetDegrees = Robot.turretForwardDegrees;
                 }
                 if (turretPosLeftButton) {
-                    turretButtonChoiceTargetDegrees = turretLeftDegrees;
+                    turretButtonChoiceTargetDegrees = Robot.turretLeftDegrees;
                 }
                 if (turretPosRightButton) {
-                    turretButtonChoiceTargetDegrees = turretRightDegrees;
+                    turretButtonChoiceTargetDegrees = Robot.turretRightDegrees;
                 }
-
                 if (turretPosBackButton) {
-                    turretButtonChoiceTargetDegrees = turretBackDegrees;
-                    turretSpeed = 0.75;
+                    turretButtonChoiceTargetDegrees = Robot.turretBackDegrees;
+                    Robot.turretSpeed = 0.75;
                     if (turretCurrentDegrees < 0) {
                         turretButtonChoiceTargetDegrees = -turretButtonChoiceTargetDegrees;
                     }
                 }
 
 
-                if (liftCurrentHeight > liftMinHeightForTurning - 0.5) {
+                if (liftCurrentHeight > Robot.liftMinHeightForTurning - 0.5) {
                     turretTargetDegrees = turretButtonChoiceTargetDegrees;
                 } else {
 
-                    if (Math.abs(turretTargetDegrees - turretCurrentDegrees) > turretCloseToZero) {  // If not close to destination, temporarily keep turret where it is until lift raises.
+                    if (Math.abs(turretTargetDegrees - turretCurrentDegrees) > Robot.turretCloseToZero) {  // If not close to destination, temporarily keep turret where it is until lift raises.
                         turretTargetDegrees = turretCurrentDegrees;
                     }
                 }
 
                 if (turretTargetDegrees != turretPrevTargetDegrees) {
-                    Robot.turretMotor.setTargetPosition((int) (turretTargetDegrees * turretTicksPerDegree));
+                    Robot.turretMotor.setTargetPosition((int) (turretTargetDegrees * Robot.turretTicksPerDegree));
                     Robot.turretMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-                    Robot.turretMotor.setPower(turretSpeed);
+                    Robot.turretMotor.setPower(Robot.turretSpeed);
                     turretPrevTargetDegrees = turretTargetDegrees;
-                    turretSpeed = 0.5;
+
                 }
 
             }
+
+
 
             else {
                 Robot.turretMotor.setPower(gamepad2.right_stick_x / 4);
@@ -369,14 +351,13 @@ public class GameTeleop extends LinearOpMode {
             //---------------------------------------------------------------//
             //GRABBER SERVO CODE
 
-            if (grabberTrigger > triggerSensitivity) {
-                if (grabberTriggerReleased) {
-                    if (grabberServoCurrentPos == grabberServoOpenPos) {
-                        grabberServoCurrentPos = grabberServoClosedPos;
+            if (grabberTrigger > Robot.triggerSensitivity) {
+                if (grabberTriggerReleased  && !autoScore) {
+                    if (grabberServoCurrentPos == Robot.grabberServoOpenPos) {
+                        grabberServoCurrentPos = Robot.grabberServoClosedPos;
                     } else {
-                        grabberServoCurrentPos = grabberServoOpenPos;
-                        startTiming = true;
-                        timerToResetHeight = 70;
+                        grabberServoCurrentPos = Robot.grabberServoOpenPos;
+
                     }
                     Robot.grabberServo.setPosition(grabberServoCurrentPos);
                     grabberTriggerReleased = false;
@@ -386,7 +367,24 @@ public class GameTeleop extends LinearOpMode {
             }
 
 
-            //Tightening code
+            if (autoScore) {
+                if (Robot.colorSensorPole.green() > Robot.colorThreshold) {
+                    scoreSteps = 1;
+                    liftHeightTarget = lastHeightTargetNoReset - 3;
+                }
+                else {
+                    grabberServoCurrentPos = Robot.grabberServoClosedPos;
+                    Robot.grabberServo.setPosition(grabberServoCurrentPos);
+                }
+
+            }
+
+            if (scoreButton > Robot.triggerSensitivity) {
+                scoreSteps = 1;
+                liftHeightTarget = lastHeightTargetNoReset - 3;
+            }
+            //---------------------------------------------------------//
+            //Tightening Code
 
             if (gamepad1.a) {
 
@@ -401,13 +399,14 @@ public class GameTeleop extends LinearOpMode {
 
 
             }
+
             //---------------------------------------------------------//
             //DRIVING CODE
 
             wheelPower = Math.hypot(leftStickX, leftStickY);
-            if (wheelPower > deadStickZone) {
+            if (wheelPower > Robot.deadStickZone) {
 
-                wheelPower = ((1 - wheelPowerMinToMove) * wheelPower + wheelPowerMinToMove);
+                wheelPower = ((1 - Robot.wheelPowerMinToMove) * wheelPower + Robot.wheelPowerMinToMove);
 
             } else {
                 wheelPower = 0;
@@ -454,7 +453,9 @@ public class GameTeleop extends LinearOpMode {
             telemetry.addData("Turret Target Position (degrees):", turretTargetDegrees);
             telemetry.addData("Lift Current Position (inches):", liftCurrentHeight);
             telemetry.addData("Lift Target Position (inches):", liftHeightTarget);
-            telemetry.addData("Average Velocity:", GetAverageVelocity(ticksPerInch));
+            telemetry.addData("Average Velocity:", GetAverageVelocity(Robot.ticksPerInch));
+            telemetry.addData("Distance", Robot.colorSensorPole.green());
+            telemetry.addData("Step", scoreSteps);
             telemetry.update();
 
         }
