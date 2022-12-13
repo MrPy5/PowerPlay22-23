@@ -80,7 +80,7 @@ public class Robot {
     //Guide
     public static Servo guideServo;
     public static double guideServoDown = 0.02;
-    public static double guideServoUp = 0.86;
+    public static double guideServoUp = 0.7;
     public static double guideServoDeployHeight = 10;
 
     //Color Sensor
@@ -89,7 +89,7 @@ public class Robot {
 
     //Pole Color Sensor
     public static ColorSensor colorSensorPole;
-    public static double colorThreshold = 500;
+    public static double colorThreshold = 300;
 
     //Gamepad
     public static double triggerSensitivity = 0.01;

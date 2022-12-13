@@ -84,12 +84,12 @@ public class GameTeleop extends LinearOpMode {
         double lrPower;
         double rrPower;
 
+        double avgWheelVelocityFPS;
 
         //---------------------------------------------------------//
         //INIT SERVOS
         Robot.grabberServo.setPosition(Robot.grabberServoOpenPos);
 
-        waitForStart();
 
         /*Robot.liftMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
         Robot.liftMotor.setPower(0.03);
@@ -140,6 +140,7 @@ public class GameTeleop extends LinearOpMode {
             liftCurrentHeight = Robot.liftMotor.getCurrentPosition() / Robot.liftTicksPerInch;
             turretCurrentDegrees = Robot.turretMotor.getCurrentPosition() / Robot.turretTicksPerDegree;
 
+            avgWheelVelocityFPS = GetAverageVelocity();
 
             //-----------------------------------------------------------//
             //SLO-MO CODE
@@ -279,7 +280,7 @@ public class GameTeleop extends LinearOpMode {
 
                 }
 
-                if (Robot.liftMotor.getCurrentPosition() / Robot.liftTicksPerInch <= (3.0/2.0) + (lastHeightTargetNoReset - 3) && scoreSteps == 2) {
+                if (liftCurrentHeight <= (3.0/2.0) + (lastHeightTargetNoReset - 3) && scoreSteps == 2) {
                     Robot.grabberServo.setPosition(Robot.grabberServoOpenPos);
                 }
 
@@ -367,7 +368,7 @@ public class GameTeleop extends LinearOpMode {
             }
 
 
-            if (autoScore) {
+            if (autoScore && avgWheelVelocityFPS < 1) {
                 if (Robot.colorSensorPole.green() > Robot.colorThreshold) {
                     scoreSteps = 1;
                     liftHeightTarget = lastHeightTargetNoReset - 3;
@@ -453,7 +454,7 @@ public class GameTeleop extends LinearOpMode {
             telemetry.addData("Turret Target Position (degrees):", turretTargetDegrees);
             telemetry.addData("Lift Current Position (inches):", liftCurrentHeight);
             telemetry.addData("Lift Target Position (inches):", liftHeightTarget);
-            telemetry.addData("Average Velocity:", GetAverageVelocity(Robot.ticksPerInch));
+            telemetry.addData("Average Velocity:", GetAverageVelocity());
             telemetry.addData("Distance", Robot.colorSensorPole.green());
             telemetry.addData("Step", scoreSteps);
             telemetry.update();
@@ -461,13 +462,13 @@ public class GameTeleop extends LinearOpMode {
         }
     }
 
-    public double GetAverageVelocity(double ticksPerInch) {
+    public double GetAverageVelocity() {
         double averageVelocity = 0;
 
 
         averageVelocity = (Robot.backRight.getVelocity() + Robot.backLeft.getVelocity() + Robot.frontLeft.getVelocity() + Robot.frontRight.getVelocity()) / 4;
 
-        averageVelocity = (averageVelocity / ticksPerInch) / 12;
+        averageVelocity = (averageVelocity / Robot.ticksPerInch) / 12;
         return averageVelocity;
     }
 

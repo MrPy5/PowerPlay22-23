@@ -31,6 +31,7 @@ package org.firstinspires.ftc.teamcode.opmodes.testing;
 
 import android.app.Activity;
 import android.graphics.Color;
+import android.util.Log;
 import android.view.View;
 
 import com.qualcomm.robotcore.eventloop.opmode.Disabled;
@@ -98,7 +99,7 @@ public class ColorSensorTestMoveMent extends LinearOpMode {
         while (opModeIsActive()) {
 
             telemetry.addData("distance", colorSensor.green());
-
+            Log.d("Test", "   Green: " + colorSensor.green());
 
             telemetry.update();
 
