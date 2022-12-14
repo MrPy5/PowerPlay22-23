@@ -28,7 +28,7 @@ public class Robot {
     //Slow Mode
     public static double slowModeSpeed = .8;
     public static double slowModeSlow = .4;
-    public static double slowModeFast = .8;
+    public static double slowModeFast = 1;
     public static double slowModeGroundJuctionSlow = .2;
 
     public static double slowModeTurnSpeed = 0.6;
@@ -49,7 +49,7 @@ public class Robot {
     public static double liftJunctionMediumHeight = 24;
     public static double liftJunctionHighHeight = 33.5;
     public static double liftMinHeightForTurning = 6;
-    public static double liftMaximumHeight = 34;
+    public static double liftMaximumHeight = 36;
 
     public static double liftSpeedUp = 1;
     public static double liftSpeedDown = .7;
@@ -79,7 +79,7 @@ public class Robot {
 
     //Guide
     public static Servo guideServo;
-    public static double guideServoDown = 0.02;
+    public static double guideServoDown = 0;
     public static double guideServoUp = 0.7;
     public static double guideServoDeployHeight = 10;
 
@@ -89,7 +89,7 @@ public class Robot {
 
     //Pole Color Sensor
     public static ColorSensor colorSensorPole;
-    public static double colorThreshold = 300;
+    public static double colorThreshold = 150;
 
     //Gamepad
     public static double triggerSensitivity = 0.01;
