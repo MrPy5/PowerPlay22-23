@@ -63,13 +63,13 @@ public class MotorTest extends LinearOpMode {
         while (opModeIsActive()) {
             if (gamepad1.right_bumper) {
                 targetPos += 0.01;
-                sleep(1000);
+                sleep(50);
             }
             if (gamepad1.left_bumper) {
                 targetPos -= 0.01;
-                sleep(1000);
+                sleep(50);
             }
-            Robot.guideServo.setPosition(targetPos);
+            Robot.grabberServo.setPosition(targetPos);
             telemetry.addData("", targetPos);
             telemetry.update();
         }

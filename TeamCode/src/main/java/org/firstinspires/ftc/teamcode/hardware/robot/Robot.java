@@ -23,8 +23,14 @@ public class Robot {
 
     public static double deadStickZone = 0.01;
     public static double wheelPowerMinToMove = 0.05;
-
-
+    
+    //Odometer
+    public static DcMotorEx odometerLeft;
+    public static DcMotorEx odometerRight;
+    public static double odometerCountsPerRevolution = 8192;
+    public static double odometerWheelDiameter = 1.435;
+    public static double odometerTicksPerInch = (odometerCountsPerRevolution) /
+            (odometerWheelDiameter * Math.PI);
     //Slow Mode
     public static double slowModeSpeed = .8;
     public static double slowModeSlow = .4;
@@ -45,6 +51,7 @@ public class Robot {
 
     public static double liftPickupHeight = 0;
     public static double liftJunctionGroundHeight = 2;
+    public static double liftUprightHeight = 2.25;
     public static double liftJunctionLowHeight = 14.5;
     public static double liftJunctionMediumHeight = 24;
     public static double liftJunctionHighHeight = 33.5;
@@ -75,7 +82,8 @@ public class Robot {
     public static Servo grabberServo;
     public static double grabberServoClosedPos = 0.18;
     public static double grabberServoHalfwayPos = 0.55;
-    public static double grabberServoOpenPos = 0.7;
+    public static double grabberServoUprightPos = 0.42;
+    public static double grabberServoOpenPos = 0.76;
 
     //Guide
     public static Servo guideServo;
@@ -113,6 +121,19 @@ public class Robot {
         frontLeft.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
         backRight.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
         frontRight.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
+
+        //Odometer
+        odometerLeft = hardwareMap.get(DcMotorEx.class, "odometerLeft");
+        odometerRight = hardwareMap.get(DcMotorEx.class, "odometerRight");
+
+        odometerRight.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        odometerLeft.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        odometerRight.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        odometerLeft.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+
+        odometerRight.setDirection(DcMotorSimple.Direction.REVERSE);
+
+        odometerLeft.setDirection(DcMotorSimple.Direction.REVERSE);
 
         //Turret
         turretMotor = hardwareMap.get(DcMotorEx.class, "turretMotor");

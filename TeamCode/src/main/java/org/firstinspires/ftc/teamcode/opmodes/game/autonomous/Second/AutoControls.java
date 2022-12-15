@@ -239,7 +239,7 @@ public abstract class AutoControls extends LinearOpMode {
         double currentTurretDegrees;
         double turretDegreesRemaining = 0;
 
-        double currentLiftInches;
+        double currentLiftInches = 0;
         double liftInchesRemaining = 0;
 
 
@@ -267,6 +267,12 @@ public abstract class AutoControls extends LinearOpMode {
 
 
         while (Math.abs(driveInchesRemaining) > 0.25 || driveCurrentVelocity > 2 || liftInchesRemaining > liftToleranceInches || turretDegreesRemaining > turretToleranceDegrees) {
+            if (Math.abs(driveInchesRemaining) <= 0.25) {
+                Robot.frontLeft.setPower(0);
+                Robot.frontRight.setPower(0);
+                Robot.backLeft.setPower(0);
+                Robot.backRight.setPower(0);
+            }
 
             if (driveInches != 0.0) {
                 if (driveInchesRemaining / driveInches > 0.7) {
@@ -314,6 +320,9 @@ public abstract class AutoControls extends LinearOpMode {
             telemetry.addData("Lift Inches Remaining", liftInchesRemaining);
             telemetry.addData("Drive Remaining", driveInchesRemaining);
             telemetry.addData("Turret Degrees Remaining", turretDegreesRemaining);
+            telemetry.addData("Are we there", currentLiftInches == liftHeightTarget);
+            telemetry.addData("current lift", currentLiftInches);
+            telemetry.addData("target lift", liftHeightTarget);
             telemetry.update();
 
         }
