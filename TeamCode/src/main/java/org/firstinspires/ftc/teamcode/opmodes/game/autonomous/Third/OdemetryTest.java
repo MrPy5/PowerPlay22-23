@@ -32,12 +32,11 @@ public class OdemetryTest extends LinearOpMode {
 
         waitForStart();
 
-        double targetInches = 22;
+        //driveToPoint(22, 87, 8);
+        driveToPoint(-22, 0, 8);
 
 
-        driveToPoint(targetInches, 87, 8);
-
-        }
+    }
 
     public void initIMU() {
         BNO055IMU.Parameters parameters = new BNO055IMU.Parameters();
@@ -77,8 +76,8 @@ public class OdemetryTest extends LinearOpMode {
         double currentSpeed;
 
         double maxWheelPower;
-        double wheelPower = .05; //Minimum speed we start at
-
+        double wheelPower = .1; //Minimum speed we start at
+        double reverse = 1; // 1 is forward, -1 is backward
 
 
         ElapsedTime timeoutTimer = new ElapsedTime();
@@ -92,9 +91,9 @@ public class OdemetryTest extends LinearOpMode {
 
 
 
-        while ((distanceToX > 1 || currentSpeed > 2) && opModeIsActive() /*&& timeoutTimer.seconds() < 1*/) {
+        while ((Math.abs(distanceToX) > 1 || currentSpeed > 2) && opModeIsActive() /*&& timeoutTimer.seconds() < 1*/) {
 
-            maxWheelPower = (Math.pow(distanceToX / speedModifier, 3) + 25) / 100;
+            maxWheelPower = (Math.abs(Math.pow(distanceToX / speedModifier, 3)) + 10) / 100;
 
             double speedIncrease = .15;
 
@@ -103,13 +102,18 @@ public class OdemetryTest extends LinearOpMode {
                 wheelPower = maxWheelPower;
             }
 
-
             double adjustment = headingAdjustment(heading);
 
-            lfPower = wheelPower + adjustment;
-            rfPower = wheelPower - adjustment;
-            lrPower = wheelPower + adjustment;
-            rrPower = wheelPower - adjustment;
+            if (distanceToX < 0) {
+                reverse = -1;
+            } else {
+                reverse = 1;
+            }
+            
+            lfPower = (wheelPower + adjustment) * reverse;
+            rfPower = (wheelPower - adjustment) * reverse;
+            lrPower = (wheelPower + adjustment) * reverse;
+            rrPower = (wheelPower - adjustment) * reverse;
 
             Robot.frontLeft.setPower(lfPower);
             Robot.frontRight.setPower(rfPower);
