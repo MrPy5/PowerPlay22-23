@@ -32,8 +32,42 @@ public class OdemetryTest extends LinearOpMode {
 
         waitForStart();
 
-        //driveToPoint(22, 87, 8);
-        driveToPoint(-22, 0, 8);
+        driveToPoint(40, 0, 7, 9);
+        sleep(1000);
+
+
+        driveToPoint(12, 0, 3, 9);
+        sleep(1000);
+
+        driveToPoint(24, 87, 5, 9);
+        sleep(1000);
+
+        driveToPoint(-37, 87, 7, 9);
+        sleep(1000);
+
+
+        driveToPoint(37, 87, 7, 9);
+        sleep(1000);
+
+        driveToPoint(-37, 87, 7, 9);
+        sleep(1000);
+
+        driveToPoint(37, 87, 7, 9);
+        sleep(1000);
+
+        driveToPoint(-37, 87, 7, 9);
+        sleep(1000);
+
+        driveToPoint(37, 87, 7, 9);
+        sleep(1000);
+
+        driveToPoint(-37, 87, 7, 9);
+        sleep(1000);
+
+        driveToPoint(-35, 87, 7, 9);
+        sleep(1000);
+
+
 
 
     }
@@ -61,7 +95,11 @@ public class OdemetryTest extends LinearOpMode {
 
     }
 
-    public void driveToPoint(double targetXInches, double heading, double speedModifier) {
+    public void driveToPoint(double targetXInches, double heading, double speedModifier, double speedMinimum) {
+        Robot.odometerRight.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        Robot.odometerLeft.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        Robot.odometerRight.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        Robot.odometerLeft.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
 
         double currentXInches;
 
@@ -76,7 +114,7 @@ public class OdemetryTest extends LinearOpMode {
         double currentSpeed;
 
         double maxWheelPower;
-        double wheelPower = .1; //Minimum speed we start at
+        double wheelPower = 0; //Minimum speed we start at
         double reverse = 1; // 1 is forward, -1 is backward
 
 
@@ -91,11 +129,11 @@ public class OdemetryTest extends LinearOpMode {
 
 
 
-        while ((Math.abs(distanceToX) > 1 || currentSpeed > 2) && opModeIsActive() /*&& timeoutTimer.seconds() < 1*/) {
+        while ((Math.abs(distanceToX) > 0.25 || currentSpeed > .25) && opModeIsActive() /*&& timeoutTimer.seconds() < 1*/) {
 
-            maxWheelPower = (Math.abs(Math.pow(distanceToX / speedModifier, 3)) + 10) / 100;
+            maxWheelPower = (Math.abs(Math.pow(distanceToX / speedModifier, 3)) + speedMinimum) / 100;
 
-            double speedIncrease = .15;
+            double speedIncrease = .1;
 
             wheelPower += speedIncrease;
             if (Math.abs(wheelPower) > Math.abs(maxWheelPower)) {
@@ -110,10 +148,10 @@ public class OdemetryTest extends LinearOpMode {
                 reverse = 1;
             }
             
-            lfPower = (wheelPower + adjustment) * reverse;
-            rfPower = (wheelPower - adjustment) * reverse;
-            lrPower = (wheelPower + adjustment) * reverse;
-            rrPower = (wheelPower - adjustment) * reverse;
+            lfPower = (wheelPower * reverse + adjustment);
+            rfPower = (wheelPower * reverse - adjustment);
+            lrPower = (wheelPower * reverse + adjustment);
+            rrPower = (wheelPower * reverse - adjustment);
 
             Robot.frontLeft.setPower(lfPower);
             Robot.frontRight.setPower(rfPower);

@@ -1,11 +1,12 @@
 package org.firstinspires.ftc.teamcode.opmodes.game.autonomous.Second;
 
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 
 import org.firstinspires.ftc.teamcode.hardware.robot.Robot;
 
 @Autonomous(name = "Left Auto")
-
+@Disabled
 public class LeftAuto extends AutoControls {
     @Override
     public void runOpMode() throws InterruptedException {

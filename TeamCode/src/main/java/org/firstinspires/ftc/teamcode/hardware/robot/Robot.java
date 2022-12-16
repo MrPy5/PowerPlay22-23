@@ -28,7 +28,7 @@ public class Robot {
     public static DcMotorEx odometerLeft;
     public static DcMotorEx odometerRight;
     public static double odometerCountsPerRevolution = 8192;
-    public static double odometerWheelDiameter = 1.435;
+    public static double odometerWheelDiameter = 1.436;
     public static double odometerTicksPerInch = (odometerCountsPerRevolution) /
             (odometerWheelDiameter * Math.PI);
     //Slow Mode
@@ -53,7 +53,7 @@ public class Robot {
     public static double liftJunctionGroundHeight = 2;
     public static double liftUprightHeight = 2.25;
     public static double liftJunctionLowHeight = 14.5;
-    public static double liftJunctionMediumHeight = 24;
+    public static double liftJunctionMediumHeight = 26; //24
     public static double liftJunctionHighHeight = 33.5;
     public static double liftMinHeightForTurning = 6;
     public static double liftMaximumHeight = 36;
