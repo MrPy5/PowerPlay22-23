@@ -30,13 +30,14 @@
 package org.firstinspires.ftc.teamcode.opmodes.testing;
 
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 
 import org.firstinspires.ftc.teamcode.hardware.robot.Robot;
 
 
 @Autonomous(name="Voltage Test")
-
+@Disabled
 public class VoltageTest extends LinearOpMode {
     @Override
     public void runOpMode() {

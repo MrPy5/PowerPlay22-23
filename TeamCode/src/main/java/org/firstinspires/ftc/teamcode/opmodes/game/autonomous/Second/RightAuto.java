@@ -3,8 +3,8 @@ package org.firstinspires.ftc.teamcode.opmodes.game.autonomous.Second;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 
-@Autonomous(name = "Right Auto")
-@Disabled
+@Autonomous(name = "**Right Auto Old")
+
 public class RightAuto extends AutoControls {
     @Override
     public void runOpMode() throws InterruptedException {
@@ -12,14 +12,14 @@ public class RightAuto extends AutoControls {
         int endParkingPosition = DetectAprilTags();
         //waitForStart();
         ChangeGripperState(grabberServoClosedPos);
-        performAction(40, liftJunctionMediumHeight, 35, turretLeftDegrees, 22, 'n');
+        performAction(41, liftJunctionMediumHeight, 35, turretLeftDegrees, 22, 'n');
         performAction(0, liftJunctionMediumHeight - 4, 1, -1, -1, 'n');
 
         ChangeGripperState(grabberServoOpenPos);
 
         sleep(500);
         performAction(0, liftJunctionMediumHeight, 1, -1, 0, 'n');
-        performAction(10.5, liftJunctionGroundHeight + 5.5, 8, turretForwardDegrees, 11, 'n');
+        performAction(9.5, liftJunctionGroundHeight + 5.5, 8, turretForwardDegrees, 11, 'n');
 
         Turn(273);
 
@@ -65,7 +65,7 @@ public class RightAuto extends AutoControls {
 
         else if (endParkingPosition == 3) {
 
-            performAction(32.5, -1, 0, -1, 0, 'n');
+            performAction(31.5, -1, 0, -1, 0, 'n');
 
 
         }

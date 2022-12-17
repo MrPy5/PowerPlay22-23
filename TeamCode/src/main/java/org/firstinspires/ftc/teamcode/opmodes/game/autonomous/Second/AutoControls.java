@@ -129,6 +129,7 @@ public abstract class AutoControls extends LinearOpMode {
         Robot robot = new Robot(hwMap);
         initIMU();
         initCamera();
+        Robot.guideServo.setPosition(Robot.guideServoUp);
         //Camera Stuff
     }
 

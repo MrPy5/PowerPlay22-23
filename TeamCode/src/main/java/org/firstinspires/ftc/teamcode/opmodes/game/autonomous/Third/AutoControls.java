@@ -127,17 +127,21 @@ public abstract class AutoControls extends LinearOpMode {
     final double SCALE_FACTOR = 255;
 
     double multiplier = 0;
-
+    public char alliance = 'b';
 
     public void init(HardwareMap hwMap) {
         Robot robot = new Robot(hwMap);
         initIMU();
         initCamera();
+        telemetry.addData("here", "here");
+        telemetry.update();
+        sleep(1000);
         Robot.guideServo.setPosition(Robot.guideServoUp);
         Robot.grabberServo.setPosition(Robot.grabberServoOpenPos);
 
         ZeroPowerToBrake();
         multiplier = getVoltageMultiplier();
+
         //Camera Stuff
     }
 
@@ -245,7 +249,7 @@ public abstract class AutoControls extends LinearOpMode {
 
     public void performAction(double targetXInches, double heading, double speedModifier, double speedMinimum, double liftHeightTarget, double liftPerformWithInchesLeft, double turretTargetDegrees, double turretPerformWithInchesLeft, double targetServoPosition, double servoPerformWithInchesLeft, double distanceToleranceParam) {
 
-        speedModifier = speedModifier * multiplier;
+        speedModifier = speedModifier * 1; //multiplier;
 
         ResetEncoders();
         double currentLiftInches = 0;
@@ -329,6 +333,8 @@ public abstract class AutoControls extends LinearOpMode {
             else {
                 wheelPower = 0;
             }
+
+            //double adjustForColorVariable = adjustForColor(alliance);
 
             lfPower = (wheelPower * reverse + adjustment);
             rfPower = (wheelPower * reverse - adjustment);
@@ -455,15 +461,15 @@ public abstract class AutoControls extends LinearOpMode {
             degreesOff = 360 - degreesOff;
         }
 
-        double speedModifier = 12;
-        double speedMinimum = 5;
+        double speedModifier = 14;
+        double speedMinimum = 6;
 
         if (degreesOff > 10) {
-            speedModifier = 8;
+            speedModifier = 10;
         }
 
         if (distanceToX > 3) {
-            speedMinimum = 3;
+            speedMinimum = 2;
         }
 
 
@@ -504,20 +510,20 @@ public abstract class AutoControls extends LinearOpMode {
         double leftColor;
         double rightColor;
 
-        double blueThreshold = 0;
-        double blueMultiplier = 1;
+        double blueThreshold = 350;
+        double blueDivisor = 4000;
 
-        double redThreshold = 0;
-        double redMultiplier = 1;
+        double redThreshold = 250;
+        double redDivisor = 2000;
 
         double outputValue = 0;
 
-        if (color == 'r') {
+        if (color == 'b') {
             leftColor = Robot.colorSensorLeft.red();
             rightColor = Robot.colorSensorRight.red();
 
             if (leftColor > redThreshold || rightColor > redThreshold) {
-                outputValue = (rightColor - leftColor) * redMultiplier;
+                outputValue = (rightColor - leftColor) * redDivisor;
             }
         }
         else {
@@ -525,13 +531,14 @@ public abstract class AutoControls extends LinearOpMode {
             rightColor = Robot.colorSensorRight.blue();
 
             if (leftColor > blueThreshold || rightColor > blueThreshold) {
-                outputValue = (rightColor - leftColor) * blueMultiplier;
+                outputValue = (rightColor - leftColor) / blueDivisor;
             }
         }
-        telemetry.addData("Left Color", leftColor);
+
+        /*telemetry.addData("Left Color", leftColor);
         telemetry.addData("Right Color", rightColor);
         telemetry.addData("Output Value", outputValue);
-        telemetry.update();
+        telemetry.update();*/
 
         return outputValue;
 

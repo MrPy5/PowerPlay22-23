@@ -46,7 +46,7 @@ import org.firstinspires.ftc.teamcode.opmodes.game.autonomous.Third.AutoControls
 
 
 @TeleOp(name = "Color Sensor Test", group = "Sensor")
-
+@Disabled
 
 public class ColorSensorTestMoveMent extends AutoControls {
 
@@ -56,7 +56,7 @@ public class ColorSensorTestMoveMent extends AutoControls {
         init(hardwareMap);
         waitForStart();
         while (opModeIsActive()) {
-            adjustForColor('b');
+            adjustForColor('r');
             sleep(20);
         }
 

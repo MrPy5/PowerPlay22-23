@@ -5,7 +5,7 @@ import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 
 import org.firstinspires.ftc.teamcode.hardware.robot.Robot;
 
-@Autonomous(name = "Left Auto")
+@Autonomous(name = "Left Auto Old")
 @Disabled
 public class LeftAuto extends AutoControls {
     @Override

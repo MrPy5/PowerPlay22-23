@@ -10,6 +10,8 @@
 
 package org.firstinspires.ftc.teamcode.opmodes.testing;
 
+import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
@@ -18,7 +20,7 @@ import org.firstinspires.ftc.teamcode.hardware.robot.Robot;
 
 
 @TeleOp(name = "Strafe Testing")
-
+@Disabled
 public class StrafingRunToPositionTesting extends LinearOpMode {
 
 

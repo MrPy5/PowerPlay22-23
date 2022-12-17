@@ -3,6 +3,7 @@ package org.firstinspires.ftc.teamcode.opmodes.game.autonomous.Third;
 import com.qualcomm.hardware.bosch.BNO055IMU;
 import com.qualcomm.hardware.bosch.JustLoggingAccelerationIntegrator;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
@@ -13,7 +14,7 @@ import org.firstinspires.ftc.robotcore.external.navigation.Orientation;
 import org.firstinspires.ftc.teamcode.hardware.robot.Robot;
 
 @Autonomous(name="TickTest")
-
+@Disabled
 public class OdemetryTickTest extends LinearOpMode {
     BNO055IMU imu;
     Orientation angles;
