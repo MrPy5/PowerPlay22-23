@@ -18,13 +18,13 @@ import org.firstinspires.ftc.teamcode.hardware.robot.Robot;
 public class OdemetryTest extends LinearOpMode {
     BNO055IMU imu;
     Orientation angles;
-
+    public double multiplier = 0;
 
     @Override
     public void runOpMode() throws InterruptedException {
         Robot robot = new Robot(hardwareMap);
         initIMU();
-
+        multiplier = getVoltageMultiplier();
         Robot.backLeft.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         Robot.frontLeft.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         Robot.backRight.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
@@ -94,13 +94,18 @@ public class OdemetryTest extends LinearOpMode {
         imu.write8(BNO055IMU.Register.OPR_MODE, BNO055IMU.SensorMode.IMU.bVal & 0x0F);
 
     }
+    public double getVoltageMultiplier() {
+        double voltage = hardwareMap.voltageSensor.iterator().next().getVoltage();
+        double multiplier = (.2 * voltage) - 1.5;
+        return multiplier;
+    }
 
     public void driveToPoint(double targetXInches, double heading, double speedModifier, double speedMinimum) {
         Robot.odometerRight.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         Robot.odometerLeft.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         Robot.odometerRight.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         Robot.odometerLeft.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-
+        speedModifier = speedModifier * multiplier;
         double currentXInches;
 
         double startXPos = getAverageOdometerPosition();

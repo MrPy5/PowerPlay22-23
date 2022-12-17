@@ -6,6 +6,7 @@ import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.Servo;
+import com.qualcomm.robotcore.hardware.VoltageSensor;
 
 public class Robot {
 
@@ -53,7 +54,7 @@ public class Robot {
     public static double liftJunctionGroundHeight = 2;
     public static double liftUprightHeight = 2.25;
     public static double liftJunctionLowHeight = 14.5;
-    public static double liftJunctionMediumHeight = 26; //24
+    public static double liftJunctionMediumHeight = 24.5; //24
     public static double liftJunctionHighHeight = 33.5;
     public static double liftMinHeightForTurning = 6;
     public static double liftMaximumHeight = 36;
@@ -103,6 +104,8 @@ public class Robot {
     public static double triggerSensitivity = 0.01;
 
 
+
+
     public Robot(HardwareMap robot_hardwareMap) {
         hardwareMap = robot_hardwareMap;
 
@@ -111,6 +114,7 @@ public class Robot {
         backRight = hardwareMap.get(DcMotorEx.class, "backRight");
         frontLeft = hardwareMap.get(DcMotorEx.class, "frontLeft");
         frontRight = hardwareMap.get(DcMotorEx.class, "frontRight");
+
 
         backLeft.setDirection(DcMotor.Direction.FORWARD);
         frontLeft.setDirection(DcMotor.Direction.FORWARD);

@@ -13,31 +13,58 @@ public class LeftAuto extends AutoControls{
         //int endParkingPosition = DetectAprilTags();
         waitForStart();
         Robot.grabberServo.setPosition(Robot.grabberServoClosedPos);
-        performAction(40, 0, 7, 9, Robot.liftJunctionMediumHeight - 2, 35, Robot.turretRightDegrees, 22, Robot.grabberServoOpenPos, .3);
+        performAction(40, 0, 6.5, 10, Robot.liftJunctionMediumHeight, 37, Robot.turretRightDegrees, 22, Robot.grabberServoOpenPos, 0, 0);
 
-        performAction(12, 0, 3, 9, -1, 0, Robot.turretForwardDegrees, 12, -1, 0);
+        performAction(12, 0, 3, 9, -1, 0, Robot.turretForwardDegrees, 12, -1, 0, 0);
 
         //Turn
-        performAction(0, 87, 7, 9, -1, 0, -1, 0, -1, 0);
-
-        performAction(24, 87, 5.5, 9, Robot.liftJunctionGroundHeight + 4.25, 24, -1, 0, Robot.grabberServoHalfwayPos, 24);
-
-        Robot.grabberServo.setPosition(Robot.grabberServoClosedPos);
-        sleep(500);
-        //Lift lift 10 inches
-        performAction(0, 87, 7, 9, Robot.liftJunctionGroundHeight + 12, 5, -1, 0, -1, 0);
-
-        // Go to pole
-        performAction(-34, 87, 7, 10, Robot.liftJunctionMediumHeight, 38, Robot.turretLeftDegrees, 20, Robot.grabberServoOpenPos, 0.3);
-        sleep(500);
-        //Drop 2
-        performAction(35.5, 87, 7, 10, Robot.liftJunctionGroundHeight + 3, 10, Robot.turretForwardDegrees, 30, Robot.grabberServoHalfwayPos, 20);
+        performAction(0, 87, 7, 7, -1, 0, -1, 0, -1, 0,0);
+        //Drive to stack
+        performAction(24, 87, 5, 11, Robot.liftJunctionGroundHeight + 4.25, 24, -1, 0, Robot.grabberServoHalfwayPos, 24, .5);
 
         Robot.grabberServo.setPosition(Robot.grabberServoClosedPos);
         sleep(500);
-        performAction(0, 87, 7, 9, Robot.liftJunctionGroundHeight + 12, 1, -1, 0, -1, 0);
+        //Lift 6 inches
+        performAction(0, -1, 7, 0, Robot.liftJunctionGroundHeight + 6, 5, -1, 0, -1, 0, 0);
 
-        performAction(-34.5, 87, 7, 10, Robot.liftJunctionMediumHeight, 38, Robot.turretLeftDegrees, 20, Robot.grabberServoOpenPos, 0.3);
+        // Go to pole + drop
+        performAction(-34, 87, 6, 10, Robot.liftJunctionMediumHeight, 38, Robot.turretLeftDegrees, 20, Robot.grabberServoOpenPos, 0, 0);
+        sleep(500);
+
+        //drive to stack
+        performAction(35.5, 87, 7, 11, Robot.liftJunctionGroundHeight + 3, 30, Robot.turretForwardDegrees, 30, Robot.grabberServoHalfwayPos, 20, 0);
+
+        Robot.grabberServo.setPosition(Robot.grabberServoClosedPos);
+        sleep(500);
+        performAction(0, -1, 7, 0, Robot.liftJunctionGroundHeight + 7, 1, -1, 0, -1, 0, 0);
+
+        //Go to pole + drop
+        performAction(-34.5, 87, 6, 10, Robot.liftJunctionMediumHeight, 38, Robot.turretLeftDegrees, 20, Robot.grabberServoOpenPos, 0, 0);
+        sleep(500);
+
+        //Drive to stack
+        performAction(35.5, 87, 7, 11, Robot.liftJunctionGroundHeight + 2, 30, Robot.turretForwardDegrees, 30, Robot.grabberServoHalfwayPos, 20, 0);
+
+        Robot.grabberServo.setPosition(Robot.grabberServoClosedPos);
+        sleep(500);
+        //Lift 7 inches
+        performAction(0, -1, 7, 0, Robot.liftJunctionGroundHeight + 7, 1, -1, 0, -1, 0, 0);
+
+        //Go to pole + drop
+        performAction(-34.5, 87, 6, 10, Robot.liftJunctionMediumHeight, 38, Robot.turretLeftDegrees, 20, Robot.grabberServoOpenPos, 0, 0);
+        sleep(500);
+
+        //Drive to stack
+        performAction(35.5, 87, 7, 11, Robot.liftJunctionGroundHeight + 1.25, 30, Robot.turretForwardDegrees, 30, Robot.grabberServoHalfwayPos, 20, 0);
+
+        Robot.grabberServo.setPosition(Robot.grabberServoClosedPos);
+        sleep(500);
+
+        //Lift 7 inches
+        performAction(0, -1, 7, 0, Robot.liftJunctionGroundHeight + 7, 1, -1, 0, -1, 0, 0);
+
+        //Go to pole + drop
+        performAction(-34.5, 87, 6, 10, Robot.liftJunctionMediumHeight, 38, Robot.turretLeftDegrees, 20, Robot.grabberServoOpenPos, 0, 0);
 
         /*
 

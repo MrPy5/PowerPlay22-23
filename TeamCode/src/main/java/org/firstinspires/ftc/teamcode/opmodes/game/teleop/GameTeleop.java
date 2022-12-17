@@ -125,7 +125,7 @@ public class GameTeleop extends LinearOpMode {
             double slowmoTrigger = gamepad1.left_trigger;
 
             double leftStickY = gamepad1.left_stick_y * -1 * Robot.slowModeSpeed;
-            double leftStickX = gamepad1.left_stick_x * Robot.slowModeSpeed * 0.5; // testing
+            double leftStickX = gamepad1.left_stick_x * Robot.slowModeSpeed * 0.8; // testing
             double rightStickX = gamepad1.right_stick_x * Robot.slowModeTurnSpeed * .8;
 
             boolean liftPosUpManualButton = gamepad1.right_bumper;

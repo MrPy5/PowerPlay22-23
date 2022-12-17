@@ -93,7 +93,7 @@ public abstract class AutoControls extends LinearOpMode {
     double liftHeightTarget = 0;
     double liftHeightPrevTarget = -1;
 
-    double liftToleranceInches = 0.07;
+    double liftToleranceInches = 0.25;
     //grabber
     double grabberServoClosedPos = Robot.grabberServoClosedPos;
     double grabberServoOpenPos = Robot.grabberServoOpenPos;
@@ -126,6 +126,9 @@ public abstract class AutoControls extends LinearOpMode {
     // to amplify/attentuate the measured values.
     final double SCALE_FACTOR = 255;
 
+    double multiplier = 0;
+
+
     public void init(HardwareMap hwMap) {
         Robot robot = new Robot(hwMap);
         initIMU();
@@ -134,6 +137,7 @@ public abstract class AutoControls extends LinearOpMode {
         Robot.grabberServo.setPosition(Robot.grabberServoOpenPos);
 
         ZeroPowerToBrake();
+        multiplier = getVoltageMultiplier();
         //Camera Stuff
     }
 
@@ -177,6 +181,11 @@ public abstract class AutoControls extends LinearOpMode {
             }
         });
 
+    }
+    public double getVoltageMultiplier() {
+        double voltage = hardwareMap.voltageSensor.iterator().next().getVoltage();
+        double multiplier = (.2 * voltage) - 1.5;
+        return multiplier;
     }
 
     public int DetectAprilTags() {
@@ -234,9 +243,9 @@ public abstract class AutoControls extends LinearOpMode {
         }
     }
 
-    public void performAction(double targetXInches, double heading, double speedModifier, double speedMinimum, double liftHeightTarget, double liftPerformWithInchesLeft, double turretTargetDegrees, double turretPerformWithInchesLeft, double targetServoPosition, double servoPerformWithInchesLeft) {
+    public void performAction(double targetXInches, double heading, double speedModifier, double speedMinimum, double liftHeightTarget, double liftPerformWithInchesLeft, double turretTargetDegrees, double turretPerformWithInchesLeft, double targetServoPosition, double servoPerformWithInchesLeft, double distanceToleranceParam) {
 
-        speedModifier = speedModifier * 1.1;
+        speedModifier = speedModifier * multiplier;
 
         ResetEncoders();
         double currentLiftInches = 0;
@@ -245,9 +254,6 @@ public abstract class AutoControls extends LinearOpMode {
         double currentTurretDegrees = 0;
         double turretDegreesRemaining = 0;
         double currentTurretTicks = 0;
-
-
-
 
         double currentXInches;
 
@@ -260,11 +266,20 @@ public abstract class AutoControls extends LinearOpMode {
         double rrPower;
 
         double currentSpeed;
+        double turningVelocity;
 
         double maxWheelPower;
         double wheelPower = 0; //Minimum speed we start at
         double reverse = 1; // 1 is forward, -1 is backward
 
+        //Drive
+        double distanceTolerance = 0.3; //inches away that allow us to exit the loop
+        double stoppingSpeed = 0.25; //speed that is slow enough to exit the loop
+        double turningVelocityTolerance = 0.3;
+
+        if (distanceToleranceParam != 0) {
+            distanceTolerance = distanceToleranceParam;
+        }
 
         ElapsedTime timeoutTimer = new ElapsedTime();
 
@@ -273,6 +288,7 @@ public abstract class AutoControls extends LinearOpMode {
         double distanceToX = targetXInches - currentXInches;
 
         currentSpeed = GetAverageVelocity();
+        turningVelocity = GetTurningVelocity();
 
 
         if (liftHeightTarget != -1) {
@@ -287,23 +303,31 @@ public abstract class AutoControls extends LinearOpMode {
         }
 
 
-        while ((Math.abs(distanceToX) > 0.25 || currentSpeed > .25 || liftInchesRemaining > liftToleranceInches || turretDegreesRemaining > turretToleranceDegrees || degreesOff(heading) > 1) && opModeIsActive() /*&& timeoutTimer.seconds() < 1*/) {
+        while ((Math.abs(distanceToX) > distanceTolerance || currentSpeed > stoppingSpeed || turningVelocity > turningVelocityTolerance || liftInchesRemaining > liftToleranceInches || turretDegreesRemaining > turretToleranceDegrees || degreesOff(heading) > 1) && opModeIsActive() && timeoutTimer.milliseconds() < 500) {
 
-            maxWheelPower = (Math.abs(Math.pow(distanceToX / speedModifier, 3)) + speedMinimum) / 100;
-
-            double speedIncrease = .1;
-
-            wheelPower += speedIncrease;
-            if (Math.abs(wheelPower) > Math.abs(maxWheelPower)) {
-                wheelPower = maxWheelPower;
+            double adjustment = 0;
+            if (heading != -1) {
+                adjustment = headingAdjustment(heading, distanceToX);
             }
 
-            double adjustment = headingAdjustment(heading);
+            if (Math.abs(distanceToX) > distanceTolerance || currentSpeed > stoppingSpeed) {
+                maxWheelPower = (Math.abs(Math.pow(distanceToX / speedModifier, 3)) + speedMinimum) / 100;
 
-            if (distanceToX < 0) {
-                reverse = -1;
-            } else {
-                reverse = 1;
+                double speedIncrease = .1;
+
+                wheelPower += speedIncrease;
+                if (Math.abs(wheelPower) > Math.abs(maxWheelPower)) {
+                    wheelPower = maxWheelPower;
+                }
+
+                if (distanceToX < 0) {
+                    reverse = -1;
+                } else {
+                    reverse = 1;
+                }
+            }
+            else {
+                wheelPower = 0;
             }
 
             lfPower = (wheelPower * reverse + adjustment);
@@ -316,7 +340,6 @@ public abstract class AutoControls extends LinearOpMode {
             Robot.backLeft.setPower(lrPower);
             Robot.backRight.setPower(rrPower);
 
-            angles   = imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES);
 
             currentXInches = (getAverageOdometerPosition() - startXPos);
 
@@ -325,7 +348,7 @@ public abstract class AutoControls extends LinearOpMode {
 
             currentSpeed = GetAverageVelocity();
 
-            if (Math.abs(currentSpeed) > .5) {
+            if (Math.abs(currentSpeed) > .25) {
                 timeoutTimer.reset();
             }
 
@@ -372,9 +395,21 @@ public abstract class AutoControls extends LinearOpMode {
             telemetry.addData("Current Speed:", currentSpeed);
             telemetry.addData("Wheel Power: ", wheelPower);
             telemetry.addData("average: ", getAverageOdometerPosition());
+            angles   = imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES);
             telemetry.addData("imu", angles.firstAngle);
+            telemetry.addData("Distance:" , Math.abs(distanceToX) > 0.25);
+            telemetry.addData("Speed: ", currentSpeed > .25);
+            telemetry.addData("Lift: ", liftInchesRemaining > liftToleranceInches);
+            telemetry.addData("turret: ", turretDegreesRemaining > turretToleranceDegrees);
+            telemetry.addData("rotation: ", degreesOff(heading) > 1);
             telemetry.update();
 
+        }
+        if (targetServoPosition != -1) {
+            if (grabberServoCurrentPos != targetServoPosition) {
+                Robot.grabberServo.setPosition(targetServoPosition);
+                grabberServoCurrentPos = targetServoPosition;
+            }
         }
         Robot.frontLeft.setPower(0);
         Robot.frontRight.setPower(0);
@@ -389,11 +424,21 @@ public abstract class AutoControls extends LinearOpMode {
     }
     public double GetAverageVelocity() {
         double averageVelocity = 0;
-        averageVelocity = (Robot.odometerLeft.getVelocity() + Robot.odometerRight.getVelocity()) / 2;
+        double left = Robot.odometerLeft.getVelocity();
+        double right =  Robot.odometerRight.getVelocity();
+        averageVelocity = (left + right) / 2;
         averageVelocity = (averageVelocity / Robot.odometerTicksPerInch) / 12;
         return averageVelocity;
     }
-    public double headingAdjustment(double targetHeading) {
+
+    public double GetTurningVelocity() {
+        double turningVelocity = 0;
+        double left = Robot.odometerLeft.getVelocity();
+        double right =  Robot.odometerRight.getVelocity();
+        turningVelocity = Math.abs(right - left) / 2;
+        return turningVelocity;
+    }
+    public double headingAdjustment(double targetHeading, double distanceToX) {
         double adjustment;
         double currentHeading;
         double degreesOff;
@@ -410,12 +455,22 @@ public abstract class AutoControls extends LinearOpMode {
             degreesOff = 360 - degreesOff;
         }
 
-        double speedModifier = degreesOff > 10 ? 10 : 5;
+        double speedModifier = 12;
+        double speedMinimum = 5;
+
+        if (degreesOff > 10) {
+            speedModifier = 8;
+        }
+
+        if (distanceToX > 3) {
+            speedMinimum = 3;
+        }
+
 
         if (degreesOff < .3) {
             adjustment = 0;
         } else {
-            adjustment = (Math.pow((degreesOff + 2) / speedModifier, 2) + 2) / 100;
+            adjustment = (Math.pow((degreesOff + 2) / speedModifier, 2) + speedMinimum) / 100;
         }
 
         if (goRight) {
@@ -425,26 +480,63 @@ public abstract class AutoControls extends LinearOpMode {
     }
 
     public double degreesOff(double targetHeading) {
-        double adjustment;
+        if (targetHeading == -1) {
+            return 0;
+        }
         double currentHeading;
         double degreesOff;
-        boolean goRight;
+
         angles   = imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES);
 
         currentHeading = angles.firstAngle;
 
-        goRight = targetHeading > currentHeading;
         degreesOff = Math.abs(targetHeading - currentHeading);
 
         if (degreesOff > 180) {
-            goRight = !goRight;
+
             degreesOff = 360 - degreesOff;
         }
 
 
         return degreesOff;
     }
+    public double adjustForColor(char color) {
+        double leftColor;
+        double rightColor;
 
+        double blueThreshold = 0;
+        double blueMultiplier = 1;
+
+        double redThreshold = 0;
+        double redMultiplier = 1;
+
+        double outputValue = 0;
+
+        if (color == 'r') {
+            leftColor = Robot.colorSensorLeft.red();
+            rightColor = Robot.colorSensorRight.red();
+
+            if (leftColor > redThreshold || rightColor > redThreshold) {
+                outputValue = (rightColor - leftColor) * redMultiplier;
+            }
+        }
+        else {
+            leftColor = Robot.colorSensorLeft.blue();
+            rightColor = Robot.colorSensorRight.blue();
+
+            if (leftColor > blueThreshold || rightColor > blueThreshold) {
+                outputValue = (rightColor - leftColor) * blueMultiplier;
+            }
+        }
+        telemetry.addData("Left Color", leftColor);
+        telemetry.addData("Right Color", rightColor);
+        telemetry.addData("Output Value", outputValue);
+        telemetry.update();
+
+        return outputValue;
+
+
+    }
     public void TurnTurret(double turretTargetDegrees) {
 
         Robot.turretMotor.setTargetPosition((int) (turretTargetDegrees * turretTicksPerDegree));
