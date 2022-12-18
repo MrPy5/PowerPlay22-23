@@ -372,12 +372,22 @@ public class GameTeleop extends LinearOpMode {
                 liftHeightTarget = lastHeightTargetNoReset;
                 scoreSteps = 0;
             }
-            if (scoreSteps == 2 && Robot.liftMotor.getCurrentPosition() / Robot.liftMotor.getTargetPosition() > 0.98) {
-                grabberServoCurrentPos = Robot.grabberServoOpenPos;
-                Robot.grabberServo.setPosition(grabberServoCurrentPos);
-                dropTimer.reset();
-                scoreSteps = 3;
+            if (Robot.liftMotor.getTargetPosition() != 0) {
+                if (scoreSteps == 2 && Robot.liftMotor.getCurrentPosition() / Robot.liftMotor.getTargetPosition() > 0.98) {
+                    grabberServoCurrentPos = Robot.grabberServoOpenPos;
+                    Robot.grabberServo.setPosition(grabberServoCurrentPos);
+                    dropTimer.reset();
+                    scoreSteps = 3;
 
+                }
+            }
+            else {
+                if (scoreSteps == 2 && !Robot.liftMotor.isBusy()) {
+                    grabberServoCurrentPos = Robot.grabberServoOpenPos;
+                    Robot.grabberServo.setPosition(grabberServoCurrentPos);
+                    dropTimer.reset();
+                    scoreSteps = 3;
+                }
             }
             if (scoreSteps == 1) {
                 Robot.guideServo.setPosition(Robot.guideServoUp);
@@ -388,7 +398,7 @@ public class GameTeleop extends LinearOpMode {
             //---------------------------------------------------------//
             //Tightening Code
 
-            if (gamepad1.a && liftCurrentHeight < 2 && manualMode) {
+            if (gamepad1.a && liftCurrentHeight < 2) {
 
                 Robot.liftMotor.setPower(0);
                 Robot.liftMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
@@ -447,6 +457,9 @@ public class GameTeleop extends LinearOpMode {
 
             //---------------------------------------------------------------------//
             //TELEMETRY CODE
+            if (manualMode) {
+                telemetry.addData("---MANUAL MODE---", "");
+            }
             telemetry.addData("LeftStickX:", gamepad1.left_stick_x);
             telemetry.addData("LeftStickY:", gamepad1.left_stick_y);
 

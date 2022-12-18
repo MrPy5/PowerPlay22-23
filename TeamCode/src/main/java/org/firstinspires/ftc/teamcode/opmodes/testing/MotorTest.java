@@ -47,7 +47,7 @@ import java.util.Locale;
 
 
 @Autonomous(name="MotorTest")
-@Disabled
+
 public class MotorTest extends LinearOpMode {
 
     /* Declare OpMode members. */

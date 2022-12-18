@@ -188,7 +188,10 @@ public abstract class AutoControls extends LinearOpMode {
     }
     public double getVoltageMultiplier() {
         double voltage = hardwareMap.voltageSensor.iterator().next().getVoltage();
-        double multiplier = (.2 * voltage) - 1.5;
+        double multiplier = 1;
+        if (voltage > 14) {
+            multiplier = 1.1;
+        }
         return multiplier;
     }
 
@@ -249,7 +252,7 @@ public abstract class AutoControls extends LinearOpMode {
 
     public void performAction(double targetXInches, double heading, double speedModifier, double speedMinimum, double liftHeightTarget, double liftPerformWithInchesLeft, double turretTargetDegrees, double turretPerformWithInchesLeft, double targetServoPosition, double servoPerformWithInchesLeft, double distanceToleranceParam) {
 
-        speedModifier = speedModifier * 1; //multiplier;
+        speedModifier = speedModifier * multiplier; //multiplier;
 
         ResetEncoders();
         double currentLiftInches = 0;

@@ -1,6 +1,7 @@
 package org.firstinspires.ftc.teamcode.opmodes.game.autonomous.Third;
 
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
+import com.qualcomm.robotcore.hardware.DcMotor;
 
 import org.firstinspires.ftc.teamcode.hardware.robot.Robot;
 
@@ -15,7 +16,7 @@ public class LeftAuto extends AutoControls {
         int endParkingPosition = DetectAprilTags();
         //waitForStart();
         Robot.grabberServo.setPosition(Robot.grabberServoClosedPos);
-        performAction(40, 0, 6.5, 9, Robot.liftJunctionMediumHeight, 37, Robot.turretRightDegrees, 22, Robot.grabberServoOpenPos, 0, 0);
+        performAction(39, 0, 6.5, 9, Robot.liftJunctionMediumHeight, 37, Robot.turretRightDegrees, 22, Robot.grabberServoOpenPos, 0, 0);
         sleep(250);
         performAction(12, 0, 3, 9, -1, 0, Robot.turretForwardDegrees, 12, -1, 0, 0);
 
@@ -68,7 +69,6 @@ public class LeftAuto extends AutoControls {
             performAction(-15, 90, 5, 13, Robot.liftJunctionGroundHeight, 13, Robot.turretForwardDegrees, 13, -1, -1, 1);
             performAction(0, 180, 7, 11, -1, -1, -1, -1, -1, -1, 0);
         }
-
 
         /*//Drive to stack
         performAction(35.5, 87, 7, 11, Robot.liftJunctionGroundHeight + 1.25, 30, Robot.turretForwardDegrees, 30, Robot.grabberServoHalfwayPos, 20, 0);
