@@ -1,7 +1,5 @@
 package org.firstinspires.ftc.teamcode.opmodes.game.autonomous.Third;
 
-import android.graphics.Color;
-
 import com.qualcomm.hardware.bosch.BNO055IMU;
 import com.qualcomm.hardware.bosch.JustLoggingAccelerationIntegrator;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
@@ -16,7 +14,7 @@ import org.firstinspires.ftc.robotcore.external.navigation.AxesReference;
 import org.firstinspires.ftc.robotcore.external.navigation.Orientation;
 import org.firstinspires.ftc.teamcode.hardware.robot.Robot;
 import org.firstinspires.ftc.teamcode.hardware.robot.pipelines.AprilTagDetectionPipeline;
-import org.firstinspires.ftc.teamcode.hardware.robot.pipelines.PipelineColorCounting;
+import org.firstinspires.ftc.teamcode.opmodes.testing.AdjustmentConstants;
 import org.openftc.apriltag.AprilTagDetection;
 import org.openftc.easyopencv.OpenCvCamera;
 import org.openftc.easyopencv.OpenCvCameraFactory;
@@ -130,7 +128,7 @@ public abstract class AutoControls extends LinearOpMode {
     public char alliance = 'b';
 
     public void init(HardwareMap hwMap) {
-        Robot robot = new Robot(hwMap);
+        Robot robot = new Robot(hwMap, false);
         initIMU();
         initCamera();
         telemetry.addData("here", "here");
@@ -288,7 +286,6 @@ public abstract class AutoControls extends LinearOpMode {
             distanceTolerance = distanceToleranceParam;
         }
 
-        ElapsedTime timeoutTimer = new ElapsedTime();
 
         currentXInches = (getAverageOdometerPosition() - startXPos);
 
@@ -309,6 +306,24 @@ public abstract class AutoControls extends LinearOpMode {
             turretDegreesRemaining = Math.abs(turretTargetDegrees - currentTurretDegrees);
         }
 
+        while (degreesOff(heading) > .5) {
+            double adjustment = 0;
+            if (heading != -1) {
+                adjustment = headingAdjustment(heading, distanceToX);
+            }
+
+            lfPower = adjustment;
+            rfPower = -adjustment;
+            lrPower = adjustment;
+            rrPower = -adjustment;
+
+            Robot.frontLeft.setPower(lfPower);
+            Robot.frontRight.setPower(rfPower);
+            Robot.backLeft.setPower(lrPower);
+            Robot.backRight.setPower(rrPower);
+        }
+
+        ElapsedTime timeoutTimer = new ElapsedTime();
 
         while ((Math.abs(distanceToX) > distanceTolerance || currentSpeed > stoppingSpeed || turningVelocity > turningVelocityTolerance || liftInchesRemaining > liftToleranceInches || turretDegreesRemaining > turretToleranceDegrees || degreesOff(heading) > 1) && opModeIsActive() && timeoutTimer.milliseconds() < 500) {
 
@@ -464,22 +479,22 @@ public abstract class AutoControls extends LinearOpMode {
             degreesOff = 360 - degreesOff;
         }
 
-        double speedModifier = 14;
-        double speedMinimum = 6;
+        double speedMinimum = 5;
 
+        double speedModifier = 12;
         if (degreesOff > 10) {
-            speedModifier = 10;
+            speedModifier = 8;
         }
-
+        /*
         if (distanceToX > 3) {
             speedMinimum = 2;
         }
-
+        */
 
         if (degreesOff < .3) {
             adjustment = 0;
         } else {
-            adjustment = (Math.pow((degreesOff + 2) / speedModifier, 2) + speedMinimum) / 100;
+            adjustment = (Math.pow((degreesOff + AdjustmentConstants.graphShift) / speedModifier, AdjustmentConstants.curvePower) + speedMinimum) / 100;
         }
 
         if (goRight) {

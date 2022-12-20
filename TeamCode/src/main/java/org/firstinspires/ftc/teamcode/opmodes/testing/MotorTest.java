@@ -29,56 +29,44 @@
 
 package org.firstinspires.ftc.teamcode.opmodes.testing;
 
+import com.acmerobotics.dashboard.FtcDashboard;
+import com.acmerobotics.dashboard.config.Config;
+import com.acmerobotics.dashboard.telemetry.MultipleTelemetry;
 import com.qualcomm.hardware.bosch.BNO055IMU;
 import com.qualcomm.hardware.bosch.JustLoggingAccelerationIntegrator;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.hardware.HardwareMap;
+import com.qualcomm.robotcore.hardware.PIDFCoefficients;
 
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.AxesOrder;
 import org.firstinspires.ftc.robotcore.external.navigation.AxesReference;
 import org.firstinspires.ftc.robotcore.external.navigation.Orientation;
 import org.firstinspires.ftc.teamcode.hardware.robot.Robot;
+import org.firstinspires.ftc.teamcode.opmodes.game.autonomous.Third.AutoControls;
 
 
 import java.util.Locale;
 
-
+@Config
 @Autonomous(name="MotorTest")
 
-public class MotorTest extends LinearOpMode {
-
-    /* Declare OpMode members. */
-
-
-
+public class MotorTest extends AutoControls {
 
     @Override
     public void runOpMode() {
-        Robot robot = new Robot(hardwareMap);
+        init(hardwareMap);
+        FtcDashboard dashboard = FtcDashboard.getInstance();
+        telemetry = new MultipleTelemetry(telemetry, dashboard.getTelemetry());
+
         waitForStart();
-        double targetPos = 0.5;
-        while (opModeIsActive()) {
-            if (gamepad1.right_bumper) {
-                targetPos += 0.01;
-                sleep(50);
-            }
-            if (gamepad1.left_bumper) {
-                targetPos -= 0.01;
-                sleep(50);
-            }
-            Robot.grabberServo.setPosition(targetPos);
-            telemetry.addData("", targetPos);
-            telemetry.update();
-        }
+
+        performAction(24, 0, 7, 10, -1, 0, -1, 0, -1, 0, 0.5);
 
     }
-
-
-
-
 
 
 }
