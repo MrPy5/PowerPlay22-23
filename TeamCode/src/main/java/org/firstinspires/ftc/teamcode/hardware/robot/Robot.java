@@ -84,7 +84,7 @@ public class Robot {
     public static double grabberServoClosedPos = 0.27;
     public static double grabberServoHalfwayPos = 0.60;
     public static double grabberServoUprightPos = 0.50;
-    public static double grabberServoOpenPos = 0.85;
+    public static double grabberServoOpenPos = 0.83;
 
     //Guide
     public static Servo guideServo;
@@ -106,7 +106,7 @@ public class Robot {
 
 
 
-    public Robot(HardwareMap robot_hardwareMap) {
+    public Robot(HardwareMap robot_hardwareMap, boolean isTeleop) {
         hardwareMap = robot_hardwareMap;
 
         //Driving
@@ -121,10 +121,10 @@ public class Robot {
         backRight.setDirection(DcMotor.Direction.REVERSE);
         frontRight.setDirection(DcMotor.Direction.REVERSE);
 
-        backLeft.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
-        frontLeft.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
-        backRight.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
-        frontRight.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
+        backLeft.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        frontLeft.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        backRight.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        frontRight.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
 
         //Odometer
         odometerLeft = hardwareMap.get(DcMotorEx.class, "odometerLeft");
@@ -141,13 +141,17 @@ public class Robot {
 
         //Turret
         turretMotor = hardwareMap.get(DcMotorEx.class, "turretMotor");
-        turretMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         turretMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        turretMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         turretMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
 
         //Lift
         liftMotor = hardwareMap.get(DcMotorEx.class, "liftMotor");
-        liftMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+
+        if (!isTeleop) {
+            liftMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        }
+
         liftMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         liftMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
 

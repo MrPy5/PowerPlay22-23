@@ -22,7 +22,7 @@ public class OdemetryTickTest extends LinearOpMode {
 
     @Override
     public void runOpMode() throws InterruptedException {
-        Robot robot = new Robot(hardwareMap);
+        Robot robot = new Robot(hardwareMap, false);
 
         waitForStart();
 

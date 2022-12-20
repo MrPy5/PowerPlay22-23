@@ -126,7 +126,7 @@ public abstract class AutoControls extends LinearOpMode {
     final double SCALE_FACTOR = 255;
 
     public void init(HardwareMap hwMap) {
-        Robot robot = new Robot(hwMap);
+        Robot robot = new Robot(hwMap, false);
         initIMU();
         initCamera();
         Robot.guideServo.setPosition(Robot.guideServoUp);

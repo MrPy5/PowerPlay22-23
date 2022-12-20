@@ -119,7 +119,7 @@ public class AutoAggressiveLeft extends LinearOpMode {
     @Override
     public void runOpMode() {
 
-        Robot robot = new Robot(hardwareMap);
+        Robot robot = new Robot(hardwareMap, false);
         BNO055IMU.Parameters parameters = new BNO055IMU.Parameters();
         parameters.angleUnit           = BNO055IMU.AngleUnit.DEGREES;
         parameters.accelUnit           = BNO055IMU.AccelUnit.METERS_PERSEC_PERSEC;

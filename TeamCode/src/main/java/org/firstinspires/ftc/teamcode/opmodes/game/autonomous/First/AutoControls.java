@@ -59,7 +59,7 @@ public abstract class AutoControls extends LinearOpMode {
     float changeFromZero = 0;
 
     public void init(HardwareMap hwMap){
-        Robot robot = new Robot(hwMap);
+        Robot robot = new Robot(hwMap, false);
         initIMU();
         //Camera Stuff
     }

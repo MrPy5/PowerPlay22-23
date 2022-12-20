@@ -18,7 +18,7 @@ public class SlowMecanum extends LinearOpMode {
 
     @Override
     public void runOpMode() {
-        Robot robot = new Robot(hardwareMap);
+        Robot robot = new Robot(hardwareMap, true);
         waitForStart();
         double slowfactor = 1;
         boolean slow_mode = false;

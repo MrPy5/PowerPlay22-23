@@ -28,7 +28,7 @@ public class GameTeleop extends LinearOpMode {
     @Override
     public void runOpMode() {
 
-        Robot robot = new Robot(hardwareMap);
+        Robot robot = new Robot(hardwareMap, true);
         waitForStart();
 
         //---------------------------------------------------------------//
@@ -134,6 +134,7 @@ public class GameTeleop extends LinearOpMode {
             double scoreButton = gamepad1.right_trigger;
 
 
+
             //---------------------------------------------------------------//
             //READ HARDWARE VALUES
 
@@ -148,7 +149,8 @@ public class GameTeleop extends LinearOpMode {
 
 
 
-            //grabberServoCurrentPos = CheckForPole(autoScore, avgWheelVelocityFPS, lastHeightTargetNoReset, grabberServoCurrentPos, frontLeft, frontRight, backLeft, backRight);
+
+                //grabberServoCurrentPos = CheckForPole(autoScore, avgWheelVelocityFPS, lastHeightTargetNoReset, grabberServoCurrentPos, frontLeft, frontRight, backLeft, backRight);
 
             //-----------------------------------------------------------//
             //SLO-MO CODE
@@ -433,11 +435,26 @@ public class GameTeleop extends LinearOpMode {
             cosAngleRadians = Math.cos(stickAngleRadians);
             factor = 1 / Math.max(Math.abs(sinAngleRadians), Math.abs(cosAngleRadians));
 
-
             lfPower = wheelPower * cosAngleRadians * factor + rightStickX;
             rfPower = wheelPower * sinAngleRadians * factor - rightStickX;
             lrPower = wheelPower * sinAngleRadians * factor + rightStickX;
             rrPower = wheelPower * cosAngleRadians * factor - rightStickX;
+
+            if (liftCurrentHeight > Robot.liftJunctionLowHeight && Math.abs(avgWheelVelocityFPS) > 1.5) {
+                if (leftStickX == 0 && leftStickY == 0) {
+                    if (avgWheelVelocityFPS > 0) {
+                        lfPower = 0.01;
+                        rfPower = 0.01;
+                        lrPower = 0.01;
+                        rrPower = 0.01;
+                    } else {
+                        lfPower = -0.01;
+                        rfPower = -0.01;
+                        lrPower = -0.01;
+                        rrPower = -0.01;
+                    }
+                }
+            }
 
             /*if (Math.abs(lrPower + rrPower + lfPower + rfPower) < 0.01 && GetAverageVelocity(ticksPerInch) > breakingVelocity) {
                 int multiplier = 1;

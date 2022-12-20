@@ -27,7 +27,7 @@ public class MotorTestWithDpad extends LinearOpMode {
     @Override
     public void runOpMode() {
 
-        Robot robot = new Robot(hardwareMap);
+        Robot robot = new Robot(hardwareMap, true);
         waitForStart();
 
         while (opModeIsActive()) {
