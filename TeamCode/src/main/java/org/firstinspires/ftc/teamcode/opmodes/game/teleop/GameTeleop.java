@@ -142,13 +142,6 @@ public class GameTeleop extends LinearOpMode {
             turretCurrentDegrees = Robot.turretMotor.getCurrentPosition() / Robot.turretTicksPerDegree;
 
             avgWheelVelocityFPS = GetAverageVelocity();
-            int frontRight = Robot.frontRight.getCurrentPosition();
-            int frontLeft = Robot.frontRight.getCurrentPosition();
-            int backLeft = Robot.backLeft.getCurrentPosition();
-            int backRight = Robot.backRight.getCurrentPosition();
-
-
-
 
                 //grabberServoCurrentPos = CheckForPole(autoScore, avgWheelVelocityFPS, lastHeightTargetNoReset, grabberServoCurrentPos, frontLeft, frontRight, backLeft, backRight);
 
