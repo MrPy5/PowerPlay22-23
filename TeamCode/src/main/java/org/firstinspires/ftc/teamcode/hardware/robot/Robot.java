@@ -143,19 +143,21 @@ public class Robot {
 
         //Turret
         turretMotor = hardwareMap.get(DcMotorEx.class, "turretMotor");
-        turretMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        turretMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        turretMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
 
         //Lift
         liftMotor = hardwareMap.get(DcMotorEx.class, "liftMotor");
+        
 
         if (!isTeleop) {
             liftMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+            turretMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         }
 
         liftMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         liftMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+
+        turretMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        turretMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
 
         //Grabber
         grabberServo = hardwareMap.get(Servo.class, "gripperServo");
