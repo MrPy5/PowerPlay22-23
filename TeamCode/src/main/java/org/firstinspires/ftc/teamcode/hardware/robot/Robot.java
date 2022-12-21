@@ -126,18 +126,20 @@ public class Robot {
         backRight.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         frontRight.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
 
-        //Odometer
-        odometerLeft = hardwareMap.get(DcMotorEx.class, "odometerLeft");
-        odometerRight = hardwareMap.get(DcMotorEx.class, "odometerRight");
+        if (!isTeleop) {
+            //Odometer
+            odometerLeft = hardwareMap.get(DcMotorEx.class, "odometerLeft");
+            odometerRight = hardwareMap.get(DcMotorEx.class, "odometerRight");
 
-        odometerRight.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        odometerLeft.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        odometerRight.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        odometerLeft.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+            odometerRight.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+            odometerLeft.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+            odometerRight.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+            odometerLeft.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
 
-        odometerRight.setDirection(DcMotorSimple.Direction.REVERSE);
+            odometerRight.setDirection(DcMotorSimple.Direction.REVERSE);
 
-        odometerLeft.setDirection(DcMotorSimple.Direction.REVERSE);
+            odometerLeft.setDirection(DcMotorSimple.Direction.REVERSE);
+        }
 
         //Turret
         turretMotor = hardwareMap.get(DcMotorEx.class, "turretMotor");
@@ -161,9 +163,11 @@ public class Robot {
         //Guide
         guideServo = hardwareMap.get(Servo.class, "guideServo");
 
-        //Color Sensor
-        colorSensorLeft = hardwareMap.get(ColorSensor.class, "sensorColorLeft");
-        colorSensorRight = hardwareMap.get(ColorSensor.class, "sensorColorRight");
+        if (!isTeleop) {
+            //Color Sensor
+            colorSensorLeft = hardwareMap.get(ColorSensor.class, "sensorColorLeft");
+            colorSensorRight = hardwareMap.get(ColorSensor.class, "sensorColorRight");
+        }
 
         //Color Sensor Pole
         colorSensorPole = hardwareMap.get(ColorSensor.class, "sensorColorPole");
