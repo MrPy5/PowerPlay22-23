@@ -1,13 +1,3 @@
-//Checklist
-/*
-
--180 turn for left
--
-
-
- */
-
-
 package org.firstinspires.ftc.teamcode.opmodes.game.teleop;
 
 import android.util.Log;
@@ -97,6 +87,7 @@ public class GameTeleop extends LinearOpMode {
         Robot.grabberServo.setPosition(Robot.grabberServoOpenPos);
         grabberServoCurrentPos = Robot.grabberServoOpenPos;
 
+
         while (opModeIsActive()) {
             Log.d("LOOPED", "logged");
             //---------------------------------------------------------------//
@@ -117,6 +108,7 @@ public class GameTeleop extends LinearOpMode {
             boolean manualModeButton = gamepad2.start;
 
             boolean uprightCone = gamepad2.left_bumper;
+
 
 
             //----------------------------------------------------------------//
@@ -410,8 +402,6 @@ public class GameTeleop extends LinearOpMode {
                 Robot.liftMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
                 Robot.liftMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
                 Robot.liftMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-
-
             }
 
             //---------------------------------------------------------//
