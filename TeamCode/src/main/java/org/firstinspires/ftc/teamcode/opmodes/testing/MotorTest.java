@@ -26,7 +26,7 @@
  * OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-/*
+
 package org.firstinspires.ftc.teamcode.opmodes.testing;
 
 import com.acmerobotics.dashboard.FtcDashboard;
@@ -64,10 +64,9 @@ public class MotorTest extends AutoControls {
 
         waitForStart();
 
-        performAction(24, 0, 7, 10, -1, 0, -1, 0, -1, 0, 0.5);
+        performAction(24, 0, 5, 11, -1, 0, -1, 0, -1, 0, 0.5);
 
     }
 
 
 }
-*/
