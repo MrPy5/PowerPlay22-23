@@ -1,4 +1,4 @@
-package org.firstinspires.ftc.teamcode.opmodes.testing;
+/*package org.firstinspires.ftc.teamcode.opmodes.testing;
 
 import com.acmerobotics.dashboard.config.Config;
 
@@ -11,3 +11,4 @@ public class AdjustmentConstants {
     public static double curvePower = 2;
 
 }
+*/
