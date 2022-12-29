@@ -14,7 +14,7 @@ import org.firstinspires.ftc.robotcore.external.navigation.AxesReference;
 import org.firstinspires.ftc.robotcore.external.navigation.Orientation;
 import org.firstinspires.ftc.teamcode.hardware.robot.Robot;
 import org.firstinspires.ftc.teamcode.hardware.robot.pipelines.AprilTagDetectionPipeline;
-import org.firstinspires.ftc.teamcode.opmodes.testing.AdjustmentConstants;
+//import org.firstinspires.ftc.teamcode.opmodes.testing.AdjustmentConstants;
 import org.openftc.apriltag.AprilTagDetection;
 import org.openftc.easyopencv.OpenCvCamera;
 import org.openftc.easyopencv.OpenCvCameraFactory;
@@ -494,7 +494,7 @@ public abstract class AutoControls extends LinearOpMode {
         if (degreesOff < .3) {
             adjustment = 0;
         } else {
-            adjustment = (Math.pow((degreesOff + AdjustmentConstants.graphShift) / speedModifier, AdjustmentConstants.curvePower) + speedMinimum) / 100;
+            adjustment = (Math.pow((degreesOff + 0) / speedModifier, 2) + speedMinimum) / 100;
         }
 
         if (goRight) {
