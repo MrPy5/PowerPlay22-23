@@ -99,14 +99,26 @@ public class ColorSensorTesting extends LinearOpMode {
 
         //---------------------------------------------------------//
         //INIT SERVOS
-        robot.grabberServo.setPosition(robot.grabberServoOpenPos);
-        grabberServoCurrentPos = robot.grabberServoOpenPos;
+        robot.grabberServo.setPosition(robot.grabberServoClosedPos);
+        grabberServoCurrentPos = robot.grabberServoClosedPos;
 
+        sleep(2000);
+
+        robot.liftMotor.setTargetPosition((int) (robot.liftJunctionHighHeight * robot.liftTicksPerInch));
+        robot.liftMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        robot.liftMotor.setPower(robot.liftSpeedUp);
+        robot.guideServo.setPosition(robot.guideServoDown);
+
+        sleep(1000);
+
+
+        robot.turretMotor.setTargetPosition((int) (robot.turretRightDegrees * robot.turretTicksPerDegree));
+        robot.turretMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        robot.turretMotor.setPower(robot.turretSpeed);
+
+        sleep(1000);
 
         while (opModeIsActive()) {
-            robot.liftMotor.setTargetPosition((int) (robot.liftJunctionHighHeight * robot.liftTicksPerInch));
-            robot.liftMotor.setPower(robot.liftSpeedUp);
-
 
             //---------------------------------------------------------------//
             //READ HARDWARE VALUES
@@ -118,8 +130,10 @@ public class ColorSensorTesting extends LinearOpMode {
 
 
 
-            grabberServoCurrentPos = CheckForPole(robot, 1, robot.liftJunctionHighHeight, grabberServoCurrentPos, robot.frontLeft.getCurrentPosition(), robot.frontRight.getCurrentPosition(), robot.backLeft.getCurrentPosition(), robot.backRight.getCurrentPosition());
 
+            grabberServoCurrentPos = CheckForPole(robot, avgWheelVelocityFPS, robot.liftJunctionHighHeight, grabberServoCurrentPos, robot.frontLeft.getCurrentPosition(), robot.frontRight.getCurrentPosition(), robot.backLeft.getCurrentPosition(), robot.backRight.getCurrentPosition());
+
+            telemetry.addData("green", robot.colorSensorPole.green());
         }
     }
 
@@ -132,12 +146,12 @@ public class ColorSensorTesting extends LinearOpMode {
 
 
     public double CheckForPole(Robot robot, double avgWheelVelocityFPS, double lastHeightTargetNoReset, double grabberServoCurrentPos, int frontLeft, int frontRight, int backLeft, int backRight) {
-        if (Math.abs(avgWheelVelocityFPS) < 1.5) {
+        if (Math.abs(avgWheelVelocityFPS) < 1) {
             if (robot.colorSensorPole.green() > robot.colorThreshold) {
-                robot.frontLeft.setTargetPosition(frontLeft);
-                robot.frontRight.setTargetPosition(frontRight);
-                robot.backLeft.setTargetPosition(backLeft);
-                robot.backRight.setTargetPosition(backRight);
+                robot.frontLeft.setTargetPosition(frontLeft - (int) (avgWheelVelocityFPS * robot.ticksPerInch));
+                robot.frontRight.setTargetPosition(frontRight - (int) (avgWheelVelocityFPS * robot.ticksPerInch));
+                robot.backLeft.setTargetPosition(backLeft - (int) (avgWheelVelocityFPS * robot.ticksPerInch));
+                robot.backRight.setTargetPosition(backRight - (int) (avgWheelVelocityFPS * robot.ticksPerInch));
 
                 robot.frontLeft.setMode(DcMotor.RunMode.RUN_TO_POSITION);
                 robot.frontRight.setMode(DcMotor.RunMode.RUN_TO_POSITION);
@@ -149,7 +163,7 @@ public class ColorSensorTesting extends LinearOpMode {
                 robot.backLeft.setPower(0.8);
                 robot.backRight.setPower(0.8);
 
-                robot.guideServo.setPosition(robot.guideServoUp);
+
 
                 robot.liftMotor.setTargetPosition((int) ((lastHeightTargetNoReset) * robot.liftTicksPerInch));
                 robot.liftMotor.setPower(0.8);
@@ -166,6 +180,12 @@ public class ColorSensorTesting extends LinearOpMode {
                 robot.liftMotor.setTargetPosition((int) ((lastHeightTargetNoReset) * robot.liftTicksPerInch));
                 robot.liftMotor.setPower(robot.liftSpeedUp);
                 while (opModeIsActive() && robot.liftMotor.isBusy()) {}
+
+
+                robot.frontLeft.setPower(0);
+                robot.frontRight.setPower(0);
+                robot.backLeft.setPower(0);
+                robot.backRight.setPower(0);
 
                 robot.frontLeft.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
                 robot.frontRight.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);

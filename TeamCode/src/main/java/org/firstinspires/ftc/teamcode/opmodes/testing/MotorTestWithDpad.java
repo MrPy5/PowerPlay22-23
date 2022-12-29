@@ -32,28 +32,28 @@ public class MotorTestWithDpad extends LinearOpMode {
 
         while (opModeIsActive()) {
             if (gamepad1.left_trigger > triggerSensitivity) {
-                Robot.frontLeft.setPower(.3);
-                telemetry.addData("FrontLeft:", Robot.frontLeft.getCurrentPosition());
+                robot.frontLeft.setPower(.3);
+                telemetry.addData("FrontLeft:", robot.frontLeft.getCurrentPosition());
             } else {
-                Robot.frontLeft.setPower(0);
+                robot.frontLeft.setPower(0);
             }
             if (gamepad1.right_trigger > triggerSensitivity) {
-                Robot.frontRight.setPower(.3);
-                telemetry.addData("FrontRight:", Robot.frontRight.getCurrentPosition());
+                robot.frontRight.setPower(.3);
+                telemetry.addData("FrontRight:", robot.frontRight.getCurrentPosition());
             } else {
-                Robot.frontRight.setPower(0);
+                robot.frontRight.setPower(0);
             }
             if (gamepad1.left_bumper) {
-                Robot.backLeft.setPower(.3);
-                telemetry.addData("BackLeft:", Robot.backLeft.getCurrentPosition());
+                robot.backLeft.setPower(.3);
+                telemetry.addData("BackLeft:", robot.backLeft.getCurrentPosition());
             } else {
-                Robot.backLeft.setPower(0);
+                robot.backLeft.setPower(0);
             }
             if (gamepad1.right_bumper) {
-                Robot.backRight.setPower(.3);
-                telemetry.addData("BackRight:", Robot.backRight.getCurrentPosition());
+                robot.backRight.setPower(.3);
+                telemetry.addData("BackRight:", robot.backRight.getCurrentPosition());
             } else {
-                Robot.backRight.setPower(0);
+                robot.backRight.setPower(0);
             }
             telemetry.update();
         }
