@@ -98,7 +98,7 @@ public class Robot {
 
     //Pole Color Sensor
     public ColorSensor colorSensorPole;
-    public double colorThreshold = 150;
+    public double colorThreshold = 300;
 
     //Gamepad
     public double triggerSensitivity = 0.01;

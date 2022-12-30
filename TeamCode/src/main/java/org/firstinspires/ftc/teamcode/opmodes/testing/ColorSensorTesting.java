@@ -12,7 +12,7 @@ package org.firstinspires.ftc.teamcode.opmodes.testing;
 
 import android.util.Log;
 
-import com.qualcomm.hardware.lynx.LynxModule;
+//import com.qualcomm.hardware.lynx.LynxModule;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
@@ -34,11 +34,11 @@ public class ColorSensorTesting extends LinearOpMode {
         Robot robot = new Robot(hardwareMap, true);
         waitForStart();
 
-        List<LynxModule> allHubs = hardwareMap.getAll(LynxModule.class);
+        /*List<LynxModule> allHubs = hardwareMap.getAll(LynxModule.class);
 
         for (LynxModule hub : allHubs) {
             hub.setBulkCachingMode(LynxModule.BulkCachingMode.AUTO);
-        }
+        }*/
 
         //---------------------------------------------------------------//
         //Manual Mode
@@ -123,17 +123,59 @@ public class ColorSensorTesting extends LinearOpMode {
             //---------------------------------------------------------------//
             //READ HARDWARE VALUES
 
-            liftCurrentHeight = robot.liftMotor.getCurrentPosition() / robot.liftTicksPerInch;
-            turretCurrentDegrees = robot.turretMotor.getCurrentPosition() / robot.turretTicksPerDegree;
+            double leftStickY = gamepad1.left_stick_y * -1 * robot.slowModeSpeed;
+            double leftStickX = gamepad1.left_stick_x * robot.slowModeSpeed * 0.8; // testing
+            double rightStickX = gamepad1.right_stick_x * robot.slowModeTurnSpeed * .8;
 
             avgWheelVelocityFPS = GetAverageVelocity(robot);
 
 
 
+            //Check for Pole
 
-            grabberServoCurrentPos = CheckForPole(robot, avgWheelVelocityFPS, robot.liftJunctionHighHeight, grabberServoCurrentPos, robot.frontLeft.getCurrentPosition(), robot.frontRight.getCurrentPosition(), robot.backLeft.getCurrentPosition(), robot.backRight.getCurrentPosition());
 
+
+            //Driving
+            wheelPower = Math.hypot(leftStickX, leftStickY);
+            if (wheelPower > robot.deadStickZone) {
+
+                wheelPower = ((1 - robot.wheelPowerMinToMove) * wheelPower + robot.wheelPowerMinToMove);
+
+            } else {
+                wheelPower = 0;
+            }
+
+
+            stickAngleRadians = Math.atan2(leftStickY, leftStickX);
+
+            stickAngleRadians = stickAngleRadians - Math.PI / 4; //adjust by 45 degrees
+
+            sinAngleRadians = Math.sin(stickAngleRadians);
+            cosAngleRadians = Math.cos(stickAngleRadians);
+            factor = 1 / Math.max(Math.abs(sinAngleRadians), Math.abs(cosAngleRadians));
+
+            lfPower = wheelPower * cosAngleRadians * factor + rightStickX;
+            rfPower = wheelPower * sinAngleRadians * factor - rightStickX;
+            lrPower = wheelPower * sinAngleRadians * factor + rightStickX;
+            rrPower = wheelPower * cosAngleRadians * factor - rightStickX;
+
+            robot.backLeft.setPower(lrPower);
+            robot.backRight.setPower(rrPower);
+            robot.frontLeft.setPower(lfPower);
+            robot.frontRight.setPower(rfPower);
+
+            telemetry.addData("LeftStickX:", gamepad1.left_stick_x);
+            telemetry.addData("LeftStickY:", gamepad1.left_stick_y);
+
+            telemetry.addData("WheelPower:", wheelPower);
+
+            telemetry.addData("Average Velocity:", GetAverageVelocity(robot));
+            telemetry.addData("Distance", robot.colorSensorPole.green());
+            telemetry.addData("Steps", scoreSteps);
             telemetry.addData("green", robot.colorSensorPole.green());
+            telemetry.update();
+
+
         }
     }
 
@@ -145,56 +187,7 @@ public class ColorSensorTesting extends LinearOpMode {
     }
 
 
-    public double CheckForPole(Robot robot, double avgWheelVelocityFPS, double lastHeightTargetNoReset, double grabberServoCurrentPos, int frontLeft, int frontRight, int backLeft, int backRight) {
-        if (Math.abs(avgWheelVelocityFPS) < 1) {
-            if (robot.colorSensorPole.green() > robot.colorThreshold) {
-                robot.frontLeft.setTargetPosition(frontLeft - (int) (avgWheelVelocityFPS * robot.ticksPerInch));
-                robot.frontRight.setTargetPosition(frontRight - (int) (avgWheelVelocityFPS * robot.ticksPerInch));
-                robot.backLeft.setTargetPosition(backLeft - (int) (avgWheelVelocityFPS * robot.ticksPerInch));
-                robot.backRight.setTargetPosition(backRight - (int) (avgWheelVelocityFPS * robot.ticksPerInch));
 
-                robot.frontLeft.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-                robot.frontRight.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-                robot.backLeft.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-                robot.backRight.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-
-                robot.frontLeft.setPower(0.8);
-                robot.frontRight.setPower(0.8);
-                robot.backLeft.setPower(0.8);
-                robot.backRight.setPower(0.8);
-
-
-
-                robot.liftMotor.setTargetPosition((int) ((lastHeightTargetNoReset) * robot.liftTicksPerInch));
-                robot.liftMotor.setPower(0.8);
-                while (opModeIsActive() && (robot.frontLeft.isBusy() || robot.frontRight.isBusy() || robot.backLeft.isBusy() || robot.backRight.isBusy() || robot.liftMotor.isBusy())) {}
-
-                robot.liftMotor.setTargetPosition((int) ((lastHeightTargetNoReset - 5) * robot.liftTicksPerInch));
-                robot.liftMotor.setPower(0.8);
-
-                while (opModeIsActive() && robot.liftMotor.isBusy()) {}
-
-                grabberServoCurrentPos = robot.grabberServoOpenPos;
-                robot.grabberServo.setPosition(grabberServoCurrentPos);
-
-                robot.liftMotor.setTargetPosition((int) ((lastHeightTargetNoReset) * robot.liftTicksPerInch));
-                robot.liftMotor.setPower(robot.liftSpeedUp);
-                while (opModeIsActive() && robot.liftMotor.isBusy()) {}
-
-
-                robot.frontLeft.setPower(0);
-                robot.frontRight.setPower(0);
-                robot.backLeft.setPower(0);
-                robot.backRight.setPower(0);
-
-                robot.frontLeft.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-                robot.frontRight.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-                robot.backLeft.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-                robot.backRight.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-            }
-        }
-        return grabberServoCurrentPos;
-    }
 
 }
 
