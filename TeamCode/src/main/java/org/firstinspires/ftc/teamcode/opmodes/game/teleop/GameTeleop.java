@@ -34,11 +34,11 @@ public class GameTeleop extends LinearOpMode {
         Robot robot = new Robot(hardwareMap, true);
         waitForStart();
 
-        List<LynxModule> allHubs = hardwareMap.getAll(LynxModule.class);
+        /*List<LynxModule> allHubs = hardwareMap.getAll(LynxModule.class);
 
         for (LynxModule hub : allHubs) {
             hub.setBulkCachingMode(LynxModule.BulkCachingMode.AUTO);
-        }
+        }*/
 
         //---------------------------------------------------------------//
         //Manual Mode
