@@ -465,12 +465,14 @@ public abstract class AutoControls extends LinearOpMode {
         turningVelocity = Math.abs(right - left) / 2;
         return turningVelocity;
     }
+
     public double headingAdjustment(double targetHeading, double distanceToX) {
         double adjustment;
         double currentHeading;
         double degreesOff;
         boolean goRight;
-        angles   = imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES);
+
+        angles = imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES);
 
         currentHeading = angles.firstAngle;
 
@@ -482,32 +484,33 @@ public abstract class AutoControls extends LinearOpMode {
             degreesOff = 360 - degreesOff;
         }
 
-        double speedMinimum = 5;
+        double speedMinimum;
         double speedModifier = 12;
 
         if (degreesOff > 10) {
             AdjustmentConstants.speedModifier = 8;
         }
 
-
-        if (distanceToX > 3) {
-            AdjustmentConstants.speedMinimum = 2;
+        if (distanceToX == 0) {
+            speedMinimum = AdjustmentConstants.speedMinimum;
+        } else {
+            speedMinimum = 2;
         }
-
 
         if (degreesOff < .3) {
             adjustment = 0;
         } else {
-            adjustment = (Math.pow((degreesOff + AdjustmentConstants.graphShift) / AdjustmentConstants.speedModifier, AdjustmentConstants.curvePower) + AdjustmentConstants.speedMinimum) / 100;
+            adjustment = (Math.pow((degreesOff + AdjustmentConstants.graphShift) / AdjustmentConstants.speedModifier, AdjustmentConstants.curvePower) + speedMinimum) / 100;
         }
 
         if (goRight) {
             adjustment = -adjustment;
         }
         Log.d("ADJUSTMENT", "Adjustment:" + adjustment +
-                                     " GraphShift:" + AdjustmentConstants.graphShift +
+                                     " DistanceToX:" + distanceToX +
                                      " SpeedModifier:" + AdjustmentConstants.speedModifier +
-                                     " SpeedMinimum:" + AdjustmentConstants.speedMinimum);
+                                     " SpeedMinimum:" + AdjustmentConstants.speedMinimum +
+                                     " Degrees Off:" + degreesOff(targetHeading));
         return adjustment;
     }
 
