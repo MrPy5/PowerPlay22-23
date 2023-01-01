@@ -1,5 +1,7 @@
 package org.firstinspires.ftc.teamcode.opmodes.game.autonomous.Third;
 
+import android.util.Log;
+
 import com.qualcomm.hardware.bosch.BNO055IMU;
 import com.qualcomm.hardware.bosch.JustLoggingAccelerationIntegrator;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
@@ -15,6 +17,7 @@ import org.firstinspires.ftc.robotcore.external.navigation.Orientation;
 import org.firstinspires.ftc.teamcode.hardware.robot.Robot;
 import org.firstinspires.ftc.teamcode.hardware.robot.pipelines.AprilTagDetectionPipeline;
 //import org.firstinspires.ftc.teamcode.opmodes.testing.AdjustmentConstants;
+import org.firstinspires.ftc.teamcode.opmodes.testing.AdjustmentConstants;
 import org.openftc.apriltag.AprilTagDetection;
 import org.openftc.easyopencv.OpenCvCamera;
 import org.openftc.easyopencv.OpenCvCameraFactory;
@@ -309,7 +312,7 @@ public abstract class AutoControls extends LinearOpMode {
         while (degreesOff(heading) > .5) {
             double adjustment = 0;
             if (heading != -1) {
-                adjustment = headingAdjustment(heading, distanceToX);
+                adjustment = headingAdjustment(heading, 0);
             }
 
             lfPower = adjustment;
@@ -480,26 +483,31 @@ public abstract class AutoControls extends LinearOpMode {
         }
 
         double speedMinimum = 5;
-
         double speedModifier = 12;
+
         if (degreesOff > 10) {
-            speedModifier = 8;
+            AdjustmentConstants.speedModifier = 8;
         }
-        /*
+
+
         if (distanceToX > 3) {
-            speedMinimum = 2;
+            AdjustmentConstants.speedMinimum = 2;
         }
-        */
+
 
         if (degreesOff < .3) {
             adjustment = 0;
         } else {
-            adjustment = (Math.pow((degreesOff + 0) / speedModifier, 2) + speedMinimum) / 100;
+            adjustment = (Math.pow((degreesOff + AdjustmentConstants.graphShift) / AdjustmentConstants.speedModifier, AdjustmentConstants.curvePower) + AdjustmentConstants.speedMinimum) / 100;
         }
 
         if (goRight) {
             adjustment = -adjustment;
         }
+        Log.d("ADJUSTMENT", "Adjustment:" + adjustment +
+                                     " GraphShift:" + AdjustmentConstants.graphShift +
+                                     " SpeedModifier:" + AdjustmentConstants.speedModifier +
+                                     " SpeedMinimum:" + AdjustmentConstants.speedMinimum);
         return adjustment;
     }
 
