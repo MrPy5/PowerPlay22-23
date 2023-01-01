@@ -2,13 +2,17 @@ package org.firstinspires.ftc.teamcode.opmodes.game.teleop;
 
 import android.util.Log;
 
+import com.qualcomm.hardware.lynx.LynxModule;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
+import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.teamcode.hardware.robot.Robot;
 
+
+import java.util.List;
 
 @TeleOp(name = "GAME TELEOP")
 
@@ -20,6 +24,12 @@ public class GameTeleop extends LinearOpMode {
 
         Robot robot = new Robot(hardwareMap, true);
         waitForStart();
+
+        List<LynxModule> allHubs = hardwareMap.getAll(LynxModule.class);
+
+        for (LynxModule hub : allHubs) {
+            hub.setBulkCachingMode(LynxModule.BulkCachingMode.AUTO);
+        }
 
         //---------------------------------------------------------------//
         //Manual Mode
@@ -35,6 +45,10 @@ public class GameTeleop extends LinearOpMode {
         boolean manualMode = false;
         boolean manualModeReleased = true;
 
+        //---------------------------------------------------------------//
+        //Auto Score
+        boolean autoScoreMode = false;
+        boolean autoScoreModeReleased = true;
 
         //---------------------------------------------------------------//
         //SLOW Mode
@@ -44,7 +58,7 @@ public class GameTeleop extends LinearOpMode {
 
         //---------------------------------------------------------------//
         //GRABBER SERVO VARIABLES
-        double grabberServoCurrentPos = 0.22;
+        double grabberServoCurrentPos;
         boolean grabberTriggerReleased = true;
 
 
@@ -63,9 +77,6 @@ public class GameTeleop extends LinearOpMode {
         double liftHeightTarget = 0;
         double liftHeightPrevTarget = 0;
         double lastHeightTargetNoReset = 0;
-        int timerToResetHeight = Robot.liftTimerForGuide;
-        boolean startTiming = false;
-
 
         //---------------------------------------------------------//
         //DRIVING CODE VARIABLES
@@ -74,7 +85,6 @@ public class GameTeleop extends LinearOpMode {
         double factor;
         double wheelPower;
         double stickAngleRadians;
-        double rightX;
         double lfPower;
         double rfPower;
         double lrPower;
@@ -89,7 +99,6 @@ public class GameTeleop extends LinearOpMode {
 
 
         while (opModeIsActive()) {
-            Log.d("LOOPED", "logged");
             //---------------------------------------------------------------//
             //GAMEPAD2 CONTROLS = Lift + turret + grabbing
             double grabberTrigger = gamepad2.right_trigger;
@@ -125,6 +134,8 @@ public class GameTeleop extends LinearOpMode {
 
             double scoreButton = gamepad1.right_trigger;
 
+            boolean autoScoreModeButton = gamepad1.start;
+
 
 
             //---------------------------------------------------------------//
@@ -134,15 +145,15 @@ public class GameTeleop extends LinearOpMode {
             turretCurrentDegrees = Robot.turretMotor.getCurrentPosition() / Robot.turretTicksPerDegree;
 
             avgWheelVelocityFPS = GetAverageVelocity();
-            int frontRight = Robot.frontRight.getCurrentPosition();
-            int frontLeft = Robot.frontRight.getCurrentPosition();
+
+            int frontLeft = Robot.frontLeft.getCurrentPosition();
+            int frontRight = Robot.frontLeft.getCurrentPosition();
             int backLeft = Robot.backLeft.getCurrentPosition();
             int backRight = Robot.backRight.getCurrentPosition();
 
 
 
 
-                //grabberServoCurrentPos = CheckForPole(autoScore, avgWheelVelocityFPS, lastHeightTargetNoReset, grabberServoCurrentPos, frontLeft, frontRight, backLeft, backRight);
 
             //-----------------------------------------------------------//
             //SLO-MO CODE
@@ -152,14 +163,11 @@ public class GameTeleop extends LinearOpMode {
                     if (!slowMode) {
                         if (Robot.liftJunctionGroundHeight == liftHeightPrevTarget) {
                             Robot.slowModeSpeed = Robot.slowModeGroundJuctionSlow;
-                            Robot.slowModeTurnSpeed = Robot.slowModeTurnSlow;
-                            slowMode = true;
                         } else {
                             Robot.slowModeSpeed = Robot.slowModeSlow;
-                            Robot.slowModeTurnSpeed = Robot.slowModeTurnSlow;
-                            slowMode = true;
                         }
-
+                        Robot.slowModeTurnSpeed = Robot.slowModeTurnSlow;
+                        slowMode = true;
                     } else {
                         Robot.slowModeSpeed = Robot.slowModeFast;
                         Robot.slowModeTurnSpeed = Robot.slowModeTurnFast;
@@ -202,7 +210,20 @@ public class GameTeleop extends LinearOpMode {
             }
 
 
-            //grabberServoCurrentPos = CheckForPole(autoScore, avgWheelVelocityFPS, lastHeightTargetNoReset, grabberServoCurrentPos, frontLeft, frontRight, backLeft, backRight);
+            if (autoScoreModeButton) {
+                if (autoScoreModeReleased) {
+                    if (!autoScoreMode) {
+                        autoScoreMode = true;
+                    }
+                    else {
+                        autoScoreMode = false;
+                    }
+                    autoScoreModeReleased = false;
+                }
+            }
+            else {
+                autoScoreModeReleased = true;
+            }
 
             if (!manualMode) {
 
@@ -272,17 +293,15 @@ public class GameTeleop extends LinearOpMode {
                 //GUIDE SERVO CODE
                 if (liftCurrentHeight > Robot.guideServoDeployHeight && liftHeightTarget >= Robot.liftJunctionLowHeight && grabberServoCurrentPos == Robot.grabberServoClosedPos && scoreSteps == 0) {
                     Robot.guideServo.setPosition(Robot.guideServoDown);
-                    autoScore = true;
+
                 }
                 else {
                     Robot.guideServo.setPosition(Robot.guideServoUp);
-                    autoScore = false;
 
 
 
                 }
 
-                //grabberServoCurrentPos = CheckForPole(autoScore, avgWheelVelocityFPS, lastHeightTargetNoReset, grabberServoCurrentPos, frontLeft, frontRight, backLeft, backRight);
 
                 //---------------------------------------------------------------//
                 //TURRET CODE
@@ -354,10 +373,14 @@ public class GameTeleop extends LinearOpMode {
                 liftHeightTarget = Robot.liftUprightHeight;
             }
 
+            //Autoscore
+            if (liftCurrentHeight > Robot.guideServoDeployHeight && autoScoreMode) {
+                grabberServoCurrentPos = CheckForPole(avgWheelVelocityFPS, lastHeightTargetNoReset, grabberServoCurrentPos, frontLeft, frontRight, backLeft, backRight);
+            }
 
 
-            //grabberServoCurrentPos = CheckForPole(autoScore, avgWheelVelocityFPS, lastHeightTargetNoReset, grabberServoCurrentPos, frontLeft, frontRight, backLeft, backRight);
 
+            //Manual Score
             if (scoreButton > Robot.triggerSensitivity) {
                 scoreSteps = 1;
             }
@@ -467,6 +490,9 @@ public class GameTeleop extends LinearOpMode {
             if (manualMode) {
                 telemetry.addData("---MANUAL MODE---", "");
             }
+            if (autoScoreMode) {
+                telemetry.addData("---Auto Score Mode---", "");
+            }
             telemetry.addData("LeftStickX:", gamepad1.left_stick_x);
             telemetry.addData("LeftStickY:", gamepad1.left_stick_y);
 
@@ -486,14 +512,17 @@ public class GameTeleop extends LinearOpMode {
     }
 
     public double GetAverageVelocity() {
-        double averageVelocity = 0;
+        double averageVelocity;
         averageVelocity = (Robot.backRight.getVelocity() + Robot.backLeft.getVelocity() + Robot.frontLeft.getVelocity() + Robot.frontRight.getVelocity()) / 4;
         averageVelocity = (averageVelocity / Robot.ticksPerInch) / 12;
         return averageVelocity;
     }
+    public double GetAveragePosition() {
+        return (Robot.backRight.getCurrentPosition() + Robot.backLeft.getCurrentPosition() + Robot.frontLeft.getCurrentPosition() + Robot.frontRight.getCurrentPosition()) / 4;
+    }
 
 
-    public double CheckForPole(boolean autoScore, double avgWheelVelocityFPS, double lastHeightTargetNoReset, double grabberServoCurrentPos, int frontLeft, int frontRight, int backLeft, int backRight) {
+    /*public double CheckForPole(boolean autoScore, double avgWheelVelocityFPS, double lastHeightTargetNoReset, double grabberServoCurrentPos, int frontLeft, int frontRight, int backLeft, int backRight) {
 
 
         if (autoScore && Math.abs(avgWheelVelocityFPS) < 1.5) {
@@ -562,6 +591,64 @@ public class GameTeleop extends LinearOpMode {
         Robot.backLeft.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         Robot.backRight.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
 
+        return grabberServoCurrentPos;
+    } */
+
+    public double CheckForPole(double avgWheelVelocityFPS, double lastHeightTargetNoReset, double grabberServoCurrentPos, int frontLeft, int frontRight, int backLeft, int backRight) {
+        if (Math.abs(avgWheelVelocityFPS) < 1.5) {
+            if (Robot.colorSensorPole.green() > Robot.colorThreshold) {
+                Robot.frontLeft.setTargetPosition(frontLeft - (int) (avgWheelVelocityFPS * Robot.ticksPerInch));
+                Robot.frontRight.setTargetPosition(frontRight - (int) (avgWheelVelocityFPS * Robot.ticksPerInch));
+                Robot.backLeft.setTargetPosition(backLeft - (int) (avgWheelVelocityFPS * Robot.ticksPerInch));
+                Robot.backRight.setTargetPosition(backRight - (int) (avgWheelVelocityFPS * Robot.ticksPerInch));
+
+                Robot.frontLeft.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+                Robot.frontRight.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+                Robot.backLeft.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+                Robot.backRight.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+
+                Robot.frontLeft.setPower(0.4);
+                Robot.frontRight.setPower(0.4);
+                Robot.backLeft.setPower(0.4);
+                Robot.backRight.setPower(0.4);
+
+
+                while (opModeIsActive() && Math.abs(GetAveragePosition()) > Robot.frontRight.getTargetPosition() - 1000) {
+                    telemetry.addData("hello", GetAveragePosition());
+                    telemetry.update();
+                }
+
+
+                Robot.frontLeft.setPower(0);
+                Robot.frontRight.setPower(0);
+                Robot.backLeft.setPower(0);
+                Robot.backRight.setPower(0);
+
+                Robot.frontLeft.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+                Robot.frontRight.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+                Robot.backLeft.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+                Robot.backRight.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+
+
+                Robot.liftMotor.setTargetPosition((int) ((lastHeightTargetNoReset - 5) * Robot.liftTicksPerInch));
+                Robot.liftMotor.setPower(0.8);
+
+                while (opModeIsActive() && Robot.liftMotor.isBusy()) {
+                    if ((float) (Robot.liftMotor.getCurrentPosition() / Robot.liftMotor.getTargetPosition()) > 0.9) {
+                        Robot.guideServo.setPosition(Robot.guideServoUp);
+                    }
+                }
+
+                grabberServoCurrentPos = Robot.grabberServoOpenPos;
+                Robot.grabberServo.setPosition(grabberServoCurrentPos);
+
+                Robot.liftMotor.setTargetPosition((int) ((lastHeightTargetNoReset) * Robot.liftTicksPerInch));
+                Robot.liftMotor.setPower(Robot.liftSpeedUp);
+                while (opModeIsActive() && Robot.liftMotor.isBusy()) {}
+
+
+            }
+        }
         return grabberServoCurrentPos;
     }
 
