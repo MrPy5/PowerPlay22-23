@@ -29,29 +29,51 @@
 
 package org.firstinspires.ftc.teamcode.opmodes.testing;
 
-import com.acmerobotics.dashboard.FtcDashboard;
-import com.acmerobotics.dashboard.config.Config;
-import com.acmerobotics.dashboard.telemetry.MultipleTelemetry;
+import com.qualcomm.hardware.bosch.BNO055IMU;
+import com.qualcomm.hardware.bosch.JustLoggingAccelerationIntegrator;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
+import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
+import com.qualcomm.robotcore.hardware.DcMotor;
 
-import org.firstinspires.ftc.teamcode.opmodes.game.autonomous.C_Third.AutoControls;
+import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
+import org.firstinspires.ftc.robotcore.external.navigation.AxesOrder;
+import org.firstinspires.ftc.robotcore.external.navigation.AxesReference;
+import org.firstinspires.ftc.robotcore.external.navigation.Orientation;
+import org.firstinspires.ftc.teamcode.hardware.robot.Robot;
 
-@Config
-@Autonomous(name="MotorTest")
 
-public class MotorTest extends AutoControls {
+import java.util.Locale;
+
+
+@Autonomous(name="ServoTest")
+
+public class ServoTest extends LinearOpMode {
 
     @Override
     public void runOpMode() {
-        init(hardwareMap);
-        FtcDashboard dashboard = FtcDashboard.getInstance();
-        telemetry = new MultipleTelemetry(telemetry, dashboard.getTelemetry());
+
+        Robot robot = new Robot(hardwareMap, true);
 
         waitForStart();
 
-        performAction(24, 0, 5, 11, -1, 0, -1, 0, -1, 0, 0.5);
 
+        while (opModeIsActive()) {
+            double targetPos = 0.5;
+            while (opModeIsActive()) {
+                if (gamepad1.right_bumper) {
+                    targetPos += 0.01;
+                    sleep(1000);
+                }
+                if (gamepad1.left_bumper) {
+                    targetPos -= 0.01;
+                    sleep(1000);
+                }
+                Robot.grabberServo.setPosition(targetPos);
+                telemetry.addData("", targetPos);
+                telemetry.update();
+            }
+        }
     }
-
-
 }
+

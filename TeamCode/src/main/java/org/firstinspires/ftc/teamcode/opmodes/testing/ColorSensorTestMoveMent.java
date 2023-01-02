@@ -29,20 +29,10 @@
 
 package org.firstinspires.ftc.teamcode.opmodes.testing;
 
-import android.app.Activity;
-import android.graphics.Color;
-import android.util.Log;
-import android.view.View;
-
 import com.qualcomm.robotcore.eventloop.opmode.Disabled;
-import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
-import com.qualcomm.robotcore.hardware.ColorSensor;
-import com.qualcomm.robotcore.hardware.NormalizedColorSensor;
-import com.qualcomm.robotcore.hardware.NormalizedRGBA;
 
-import org.firstinspires.ftc.teamcode.hardware.robot.Robot;
-import org.firstinspires.ftc.teamcode.opmodes.game.autonomous.Third.AutoControls;
+import org.firstinspires.ftc.teamcode.opmodes.game.autonomous.C_Third.AutoControls;
 
 
 @TeleOp(name = "Color Sensor Test", group = "Sensor")

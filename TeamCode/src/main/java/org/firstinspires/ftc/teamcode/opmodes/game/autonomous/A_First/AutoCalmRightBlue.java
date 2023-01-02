@@ -1,19 +1,67 @@
-package org.firstinspires.ftc.teamcode.opmodes.game.autonomous.First;
+/* Copyright (c) 2017 FIRST. All rights reserved.
+ *
+ * Redistribution and use in source and binary forms, with or without modification,
+ * are permitted (subject to the limitations in the disclaimer below) provided that
+ * the following conditions are met:
+ *
+ * Redistributions of source code must retain the above copyright notice, this list
+ * of conditions and the following disclaimer.
+ *
+ * Redistributions in binary form must reproduce the above copyright notice, this
+ * list of conditions and the following disclaimer in the documentation and/or
+ * other materials provided with the distribution.
+ *
+ * Neither the name of FIRST nor the names of its contributors may be used to endorse or
+ * promote products derived from this software without specific prior written permission.
+ *
+ * NO EXPRESS OR IMPLIED LICENSES TO ANY PARTY'S PATENT RIGHTS ARE GRANTED BY THIS
+ * LICENSE. THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
+ * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO,
+ * THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
+ * ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE
+ * FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
+ * DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR
+ * SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER
+ * CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
+ * OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
+ * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ */
+
+package org.firstinspires.ftc.teamcode.opmodes.game.autonomous.A_First;
 
 import com.qualcomm.hardware.bosch.BNO055IMU;
 import com.qualcomm.hardware.bosch.JustLoggingAccelerationIntegrator;
+import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
+
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
-import com.qualcomm.robotcore.hardware.HardwareMap;
 
+import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
+import org.firstinspires.ftc.robotcore.external.navigation.AxesOrder;
+import org.firstinspires.ftc.robotcore.external.navigation.AxesReference;
+import org.firstinspires.ftc.robotcore.external.navigation.Orientation;
 import org.firstinspires.ftc.teamcode.hardware.robot.Robot;
+import org.firstinspires.ftc.teamcode.hardware.robot.pipelines.PipelineColorCounting;
+import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
+import org.openftc.easyopencv.OpenCvCamera;
+import org.openftc.easyopencv.OpenCvCameraFactory;
+import org.openftc.easyopencv.OpenCvCameraRotation;
+import org.openftc.easyopencv.OpenCvWebcam;
 
-public abstract class AutoControls extends LinearOpMode {
+import java.util.Locale;
 
 
-    Robot robot;
+@Autonomous(name="R Blue GAME AUTO CALM")
+@Disabled
+public class AutoCalmRightBlue extends LinearOpMode {
+
+    /* Declare OpMode members. */
+    OpenCvWebcam webcam;
     BNO055IMU imu;
+    Orientation angles;
 
+    //drive
     double countsPerInch = Robot.ticksPerInch;
     double driveSpeedCurrent = 0.3;
     double driveSpeedFast = 0.4;
@@ -58,12 +106,18 @@ public abstract class AutoControls extends LinearOpMode {
     double grabberServoCurrentPos = 0.22;
     float changeFromZero = 0;
 
-    public void init(HardwareMap hwMap){
-        Robot robot = new Robot(hwMap, false);
-        initIMU();
-        //Camera Stuff
-    }
-    public void initIMU() {
+
+    //batchUpdate;
+
+    public double firstDriveTarget;
+    public double batchLiftTarget;
+
+    //
+    public int endParkingPosition = 1;
+    @Override
+    public void runOpMode() {
+
+        Robot robot = new Robot(hardwareMap, false);
         BNO055IMU.Parameters parameters = new BNO055IMU.Parameters();
         parameters.angleUnit           = BNO055IMU.AngleUnit.DEGREES;
         parameters.accelUnit           = BNO055IMU.AccelUnit.METERS_PERSEC_PERSEC;
@@ -83,6 +137,191 @@ public abstract class AutoControls extends LinearOpMode {
         sleep(100);
         imu.write8(BNO055IMU.Register.AXIS_MAP_SIGN,AXIS_MAP_SIGN_BYTE & 0x0F);
         imu.write8(BNO055IMU.Register.OPR_MODE,BNO055IMU.SensorMode.IMU.bVal & 0x0F);
+
+
+
+        int cameraMonitorViewId = hardwareMap.appContext.getResources().getIdentifier("cameraMonitorViewId", "id", hardwareMap.appContext.getPackageName());
+        webcam = OpenCvCameraFactory.getInstance().createWebcam(hardwareMap.get(WebcamName.class, "Webcam 1"), cameraMonitorViewId);
+
+        // OR...  Do Not Activate the Camera Monitor View
+        //webcam = OpenCvCameraFactory.getInstance().createWebcam(hardwareMap.get(WebcamName.class, "Webcam 1"));
+
+        /*
+         * Specify the image processing pipeline we wish to invoke upon receipt
+         * of a frame from the camera. Note that switching pipelines on-the-fly
+         * (while a streaming session is in flight) *IS* supported.
+         */
+        webcam.setPipeline(new PipelineColorCounting(640, 320));
+
+        /*
+         * Open the connection to the camera device. New in v1.4.0 is the ability
+         * to open the camera asynchronously, and this is now the recommended way
+         * to do it. The benefits of opening async include faster init time, and
+         * better behavior when pressing stop during init (i.e. less of a chance
+         * of tripping the stuck watchdog)
+         *
+         * If you really want to open synchronously, the old method is still available.
+         */
+        webcam.setMillisecondsPermissionTimeout(2500); // Timeout for obtaining permission is configurable. Set before opening.
+        webcam.openCameraDeviceAsync(new OpenCvCamera.AsyncCameraOpenListener()
+        {
+            @Override
+            public void onOpened()
+            {
+                /*
+                 * Tell the webcam to start streaming images to us! Note that you must make sure
+                 * the resolution you specify is supported by the camera. If it is not, an exception
+                 * will be thrown.
+                 *
+                 * Keep in mind that the SDK's UVC driver (what OpenCvWebcam uses under the hood) only
+                 * supports streaming from the webcam in the uncompressed YUV image format. This means
+                 * that the maximum resolution you can stream at and still get up to 30FPS is 480p (640x480).
+                 * Streaming at e.g. 720p will limit you to up to 10FPS and so on and so forth.
+                 *
+                 * Also, we specify the rotation that the webcam is used in. This is so that the image
+                 * from the camera sensor can be rotated such that it is always displayed with the image upright.
+                 * For a front facing camera, rotation is defined assuming the user is looking at the screen.
+                 * For a rear facing camera or a webcam, rotation is defined assuming the camera is facing
+                 * away from the user.
+                 */
+                webcam.startStreaming(320, 240, OpenCvCameraRotation.UPRIGHT);
+            }
+
+            @Override
+            public void onError(int errorCode)
+            {
+                /*
+                 * This will be called if the camera could not be opened
+                 */
+            }
+        });
+
+        telemetry.addLine("Waiting for start");
+        telemetry.update();
+
+        PipelineColorCounting.globalPosition = "right";
+
+        waitForStart();
+
+        angles = imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES);
+        float currentHeading = Float.parseFloat(formatAngle(angles.angleUnit, angles.firstAngle));
+        changeFromZero = (float) currentHeading;
+
+        endParkingPosition = PipelineColorCounting.getColorAtMiddleRect("blue");
+        endParkingPosition = PipelineColorCounting.getColorAtMiddleRect("blue");
+        endParkingPosition = PipelineColorCounting.getColorAtMiddleRect("blue");
+        telemetry.addData("park ", endParkingPosition);
+        telemetry.update();
+
+        //Close servo to start match
+        Robot.grabberServo.setPosition(Robot.grabberServoClosedPos);
+        sleep(500);
+
+        ZeroPowerToBrake();
+
+        //Get to High cone and move turret Right
+        firstDriveTarget = 66.5;
+        batchLiftTarget = Robot.liftJunctionHighHeight;
+
+        BatchUpdate(true, firstDriveTarget, true, batchLiftTarget, true, turretLeftDegrees);
+
+
+        //Drop turret
+        BatchUpdate(false, 0, true, Robot.liftJunctionHighHeight - 2, false, 0);
+        sleep(200);
+
+        //Release servo
+        Robot.grabberServo.setPosition(Robot.grabberServoOpenPos);
+        sleep(500);
+
+        //Raise turret to original height
+        BatchUpdate(false, 0, true, Robot.liftJunctionHighHeight, false, 0);
+
+        //Reverse to 5 stack, forward, drop to one
+        BatchUpdate(false, 0, false, 0, true, Robot.turretForwardDegrees);
+        BatchUpdate(true, -10.25, false, 0, false, 0);
+
+        //Turn to face 5 stack
+        Turn(268);
+
+        //Lower Drive Speed
+        driveSpeedFast = 0.3;
+
+        // Forward to 5 stack, raise to pickup height
+        BatchUpdate(true, 23.5, true, 6.25, false, 0);
+
+        //Close servo
+        Robot.grabberServo.setPosition(Robot.grabberServoClosedPos);
+
+        //Wait
+        sleep(500);
+
+        //Raise lift a bit
+        BatchUpdate(false, 0, true, Robot.liftPickupHeight + 10, false, 0);
+        //Raise lift rest of the way, back to high junction
+        BatchUpdate(true, -36, true, Robot.liftJunctionHighHeight, true, turretLeftDegrees);
+
+        BatchUpdate(false, 0, true, Robot.liftJunctionHighHeight - 2, false, 0);
+
+        sleep(200);
+        //open servo
+        Robot.grabberServo.setPosition(Robot.grabberServoOpenPos);
+        //turn forward
+        sleep(350);
+
+        /*BatchUpdate(false, 0, true, Robot.liftJunctionHighHeight,  false, 0);
+
+        BatchUpdate(false, 0, false, 0, true, turretForwardDegrees);
+
+        //Forward to 5 stack, lift height
+        BatchUpdate(true, 37, true, Robot.liftPickupHeight + 4.5, false, 0);
+        //Close servo
+        Robot.grabberServo.setPosition(Robot.grabberServoClosedPos);
+        //Wait
+        sleep(300);
+        //10 height
+        BatchUpdate(false, 0, true, Robot.liftPickupHeight + 10, false, 0);
+        //Rest of the way, back to high junction
+        BatchUpdate(true, -37, true, Robot.liftJunctionHighHeight, true, turretRightDegrees);
+        BatchUpdate(false, 0, true, Robot.liftJunctionHighHeight - 2, false, 0);
+
+        //open servo
+        Robot.grabberServo.setPosition(Robot.grabberServoOpenPos);
+        //turn forward
+        sleep(300);*/
+
+        BatchUpdate(false, 0, true, Robot.liftJunctionHighHeight,  false, 0);
+
+        if (endParkingPosition == 1) {
+            BatchUpdate(true, -13, false, 0,false, 0);
+        }
+
+        else if (endParkingPosition == 2) {
+            BatchUpdate(true, 14, false, 0,false, 0);
+        }
+
+        else if (endParkingPosition == 3) {
+            telemetry.addData("LEFT!!!!", "");
+            telemetry.update();
+            BatchUpdate(true, 34, false, 0,false, 0);
+
+
+        }
+
+        else {
+            BatchUpdate(true, 14, false, 0,false, 0);
+        }
+
+        Turn(180);
+        BatchUpdate(false, 0, false, 0, true, turretForwardDegrees);
+        BatchUpdate(false, 0, true, 0, false, 0);
+
+
+
+
+
+
+
     }
 
     public void BatchUpdate(boolean drive, double batchDriveTarget, boolean lift, double batchLiftTarget, boolean turret, double batchTurretTarget) {
@@ -213,13 +452,13 @@ public abstract class AutoControls extends LinearOpMode {
 
     }
 
-    public static void Turn(double targetAngle, double robotAngle, double changeFromZero) {
+    public void Turn(double targetAngle) {
         ResetEncoders();
 
         boolean goRight = false;
-
-        double distance = Math.abs(robotAngle - changeFromZero - targetAngle);
-        double currentAngle =  robotAngle - changeFromZero;
+        angles   = imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES);
+        double distance = Math.abs(angles.firstAngle - changeFromZero - targetAngle);
+        double currentAngle =  angles.firstAngle - changeFromZero;
         if (currentAngle < 0) {
             currentAngle = 360 + currentAngle;
         }
@@ -249,7 +488,7 @@ public abstract class AutoControls extends LinearOpMode {
         }
 
 
-        /*while ((currentAngle > targetAngle + 30 || currentAngle < targetAngle - 30) && opModeIsActive()) {
+        while ((currentAngle > targetAngle + 30 || currentAngle < targetAngle - 30) && opModeIsActive()) {
             angles = imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES);
             currentAngle =  angles.firstAngle - changeFromZero;
             if (currentAngle < 0) {
@@ -260,8 +499,7 @@ public abstract class AutoControls extends LinearOpMode {
 
 
 
-        }*/
-
+        }
 
         if (goRight) {
             Robot.frontLeft.setPower(-0.05);
@@ -276,7 +514,7 @@ public abstract class AutoControls extends LinearOpMode {
             Robot.backLeft.setPower(0.05);
             Robot.backRight.setPower(-0.05);
         }
-        /*
+
         while ((currentAngle > targetAngle + 0.5 || currentAngle < targetAngle - 0.5) && opModeIsActive()) {
             angles = imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES);
             currentAngle =  angles.firstAngle- changeFromZero;
@@ -287,7 +525,7 @@ public abstract class AutoControls extends LinearOpMode {
             telemetry.addData("> ", angles.firstAngle - changeFromZero);
             telemetry.update();*/
 
-        //}*/
+        }
 
         Robot.frontLeft.setPower(0);
         Robot.frontRight.setPower(0);
@@ -335,10 +573,7 @@ public abstract class AutoControls extends LinearOpMode {
         Robot.grabberServo.setPosition(grabberServoCurrentPos);
     }
 
-    public void DriveToPoint(double drivingInches, double drivingSpeed, double targetHeading, double liftHeightTarget, double liftHeightDistanceRemaining, double turretTarget, double turretDistanceRemaining, char lookForColor, double colorTolerance) {
-
-    }
-    public static void ResetEncoders() {
+    public void ResetEncoders() {
         Robot.frontLeft.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         Robot.frontRight.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         Robot.backLeft.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
@@ -350,10 +585,26 @@ public abstract class AutoControls extends LinearOpMode {
         Robot.backRight.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
     }
 
-    public static void ZeroPowerToBrake() {
+    public void ZeroPowerToBrake() {
         Robot.backLeft.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         Robot.frontLeft.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         Robot.backRight.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         Robot.frontRight.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
     }
+
+    public void ZeroPowerToFloat() {
+        Robot.backLeft.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
+        Robot.frontLeft.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
+        Robot.backRight.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
+        Robot.frontRight.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
+    }
+
+    String formatAngle(AngleUnit angleUnit, double angle) {
+        return formatDegrees(AngleUnit.DEGREES.fromUnit(angleUnit, angle));
+    }
+
+    String formatDegrees(double degrees){
+        return String.format(Locale.getDefault(), "%.1f", AngleUnit.DEGREES.normalize(degrees));
+    }
+
 }

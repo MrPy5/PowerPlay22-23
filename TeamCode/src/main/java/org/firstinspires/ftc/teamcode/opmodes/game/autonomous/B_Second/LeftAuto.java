@@ -1,11 +1,11 @@
-package org.firstinspires.ftc.teamcode.opmodes.game.autonomous.Second;
+package org.firstinspires.ftc.teamcode.opmodes.game.autonomous.B_Second;
 
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 
 import org.firstinspires.ftc.teamcode.hardware.robot.Robot;
 
-@Autonomous(name = "Left Auto Old")
+@Autonomous(name = "Second Left Auto")
 @Disabled
 public class LeftAuto extends AutoControls {
     @Override

@@ -1,11 +1,12 @@
-package org.firstinspires.ftc.teamcode.opmodes.game.autonomous.Third;
+package org.firstinspires.ftc.teamcode.opmodes.game.autonomous.C_Third;
 
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
-import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 
 import org.firstinspires.ftc.teamcode.hardware.robot.Robot;
 
 @Autonomous(name = "RIGHT Auto")
+@Disabled
 public class RightAuto extends AutoControls{
 
     @Override
