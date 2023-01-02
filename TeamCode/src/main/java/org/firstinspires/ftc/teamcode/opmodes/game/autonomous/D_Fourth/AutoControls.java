@@ -189,7 +189,7 @@ public abstract class AutoControls extends LinearOpMode {
     public double getVoltageMultiplier() {
         double voltage = hardwareMap.voltageSensor.iterator().next().getVoltage();
         double multiplier = 1;
-        if (voltage > 14) {
+        if (voltage > 13.5) {
             multiplier = 1.1;
         }
         return multiplier;
