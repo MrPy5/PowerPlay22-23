@@ -1,5 +1,6 @@
 package org.firstinspires.ftc.teamcode.opmodes.game.autonomous.D_Fourth;
 
+import android.annotation.SuppressLint;
 import android.util.Log;
 
 import com.qualcomm.hardware.bosch.BNO055IMU;
@@ -189,9 +190,13 @@ public abstract class AutoControls extends LinearOpMode {
     public double getVoltageMultiplier() {
         double voltage = hardwareMap.voltageSensor.iterator().next().getVoltage();
         double multiplier = 1;
-        if (voltage > 13.5) {
+        if (voltage > 14) {
+            multiplier = 1.2;
+        }
+        else if (voltage > 13.5) {
             multiplier = 1.1;
         }
+
         return multiplier;
     }
 
@@ -250,7 +255,7 @@ public abstract class AutoControls extends LinearOpMode {
         }
     }
 
-    public void performAction(double targetXInches, double heading, double speedModifier, double speedMinimum, double liftHeightTarget, double liftPerformWithInchesLeft, double turretTargetDegrees, double turretPerformWithInchesLeft, double targetServoPosition, double servoPerformWithInchesLeft, double distanceToleranceParam) {
+    public void performAction(double targetXInches, double heading, double speedModifier, double speedMinimum, double liftHeightTarget, double liftPerformWithInchesLeft, double turretTargetDegrees, double turretPerformWithInchesLeft, double targetServoPosition, double servoPerformWithInchesLeft, double distanceToleranceParam, double liftQuitWithInchesLeft) {
 
         speedModifier = speedModifier * multiplier; //multiplier;
 
@@ -327,7 +332,7 @@ public abstract class AutoControls extends LinearOpMode {
 
         ElapsedTime timeoutTimer = new ElapsedTime();
 
-        while ((Math.abs(distanceToX) > distanceTolerance || currentSpeed > stoppingSpeed || turningVelocity > turningVelocityTolerance || liftInchesRemaining > liftToleranceInches || turretDegreesRemaining > turretToleranceDegrees || degreesOff(heading) > 1) && opModeIsActive() && timeoutTimer.milliseconds() < 500) {
+        while ((Math.abs(distanceToX) > distanceTolerance || currentSpeed > stoppingSpeed || turningVelocity > turningVelocityTolerance || liftInchesRemaining > liftToleranceInches || turretDegreesRemaining > turretToleranceDegrees || degreesOff(heading) > 1) && opModeIsActive() && timeoutTimer.milliseconds() < 500 && (liftHeightTarget == -1 || liftInchesRemaining > liftQuitWithInchesLeft)) {
 
             double adjustment = 0;
             if (heading != -1) {
@@ -443,6 +448,200 @@ public abstract class AutoControls extends LinearOpMode {
         Robot.backRight.setPower(0);
     }
 
+
+    public void performActionWaitForLift(double targetXInches, double drivePerformWithLiftInchesLeft, double heading, double speedModifier, double speedMinimum, double liftHeightTarget, double turretTargetDegrees, double turretPerformWithInchesLeft, double targetServoPosition, double servoPerformWithInchesLeft, double distanceToleranceParam) {
+
+        speedModifier = speedModifier * multiplier; //multiplier;
+
+        ResetEncoders();
+        double currentLiftInches = 0;
+        double liftInchesRemaining = 0;
+
+        double currentTurretDegrees = 0;
+        double turretDegreesRemaining = 0;
+        double currentTurretTicks = 0;
+
+        double currentXInches;
+
+        double startXPos = getAverageOdometerPosition();
+
+
+        double lfPower;
+        double rfPower;
+        double lrPower;
+        double rrPower;
+
+        double currentSpeed;
+        double turningVelocity;
+
+        double maxWheelPower;
+        double wheelPower = 0; //Minimum speed we start at
+        double reverse = 1; // 1 is forward, -1 is backward
+
+        //Drive
+        double distanceTolerance = 0.5; //inches away that allow us to exit the loop
+        double stoppingSpeed = 0.25; //speed that is slow enough to exit the loop
+        double turningVelocityTolerance = 0.3;
+
+        if (distanceToleranceParam != 0) {
+            distanceTolerance = distanceToleranceParam;
+        }
+
+
+        currentXInches = (getAverageOdometerPosition() - startXPos);
+
+        double distanceToX = targetXInches - currentXInches;
+
+        currentSpeed = GetAverageVelocity();
+        turningVelocity = GetTurningVelocity();
+
+
+        if (liftHeightTarget != -1) {
+            currentLiftInches = Robot.liftMotor.getCurrentPosition() / liftTicksPerInch;
+            liftInchesRemaining = Math.abs(liftHeightTarget - currentLiftInches);
+        }
+
+        if (turretTargetDegrees != -1) {
+            currentTurretTicks = Robot.turretMotor.getCurrentPosition();
+            currentTurretDegrees = currentTurretTicks / turretTicksPerDegree;
+            turretDegreesRemaining = Math.abs(turretTargetDegrees - currentTurretDegrees);
+        }
+
+        while (degreesOff(heading) > .5) {
+            double adjustment = 0;
+            if (heading != -1) {
+                adjustment = headingAdjustment(heading, 0);
+            }
+
+            lfPower = adjustment;
+            rfPower = -adjustment;
+            lrPower = adjustment;
+            rrPower = -adjustment;
+
+            Robot.frontLeft.setPower(lfPower);
+            Robot.frontRight.setPower(rfPower);
+            Robot.backLeft.setPower(lrPower);
+            Robot.backRight.setPower(rrPower);
+        }
+
+        ElapsedTime timeoutTimer = new ElapsedTime();
+
+        while ((Math.abs(distanceToX) > distanceTolerance || currentSpeed > stoppingSpeed || turningVelocity > turningVelocityTolerance || liftInchesRemaining > liftToleranceInches || turretDegreesRemaining > turretToleranceDegrees || degreesOff(heading) > 1) && opModeIsActive() && timeoutTimer.milliseconds() < 500) {
+
+            double adjustment = 0;
+            if (heading != -1) {
+                adjustment = headingAdjustment(heading, distanceToX);
+            }
+
+            if (Math.abs(distanceToX) > distanceTolerance || currentSpeed > stoppingSpeed) {
+                maxWheelPower = (Math.abs(Math.pow(distanceToX / speedModifier, 3)) + speedMinimum) / 100;
+
+                double speedIncrease = .1;
+
+                wheelPower += speedIncrease;
+                if (Math.abs(wheelPower) > Math.abs(maxWheelPower)) {
+                    wheelPower = maxWheelPower;
+                }
+
+                if (distanceToX < 0) {
+                    reverse = -1;
+                } else {
+                    reverse = 1;
+                }
+            }
+            else {
+                wheelPower = 0;
+            }
+
+            //double adjustForColorVariable = adjustForColor(alliance);
+
+            lfPower = (wheelPower * reverse + adjustment);
+            rfPower = (wheelPower * reverse - adjustment);
+            lrPower = (wheelPower * reverse + adjustment);
+            rrPower = (wheelPower * reverse - adjustment);
+
+            if (liftInchesRemaining > drivePerformWithLiftInchesLeft) {
+                Robot.frontLeft.setPower(lfPower);
+                Robot.frontRight.setPower(rfPower);
+                Robot.backLeft.setPower(lrPower);
+                Robot.backRight.setPower(rrPower);
+            }
+
+            currentXInches = (getAverageOdometerPosition() - startXPos);
+
+            distanceToX = targetXInches - currentXInches;
+
+
+            currentSpeed = GetAverageVelocity();
+
+            if (Math.abs(currentSpeed) > .25) {
+                timeoutTimer.reset();
+            }
+
+
+            if (turretTargetDegrees != -1 && Math.abs(distanceToX) <= turretPerformWithInchesLeft) {
+                if (turretPrevTargetDegrees != turretTargetDegrees) {
+                    TurnTurret(turretTargetDegrees);
+                    telemetry.addData("turretMoving", "");
+                    Robot.turretMotor.setPower(turretSpeed);
+                    turretPrevTargetDegrees = turretTargetDegrees;
+                }
+            }
+
+            if (liftHeightTarget != -1) {
+                if (liftHeightPrevTarget != liftHeightTarget) {
+                    RaiseLift(liftHeightTarget);
+                    Robot.liftMotor.setPower(liftSpeedUp);
+                    telemetry.addData("liftMoving", "");
+                    liftHeightPrevTarget = liftHeightTarget;
+                }
+            }
+            if (targetServoPosition != -1 && Math.abs(distanceToX) <= servoPerformWithInchesLeft) {
+                if (grabberServoCurrentPos != targetServoPosition) {
+                    Robot.grabberServo.setPosition(targetServoPosition);
+                    grabberServoCurrentPos = targetServoPosition;
+                }
+            }
+
+
+            if (liftHeightTarget != -1) {
+                currentLiftInches = Robot.liftMotor.getCurrentPosition() / liftTicksPerInch;
+                liftInchesRemaining = Math.abs(liftHeightTarget - currentLiftInches);
+            }
+
+            if (turretTargetDegrees != -1) {
+                currentTurretTicks = Robot.turretMotor.getCurrentPosition();
+                currentTurretDegrees = currentTurretTicks / turretTicksPerDegree;
+                turretDegreesRemaining = Math.abs(turretTargetDegrees - currentTurretDegrees);
+            }
+
+
+            telemetry.addData("XPos: ", currentXInches);
+            telemetry.addData("distanceToX: ", distanceToX);
+            telemetry.addData("Current Speed:", currentSpeed);
+            telemetry.addData("Wheel Power: ", wheelPower);
+            telemetry.addData("average: ", getAverageOdometerPosition());
+            angles   = imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES);
+            telemetry.addData("imu", angles.firstAngle);
+            telemetry.addData("Distance:" , Math.abs(distanceToX) > 0.25);
+            telemetry.addData("Speed: ", currentSpeed > .25);
+            telemetry.addData("Lift: ", liftInchesRemaining > liftToleranceInches);
+            telemetry.addData("turret: ", turretDegreesRemaining > turretToleranceDegrees);
+            telemetry.addData("rotation: ", degreesOff(heading) > 1);
+            telemetry.update();
+
+        }
+        if (targetServoPosition != -1) {
+            if (grabberServoCurrentPos != targetServoPosition) {
+                Robot.grabberServo.setPosition(targetServoPosition);
+                grabberServoCurrentPos = targetServoPosition;
+            }
+        }
+        Robot.frontLeft.setPower(0);
+        Robot.frontRight.setPower(0);
+        Robot.backLeft.setPower(0);
+        Robot.backRight.setPower(0);
+    }
 
 
     public double getAverageOdometerPosition() {
@@ -609,6 +808,7 @@ public abstract class AutoControls extends LinearOpMode {
         Robot.frontRight.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
     }
 
+    @SuppressLint("DefaultLocale")
     void tagToTelemetry(AprilTagDetection detection)
     {
         telemetry.addLine(String.format("\nDetected tag ID=%d", detection.id));
