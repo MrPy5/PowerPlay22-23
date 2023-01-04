@@ -3,9 +3,9 @@ package org.firstinspires.ftc.teamcode.opmodes.game.autonomous.C_Third;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 
-@Autonomous(name = "Test Auto")
+@Autonomous(name = "Test Auto One")
 @Disabled
-public class TestAuto extends AutoControls{
+public class TestAutoOne extends AutoControls{
 
     @Override
     public void runOpMode() throws InterruptedException {

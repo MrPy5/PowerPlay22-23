@@ -81,7 +81,7 @@ public class Robot {
 
     //Grabber
     public static Servo grabberServo;
-    public static double grabberServoClosedPos = 0.22;
+    public static double grabberServoClosedPos = 0.15;
     public static double grabberServoHalfwayPos = 0.58;
     public static double grabberServoUprightPos = 0.50;
     public static double grabberServoOpenPos = 0.77;
