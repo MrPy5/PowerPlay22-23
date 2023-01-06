@@ -34,7 +34,7 @@ import com.acmerobotics.dashboard.config.Config;
 import com.acmerobotics.dashboard.telemetry.MultipleTelemetry;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 
-import org.firstinspires.ftc.teamcode.opmodes.game.autonomous.C_Third.AutoControls;
+import org.firstinspires.ftc.teamcode.opmodes.game.autonomous.D_Fourth.AutoControls;
 
 @Config
 @Autonomous(name="MotorTest")
@@ -49,7 +49,7 @@ public class MotorTest extends AutoControls {
 
         waitForStart();
 
-        performAction(24, 0, 5, 11, -1, 0, -1, 0, -1, 0, 0.5);
+        performAction(24, 0, 5, 11, -1, 0, -1, 0, -1, 0, 0.5, 0);
 
     }
 
