@@ -63,11 +63,11 @@ public class ServoTest extends LinearOpMode {
             while (opModeIsActive()) {
                 if (gamepad1.right_bumper) {
                     targetPos += 0.01;
-                    sleep(1000);
+                    sleep(250);
                 }
                 if (gamepad1.left_bumper) {
                     targetPos -= 0.01;
-                    sleep(1000);
+                    sleep(250);
                 }
                 Robot.grabberServo.setPosition(targetPos);
                 telemetry.addData("", targetPos);

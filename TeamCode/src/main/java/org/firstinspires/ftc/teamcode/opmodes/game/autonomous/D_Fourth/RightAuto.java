@@ -18,67 +18,67 @@ public class RightAuto extends AutoControls {
         int endParkingPosition = DetectAprilTags();
         //waitForStart();
         Robot.grabberServo.setPosition(Robot.grabberServoClosedPos);
-        performAction(42, 0, 6.5, 9, Robot.liftJunctionMediumHeight, 37, Robot.turretLeftDegrees, 22, Robot.grabberServoOpenPos, 0, 0, 0);
+        performAction(42, 0, 7, 9, Robot.liftJunctionMediumHeight, 37, Robot.turretLeftDegrees, 22, Robot.grabberServoOpenPos, 0, 0, 0);
         sleep(250);
-        performAction(12, 0, 3, 9, -1, 0, Robot.turretForwardDegrees, 14, -1, 0, 0, 0);
+        performAction(11.25, 0, 3, 9, -1, 0, Robot.turretForwardDegrees, 14, -1, 0, 0, 0);
 
         //Turn
-        performAction(0, 271, 7, 0, -1, 0, -1, 0, -1, 0, 0, 0);
+        //performAction(0, 267, 7, 0, -1, 0, -1, 0, -1, 0, 0, 0);
         //Drive to stack
-        performAction(24.75, 271, 5, 11, Robot.liftJunctionGroundHeight + 4.25, 24, -1, 0, Robot.grabberServoHalfwayPos, 24, .5, 0);
+        performAction(24.75, 266, 5.5, 11, coneOneGrabHeight, 24, -1, 0, Robot.grabberServoHalfwayPos, 24, .5, 0);
 
         Robot.grabberServo.setPosition(Robot.grabberServoClosedPos);
         sleep(250);
         //Lift 6 inches
-        performAction(0, -1, 7, 0, Robot.liftJunctionHighHeight, 5, -1, 0, -1, 0, 0, 20);
+        performAction(0, -1, 7, 0, Robot.liftJunctionHighHeight, 5, -1, 0, -1, 0, 0, 31);
 
         // Go to pole + drop
-        performAction(-36, 271, 6.5, 9, Robot.liftJunctionHighHeight, 38, Robot.turretLeftDegrees, 20, Robot.grabberServoOpenPos, 0, 0, 0);
+        performAction(-36, 267, 6.5, 10, Robot.liftJunctionHighHeight, 38, Robot.turretLeftDegrees, 20, Robot.grabberServoOpenPos, 0, 0, 0);
         sleep(250);
 
         //drive to stack
-        performAction(36, 270, 6.5, 8, Robot.liftJunctionGroundHeight + 3, 30, Robot.turretForwardDegrees, 35, Robot.grabberServoHalfwayPos, 20, 0, 0);
+        performAction(35.5, 267, 6.5, 8, coneTwoGrabHeight, 30, Robot.turretForwardDegrees, 35, Robot.grabberServoHalfwayPos, 20, 0, 0);
 
         Robot.grabberServo.setPosition(Robot.grabberServoClosedPos);
         sleep(250);
-        performAction(0, -1, 7, 0, Robot.liftJunctionHighHeight, 1, -1, 0, -1, 0, 0, 20);
+        performAction(0, -1, 7, 0, Robot.liftJunctionHighHeight, 1, -1, 0, -1, 0, 0, 31);
 
         //Go to pole + drop
-        performAction(-36, 271, 6.5, 9, Robot.liftJunctionHighHeight, 38, Robot.turretLeftDegrees, 20, Robot.grabberServoOpenPos, 0, 0, 0);
+        performAction(-36, 267, 6.5, 10, Robot.liftJunctionHighHeight, 38, Robot.turretLeftDegrees, 20, Robot.grabberServoOpenPos, 0, 0, 0);
         sleep(250);
 
         //Drive to stack
-        performAction(36, 270, 6.5, 8, Robot.liftJunctionGroundHeight + 2, 30, Robot.turretForwardDegrees, 35, Robot.grabberServoHalfwayPos, 20, 0, 0);
+        performAction(35.5, 267, 6.5, 8, coneThreeGrabHeight, 30, Robot.turretForwardDegrees, 35, Robot.grabberServoHalfwayPos, 20, 0, 0);
 
         Robot.grabberServo.setPosition(Robot.grabberServoClosedPos);
         sleep(250);
         //Lift 7 inches
-        performAction(0, -1, 7, 0, Robot.liftJunctionHighHeight, 1, -1, 0, -1, 0, 0, 20);
+        performAction(0, -1, 7, 0, Robot.liftJunctionHighHeight, 1, -1, 0, -1, 0, 0, 31);
 
         //Go to pole + drop
-        performAction(-36, 271, 6.5, 9, Robot.liftJunctionHighHeight, 38, Robot.turretLeftDegrees, 20, Robot.grabberServoOpenPos, 0, 0, 0);
+        performAction(-36, 267, 6.5, 10, Robot.liftJunctionHighHeight, 38, Robot.turretLeftDegrees, 20, Robot.grabberServoOpenPos, 0, 0, 0);
         sleep(250);
 
         //Drive to stack
-        performAction(36, 270, 6.5, 8, Robot.liftJunctionGroundHeight + 0.75, 30, Robot.turretForwardDegrees, 35, Robot.grabberServoHalfwayPos, 20, 0, 0);
+        performAction(35.5, 267, 6.5, 8, coneFourGrabHeight, 30, Robot.turretForwardDegrees, 35, Robot.grabberServoHalfwayPos, 20, 0, 0);
 
         Robot.grabberServo.setPosition(Robot.grabberServoClosedPos);
         sleep(250);
         //Lift 7 inches
-        performAction(0, -1, 7, 0, Robot.liftJunctionHighHeight, 1, -1, 0, -1, 0, 0, 20);
+        performAction(0, -1, 7, 0, Robot.liftJunctionHighHeight, 1, -1, 0, -1, 0, 0, 31);
 
         //Go to pole + drop
-        performAction(-36, 271, 6.5, 9, Robot.liftJunctionHighHeight, 38, Robot.turretLeftDegrees, 20, Robot.grabberServoOpenPos, 0, 0, 0);
+        performAction(-35.5, 267, 6.5, 10, Robot.liftJunctionHighHeight, 38, Robot.turretLeftDegrees, 20, Robot.grabberServoOpenPos, 0, 0, 0);
         sleep(250);
 
-        if (endParkingPosition == 1) {
-            performAction(31.5, 180, 6, 11, Robot.liftJunctionGroundHeight, 25, Robot.turretForwardDegrees, 40, -1, -1, 1, 0);
+        if (endParkingPosition == 3) {
+            performAction(31.5, -1, 6, 11, Robot.liftJunctionGroundHeight, 25, Robot.turretForwardDegrees, 40, -1, -1, 1, 0);
         }
         if (endParkingPosition == 2) {
-            performAction(8.5, 180, 5, 20, Robot.liftJunctionGroundHeight, 13, Robot.turretForwardDegrees, 13, -1, -1, 1, 0);
+            performAction(8.5, -1, 5, 20, Robot.liftJunctionGroundHeight, 13, Robot.turretForwardDegrees, 13, -1, -1, 1, 0);
         }
-        if (endParkingPosition == 3) {
-            performAction(-14.5, 180, 5, 20, Robot.liftJunctionGroundHeight, 13, Robot.turretForwardDegrees, 13, -1, -1, 1, 0);
+        if (endParkingPosition == 1) {
+            performAction(-14.5, -1, 5, 20, Robot.liftJunctionGroundHeight, 13, Robot.turretForwardDegrees, 13, -1, -1, 1, 0);
         }
 
         /*//Drive to stack

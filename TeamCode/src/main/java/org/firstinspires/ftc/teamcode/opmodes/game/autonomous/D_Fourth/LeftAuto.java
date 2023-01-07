@@ -24,9 +24,9 @@ public class LeftAuto extends AutoControls {
         performAction(12, 0, 3, 9, -1, 0, Robot.turretForwardDegrees, 12, -1, 0, 0, 0);
 
         //Turn
-        performAction(0, 87, 7, 0, -1, 0, -1, 0, -1, 0, 0, 0);
+        //performAction(0, 87, 7, 0, -1, 0, -1, 0, -1, 0, 0, 0);
         //Drive to stack
-        performAction(23.75, 87, 5, 11, Robot.liftJunctionGroundHeight + 4.25, 24, -1, 0, Robot.grabberServoHalfwayPos, 24, .5, 0);
+        performAction(23.75, 87, 5, 11, coneOneGrabHeight, 24, -1, 0, Robot.grabberServoHalfwayPos, 24, .5, 0);
 
         Robot.grabberServo.setPosition(Robot.grabberServoClosedPos);
         sleep(250);
@@ -38,7 +38,7 @@ public class LeftAuto extends AutoControls {
         sleep(250);
 
         //drive to stack
-        performAction(34.75, 87, 6.5, 8, Robot.liftJunctionGroundHeight + 3, 30, Robot.turretForwardDegrees, 35, Robot.grabberServoHalfwayPos, 20, 0, 0);
+        performAction(34.75, 87, 6.5, 8, coneTwoGrabHeight, 30, Robot.turretForwardDegrees, 35, Robot.grabberServoHalfwayPos, 20, 0, 0);
 
         Robot.grabberServo.setPosition(Robot.grabberServoClosedPos);
         sleep(250);
@@ -49,7 +49,7 @@ public class LeftAuto extends AutoControls {
         sleep(250);
 
         //Drive to stack
-        performAction(34.75, 87, 6.5, 8, Robot.liftJunctionGroundHeight + 2, 30, Robot.turretForwardDegrees, 35, Robot.grabberServoHalfwayPos, 20, 0, 0);
+        performAction(34.75, 87, 6.5, 8, coneThreeGrabHeight, 30, Robot.turretForwardDegrees, 35, Robot.grabberServoHalfwayPos, 20, 0, 0);
 
         Robot.grabberServo.setPosition(Robot.grabberServoClosedPos);
         sleep(250);
@@ -61,7 +61,7 @@ public class LeftAuto extends AutoControls {
         sleep(250);
 
         //Drive to stack
-        performAction(34.75, 87, 6.5, 8, Robot.liftJunctionGroundHeight + 0.75, 30, Robot.turretForwardDegrees, 35, Robot.grabberServoHalfwayPos, 20, 0, 0);
+        performAction(34.75, 87, 6.5, 8, coneFourGrabHeight, 30, Robot.turretForwardDegrees, 35, Robot.grabberServoHalfwayPos, 20, 0, 0);
 
         Robot.grabberServo.setPosition(Robot.grabberServoClosedPos);
         sleep(250);

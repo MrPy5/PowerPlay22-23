@@ -32,6 +32,7 @@ public class Robot {
     public static double odometerWheelDiameter = 1.436;
     public static double odometerTicksPerInch = (odometerCountsPerRevolution) /
             (odometerWheelDiameter * Math.PI);
+    public static double workingEncoderVelocityDifference = 4;
     //Slow Mode
     public static double slowModeSpeed = .8;
     public static double slowModeSlow = .4;
@@ -81,7 +82,7 @@ public class Robot {
 
     //Grabber
     public static Servo grabberServo;
-    public static double grabberServoClosedPos = 0.15;
+    public static double grabberServoClosedPos = 0.23;
     public static double grabberServoHalfwayPos = 0.58;
     public static double grabberServoUprightPos = 0.50;
     public static double grabberServoOpenPos = 0.77;
