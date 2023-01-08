@@ -55,6 +55,9 @@ public class GameTeleop extends LinearOpMode {
         boolean slowMode = false;
         boolean slowmoTriggerReleased = true;
 
+        //Increment
+        boolean incrementUpReleased = true;
+        boolean incrementDownReleased = true;
 
         //---------------------------------------------------------------//
         //GRABBER SERVO VARIABLES
@@ -210,7 +213,7 @@ public class GameTeleop extends LinearOpMode {
             }
 
 
-            if (autoScoreModeButton) {
+            /*if (autoScoreModeButton) {
                 if (autoScoreModeReleased) {
                     if (!autoScoreMode) {
                         autoScoreMode = true;
@@ -223,7 +226,7 @@ public class GameTeleop extends LinearOpMode {
             }
             else {
                 autoScoreModeReleased = true;
-            }
+            }*/
 
             if (!manualMode) {
 
@@ -257,14 +260,22 @@ public class GameTeleop extends LinearOpMode {
 
                 // manual lift
                 if (liftPosDownManualButton) {
-                    if (liftCurrentHeight > Robot.manualLiftIncrement) {
+                    if (liftCurrentHeight > Robot.manualLiftIncrement && incrementDownReleased) {
                         liftHeightTarget = liftCurrentHeight - Robot.manualLiftIncrement;
+                        incrementDownReleased = false;
                     }
                 }
+                else {
+                    incrementDownReleased = true;
+                }
                 if (liftPosUpManualButton) {
-                    if (liftCurrentHeight < Robot.liftMaximumHeight - Robot.manualLiftIncrement) {
+                    if (liftCurrentHeight < Robot.liftMaximumHeight - Robot.manualLiftIncrement && incrementUpReleased) {
                         liftHeightTarget = liftCurrentHeight + Robot.manualLiftIncrement;
+                        incrementUpReleased = false;
                     }
+                }
+                else {
+                    incrementUpReleased = true;
                 }
 
 
@@ -333,8 +344,13 @@ public class GameTeleop extends LinearOpMode {
 
             //MANUAL MODE
             else {
+                if (Math.abs(gamepad2.left_stick_y / 4) > 0.01) {
+                    Robot.liftMotor.setPower((gamepad2.left_stick_y / 4) * -1);
+                }
+                else {
+                    Robot.liftMotor.setPower(0);
+                }
                 Robot.turretMotor.setPower(gamepad2.right_stick_x / 4);
-                Robot.liftMotor.setPower(gamepad2.left_stick_y / 4);
             }
 
 

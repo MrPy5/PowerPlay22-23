@@ -62,7 +62,7 @@ public class Robot {
 
     public static double liftSpeedUp = 1;
     public static double liftSpeedDown = .7;
-    public static double manualLiftIncrement = 1.1;
+    public static double manualLiftIncrement = 1.4;
     public static int liftTimerForGuide = 70;
 
 
@@ -82,7 +82,7 @@ public class Robot {
 
     //Grabber
     public static Servo grabberServo;
-    public static double grabberServoClosedPos = 0.23;
+    public static double grabberServoClosedPos = 0.20;
     public static double grabberServoHalfwayPos = 0.58;
     public static double grabberServoUprightPos = 0.50;
     public static double grabberServoOpenPos = 0.77;
