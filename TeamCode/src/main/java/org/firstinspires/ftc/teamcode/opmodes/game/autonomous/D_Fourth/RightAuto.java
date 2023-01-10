@@ -8,6 +8,7 @@ import org.firstinspires.ftc.teamcode.hardware.robot.Robot;
 //Best Battery: 12.8 / 12.9
 
 @Autonomous(name = "Right Auto")
+@Disabled
 public class RightAuto extends AutoControls {
 
     @Override
