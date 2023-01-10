@@ -213,7 +213,7 @@ public class GameTeleop extends LinearOpMode {
             }
 
 
-            /*if (autoScoreModeButton) {
+            if (autoScoreModeButton) {
                 if (autoScoreModeReleased) {
                     if (!autoScoreMode) {
                         autoScoreMode = true;
@@ -226,7 +226,7 @@ public class GameTeleop extends LinearOpMode {
             }
             else {
                 autoScoreModeReleased = true;
-            }*/
+            }
 
             if (!manualMode) {
 
@@ -638,7 +638,7 @@ public class GameTeleop extends LinearOpMode {
                 Robot.liftMotor.setPower(0.8);
 
                 while (opModeIsActive() && Robot.liftMotor.isBusy()) {
-                    if ((Robot.liftMotor.getCurrentPosition() / Robot.liftMotor.getTargetPosition()) > 0.5) {
+                    if ((Robot.liftMotor.getCurrentPosition() / Robot.liftMotor.getTargetPosition()) > 0.8) {
                         Robot.guideServo.setPosition(Robot.guideServoUp);
                     }
                 }
