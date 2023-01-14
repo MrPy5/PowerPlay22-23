@@ -33,7 +33,6 @@ public class GameTeleop extends LinearOpMode {
 
         //---------------------------------------------------------------//
         //Manual Mode
-        boolean autoScore = false;
         int scoreSteps = 0;
         int liftRaiseWaitTime = 150;
 
@@ -49,6 +48,8 @@ public class GameTeleop extends LinearOpMode {
         //Auto Score
         boolean autoScoreMode = false;
         boolean autoScoreModeReleased = true;
+
+        boolean allowAutoScore = true;
 
         //---------------------------------------------------------------//
         //SLOW Mode
@@ -358,7 +359,7 @@ public class GameTeleop extends LinearOpMode {
             //GRABBER SERVO CODE
 
             if (grabberTrigger > Robot.triggerSensitivity) {
-                if (grabberTriggerReleased  && !autoScore) {
+                if (grabberTriggerReleased) {
                     if (grabberServoCurrentPos == Robot.grabberServoOpenPos) {
                         grabberServoCurrentPos = Robot.grabberServoClosedPos;
                     } else {
@@ -389,7 +390,15 @@ public class GameTeleop extends LinearOpMode {
 
             //Autoscore
             if (liftCurrentHeight > Robot.guideServoDeployHeight && autoScoreMode) {
-                grabberServoCurrentPos = CheckForPole(avgWheelVelocityFPS, lastHeightTargetNoReset, grabberServoCurrentPos, frontLeft, frontRight, backLeft, backRight, GetAveragePosition());
+                if (allowAutoScore) {
+                    scoreSteps = CheckForPole(avgWheelVelocityFPS, lastHeightTargetNoReset, grabberServoCurrentPos, frontLeft, frontRight, backLeft, backRight, GetAveragePosition());
+                    if (scoreSteps != 0) {
+                        allowAutoScore = false;
+                    }
+                }
+            }
+            if (liftCurrentHeight <= Robot.liftPickupHeight) {
+                allowAutoScore = true;
             }
 
             //Manual Score
@@ -402,7 +411,7 @@ public class GameTeleop extends LinearOpMode {
                 scoreSteps = 0;
             }
             if (Robot.liftMotor.getTargetPosition() != 0) {
-                if (scoreSteps == 2 && Robot.liftMotor.getCurrentPosition() / Robot.liftMotor.getTargetPosition() > 0.98) {
+                if (scoreSteps == 2 && Robot.liftMotor.isBusy()) {
                     grabberServoCurrentPos = Robot.grabberServoOpenPos;
                     Robot.grabberServo.setPosition(grabberServoCurrentPos);
                     dropTimer.reset();
@@ -595,37 +604,59 @@ public class GameTeleop extends LinearOpMode {
         return grabberServoCurrentPos;
     } */
 
-    public double CheckForPole(double avgWheelVelocityFPS, double lastHeightTargetNoReset, double grabberServoCurrentPos, int frontLeft, int frontRight, int backLeft, int backRight, double originalAveragePosition) {
+    public int CheckForPole(double avgWheelVelocityFPS, double lastHeightTargetNoReset, double grabberServoCurrentPos, int frontLeft, int frontRight, int backLeft, int backRight, double originalAveragePosition) {
 
-        int adjustmentAmount = (int) (avgWheelVelocityFPS * Robot.ticksPerInch * 0.8);
-        if (Math.abs(avgWheelVelocityFPS) < 1.5) {
+        int adjustmentAmount = (int) (avgWheelVelocityFPS * Robot.ticksPerInch * 0);
+        if (Math.abs(avgWheelVelocityFPS) < 1.0) {
+            Log.d("AutoScore", "AdjustmentAmount: " + adjustmentAmount);
+            Log.d("AutoScore", "Original Average Position: " + originalAveragePosition);
+            Log.d("AutoScore", "Average Velocity: " + avgWheelVelocityFPS);
+
             if (Robot.colorSensorPole.green() > Robot.colorThreshold) {
+                Log.d("AutoScore", "Pole Detected");
+                Robot.frontLeft.setPower(0.01);
+                Robot.frontRight.setPower(0.01);
+                Robot.backLeft.setPower(0.01);
+                Robot.backRight.setPower(0.01);
+
+
                 Robot.frontLeft.setTargetPosition(frontLeft - adjustmentAmount);
                 Robot.frontRight.setTargetPosition(frontRight - adjustmentAmount);
                 Robot.backLeft.setTargetPosition(backLeft - adjustmentAmount);
                 Robot.backRight.setTargetPosition(backRight - adjustmentAmount);
 
+
                 Robot.frontLeft.setMode(DcMotor.RunMode.RUN_TO_POSITION);
                 Robot.frontRight.setMode(DcMotor.RunMode.RUN_TO_POSITION);
                 Robot.backLeft.setMode(DcMotor.RunMode.RUN_TO_POSITION);
                 Robot.backRight.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+                /**
+                Robot.frontLeft.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+                Robot.frontRight.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+                Robot.backRight.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+                Robot.backLeft.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+                **/
 
-                Robot.frontLeft.setPower(0.4);
-                Robot.frontRight.setPower(0.4);
-                Robot.backLeft.setPower(0.4);
-                Robot.backRight.setPower(0.4);
+
+                Robot.frontLeft.setPower(0.2);
+                Robot.frontRight.setPower(0.2);
+                Robot.backLeft.setPower(0.2);
+                Robot.backRight.setPower(0.2);
 
 
-                while (opModeIsActive() && (Math.abs(originalAveragePosition - adjustmentAmount) - Math.abs(GetAveragePosition())) * Robot.ticksPerInch > 0.25) { //loop until within quarter inch of target
+                while (opModeIsActive() && Robot.frontLeft.isBusy()){ //(Math.abs(originalAveragePosition - adjustmentAmount) - Math.abs(GetAveragePosition())) * Robot.ticksPerInch > 0.25) { //loop until within quarter inch of target
                     telemetry.addData("distance travelled", (Math.abs(originalAveragePosition - adjustmentAmount) - Math.abs(GetAveragePosition())) * Robot.ticksPerInch);
                     telemetry.update();
+                    Log.d("AutoScore", "Traveling Back, Velocity: " + GetAverageVelocity());
+                    Log.d("AutoScore", "Distance Travelled: " + (Math.abs(originalAveragePosition - adjustmentAmount) - Math.abs(GetAveragePosition())));
                 }
 
+                Log.d("AutoScore", "Traveled Back finished");
 
-                Robot.frontLeft.setPower(0);
-                Robot.frontRight.setPower(0);
-                Robot.backLeft.setPower(0);
-                Robot.backRight.setPower(0);
+                Robot.frontLeft.setPower(0.01);
+                Robot.frontRight.setPower(0.01);
+                Robot.backLeft.setPower(0.01);
+                Robot.backRight.setPower(0.01);
 
                 Robot.frontLeft.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
                 Robot.frontRight.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
@@ -633,15 +664,25 @@ public class GameTeleop extends LinearOpMode {
                 Robot.backRight.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
 
 
+                telemetry.addLine("Finished travel back");
+                telemetry.update();
+
+
+
+                /**
                 Robot.liftMotor.setTargetPosition((int) ((lastHeightTargetNoReset - 5) * Robot.liftTicksPerInch)); // last height target no reset - 5
                 Robot.liftMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
                 Robot.liftMotor.setPower(0.8);
 
-                while (opModeIsActive() && Robot.liftMotor.isBusy()) {
+                while (opModeIsActive() && ((float) Robot.liftMotor.getCurrentPosition() / Robot.liftMotor.getTargetPosition()) < 0.98) {
                     if ((Robot.liftMotor.getCurrentPosition() / Robot.liftMotor.getTargetPosition()) > 0.8) {
                         Robot.guideServo.setPosition(Robot.guideServoUp);
                     }
+
+                    Log.d("AutoScore", "Lift Down");
                 }
+                Log.d("AutoScore", "Lift Down Finished");
+
 
                 grabberServoCurrentPos = Robot.grabberServoOpenPos;
                 Robot.grabberServo.setPosition(grabberServoCurrentPos);
@@ -650,11 +691,11 @@ public class GameTeleop extends LinearOpMode {
                 Robot.liftMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
                 Robot.liftMotor.setPower(Robot.liftSpeedUp);
                 while (opModeIsActive() && Robot.liftMotor.isBusy()) {}
-
-
+                **/
+                return 1;
             }
         }
-        return grabberServoCurrentPos;
+        return 0;
     }
 
 }
