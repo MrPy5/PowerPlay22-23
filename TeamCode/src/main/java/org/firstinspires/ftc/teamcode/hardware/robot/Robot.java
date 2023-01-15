@@ -6,7 +6,6 @@ import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.Servo;
-import com.qualcomm.robotcore.hardware.VoltageSensor;
 
 public class Robot {
 
@@ -53,7 +52,7 @@ public class Robot {
 
     public static double liftPickupHeight = 0;
     public static double liftJunctionGroundHeight = 2;
-    public static double liftUprightHeight = 2.25;
+    public static double liftConeUprightHeight = 2;
     public static double liftJunctionLowHeight = 14.5;
     public static double liftJunctionMediumHeight = 24.5; //24
     public static double liftJunctionHighHeight = 33.5;
@@ -84,13 +83,13 @@ public class Robot {
     public static Servo grabberServo;
     public static double grabberServoClosedPos = 0.25;
     public static double grabberServoHalfwayPos = 0.60;
-    public static double grabberServoUprightPos = 0.50;
+    public static double grabberServoUprightPos = 0.47;
     public static double grabberServoOpenPos = 0.82;
 
     //Guide
     public static Servo guideServo;
-    public static double guideServoDown = 0;
-    public static double guideServoUp = 0.7;
+    public static double guideServoDown = 0.2;
+    public static double guideServoUp = guideServoDown + 0.65;
     public static double guideServoDeployHeight = 10;
 
     //Color Sensor
@@ -99,7 +98,7 @@ public class Robot {
 
     //Pole Color Sensor
     public static ColorSensor colorSensorPole;
-    public static double colorThreshold = 250;
+    public static double colorThreshold = 300;
 
     //Gamepad
     public static double triggerSensitivity = 0.01;

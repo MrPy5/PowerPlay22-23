@@ -1,14 +1,11 @@
 package org.firstinspires.ftc.teamcode.opmodes.game.teleop;
 
-import android.util.Log;
-
 import com.qualcomm.hardware.lynx.LynxModule;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
-import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.teamcode.hardware.robot.Robot;
 
 
@@ -131,6 +128,12 @@ public class GameTeleop extends LinearOpMode {
 
             double leftStickY = gamepad1.left_stick_y * -1 * Robot.slowModeSpeed;
             double leftStickX = gamepad1.left_stick_x * Robot.slowModeSpeed * 0.8; // testing
+
+            if (scoreSteps > 0) {
+                leftStickX = 0;
+                leftStickY = 0;
+            }
+
             double rightStickX = gamepad1.right_stick_x * Robot.slowModeTurnSpeed * .8;
 
             boolean liftPosUpManualButton = gamepad1.right_bumper;
@@ -216,12 +219,7 @@ public class GameTeleop extends LinearOpMode {
 
             if (autoScoreModeButton) {
                 if (autoScoreModeReleased) {
-                    if (!autoScoreMode) {
-                        autoScoreMode = true;
-                    }
-                    else {
-                        autoScoreMode = false;
-                    }
+                    autoScoreMode = !autoScoreMode;
                     autoScoreModeReleased = false;
                 }
             }
@@ -375,7 +373,7 @@ public class GameTeleop extends LinearOpMode {
 
             if (uprightCone) {
                 Robot.grabberServo.setPosition(Robot.grabberServoUprightPos);
-                liftHeightTarget = Robot.liftUprightHeight;
+                liftHeightTarget = Robot.liftConeUprightHeight;
             }
 
 
@@ -397,7 +395,7 @@ public class GameTeleop extends LinearOpMode {
                     }
                 }
             }
-            if (liftCurrentHeight <= Robot.liftPickupHeight) {
+            if (liftCurrentHeight < Robot.liftConeUprightHeight) {
                 allowAutoScore = true;
             }
 
@@ -407,6 +405,7 @@ public class GameTeleop extends LinearOpMode {
             }
 
             if (scoreSteps == 3 && dropTimer.milliseconds() > liftRaiseWaitTime) {
+                sleep(250);
                 liftHeightTarget = lastHeightTargetNoReset;
                 scoreSteps = 0;
             }
@@ -508,6 +507,8 @@ public class GameTeleop extends LinearOpMode {
 
             telemetry.addData("WheelPower:", wheelPower);
 
+            telemetry.addData("Lift Height:", liftCurrentHeight);
+
             /*telemetry.addData("Turret Current Position (degrees):", turretCurrentDegrees);
             telemetry.addData("Turret Target Position (degrees):", turretTargetDegrees);
             telemetry.addData("Lift Current Position (inches):", liftCurrentHeight);
@@ -607,13 +608,8 @@ public class GameTeleop extends LinearOpMode {
     public int CheckForPole(double avgWheelVelocityFPS, double lastHeightTargetNoReset, double grabberServoCurrentPos, int frontLeft, int frontRight, int backLeft, int backRight, double originalAveragePosition) {
 
         int adjustmentAmount = (int) (avgWheelVelocityFPS * Robot.ticksPerInch * 0);
-        if (Math.abs(avgWheelVelocityFPS) < 1.0) {
-            Log.d("AutoScore", "AdjustmentAmount: " + adjustmentAmount);
-            Log.d("AutoScore", "Original Average Position: " + originalAveragePosition);
-            Log.d("AutoScore", "Average Velocity: " + avgWheelVelocityFPS);
-
+        if (Math.abs(avgWheelVelocityFPS) < 1.2) {
             if (Robot.colorSensorPole.green() > Robot.colorThreshold) {
-                Log.d("AutoScore", "Pole Detected");
                 Robot.frontLeft.setPower(0.01);
                 Robot.frontRight.setPower(0.01);
                 Robot.backLeft.setPower(0.01);
@@ -647,11 +643,8 @@ public class GameTeleop extends LinearOpMode {
                 while (opModeIsActive() && Robot.frontLeft.isBusy()){ //(Math.abs(originalAveragePosition - adjustmentAmount) - Math.abs(GetAveragePosition())) * Robot.ticksPerInch > 0.25) { //loop until within quarter inch of target
                     telemetry.addData("distance travelled", (Math.abs(originalAveragePosition - adjustmentAmount) - Math.abs(GetAveragePosition())) * Robot.ticksPerInch);
                     telemetry.update();
-                    Log.d("AutoScore", "Traveling Back, Velocity: " + GetAverageVelocity());
-                    Log.d("AutoScore", "Distance Travelled: " + (Math.abs(originalAveragePosition - adjustmentAmount) - Math.abs(GetAveragePosition())));
                 }
 
-                Log.d("AutoScore", "Traveled Back finished");
 
                 Robot.frontLeft.setPower(0.01);
                 Robot.frontRight.setPower(0.01);
