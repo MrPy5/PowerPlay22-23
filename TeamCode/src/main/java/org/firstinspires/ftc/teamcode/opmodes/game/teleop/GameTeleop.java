@@ -388,7 +388,7 @@ public class GameTeleop extends LinearOpMode {
 
             //Autoscore
             if (liftCurrentHeight > Robot.guideServoDeployHeight && autoScoreMode) {
-                if (allowAutoScore) {
+                if (allowAutoScore && scoreSteps == 0) {
                     scoreSteps = CheckForPole(avgWheelVelocityFPS, lastHeightTargetNoReset, grabberServoCurrentPos, frontLeft, frontRight, backLeft, backRight, GetAveragePosition());
                     if (scoreSteps != 0) {
                         allowAutoScore = false;
@@ -400,13 +400,15 @@ public class GameTeleop extends LinearOpMode {
             }
 
             //Manual Score
-            if (scoreButton > Robot.triggerSensitivity) {
+            if (scoreButton > Robot.triggerSensitivity && scoreSteps == 0) {
                 scoreSteps = 1;
             }
 
             if (scoreSteps == 3 && dropTimer.milliseconds() > liftRaiseWaitTime) {
                 sleep(250);
                 liftHeightTarget = lastHeightTargetNoReset;
+                grabberServoCurrentPos = Robot.grabberServoOpenPos;
+                Robot.grabberServo.setPosition(grabberServoCurrentPos);
                 scoreSteps = 0;
             }
             if (Robot.liftMotor.getTargetPosition() != 0) {
@@ -420,8 +422,6 @@ public class GameTeleop extends LinearOpMode {
             }
             else {
                 if (scoreSteps == 2 && !Robot.liftMotor.isBusy()) {
-                    grabberServoCurrentPos = Robot.grabberServoOpenPos;
-                    Robot.grabberServo.setPosition(grabberServoCurrentPos);
                     dropTimer.reset();
                     scoreSteps = 3;
                 }
@@ -473,7 +473,7 @@ public class GameTeleop extends LinearOpMode {
             lrPower = wheelPower * sinAngleRadians * factor + rightStickX;
             rrPower = wheelPower * cosAngleRadians * factor - rightStickX;
 
-            if (liftCurrentHeight > Robot.liftJunctionLowHeight && Math.abs(avgWheelVelocityFPS) > 0.5) {
+            if (liftCurrentHeight > Robot.liftJunctionLowHeight && Math.abs(avgWheelVelocityFPS) > 0.3) {
                 if (leftStickX == 0 && leftStickY == 0) {
                     if (avgWheelVelocityFPS > 0) {
                         lfPower = 0.01;
@@ -609,12 +609,13 @@ public class GameTeleop extends LinearOpMode {
 
         int adjustmentAmount = (int) (avgWheelVelocityFPS * Robot.ticksPerInch * 0);
         if (Math.abs(avgWheelVelocityFPS) < 1.2) {
-            if (Robot.colorSensorPole.green() > Robot.colorThreshold) {
-                Robot.frontLeft.setPower(0.01);
-                Robot.frontRight.setPower(0.01);
-                Robot.backLeft.setPower(0.01);
-                Robot.backRight.setPower(0.01);
+            if (Robot.colorSensorPole.green() > Robot.colorThreshold && (Robot.liftMotor.getCurrentPosition() * Robot.ticksPerInch) >= lastHeightTargetNoReset - 0.5) {
+                double speed = 0.01;
 
+                Robot.frontLeft.setPower(speed);
+                Robot.frontRight.setPower(speed);
+                Robot.backLeft.setPower(speed);
+                Robot.backRight.setPower(speed);
 
                 Robot.frontLeft.setTargetPosition(frontLeft - adjustmentAmount);
                 Robot.frontRight.setTargetPosition(frontRight - adjustmentAmount);
@@ -634,15 +635,19 @@ public class GameTeleop extends LinearOpMode {
                 **/
 
 
-                Robot.frontLeft.setPower(0.2);
-                Robot.frontRight.setPower(0.2);
-                Robot.backLeft.setPower(0.2);
-                Robot.backRight.setPower(0.2);
 
 
                 while (opModeIsActive() && Robot.frontLeft.isBusy()){ //(Math.abs(originalAveragePosition - adjustmentAmount) - Math.abs(GetAveragePosition())) * Robot.ticksPerInch > 0.25) { //loop until within quarter inch of target
                     telemetry.addData("distance travelled", (Math.abs(originalAveragePosition - adjustmentAmount) - Math.abs(GetAveragePosition())) * Robot.ticksPerInch);
                     telemetry.update();
+
+                    if (speed < 0.1 && Math.abs(GetAverageVelocity()) < 0.2) {
+                        speed += 0.01;
+                    }
+                    Robot.frontLeft.setPower(speed);
+                    Robot.frontRight.setPower(speed);
+                    Robot.backLeft.setPower(speed);
+                    Robot.backRight.setPower(speed);
                 }
 
 

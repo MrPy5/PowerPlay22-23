@@ -131,7 +131,7 @@ public abstract class AutoControls extends LinearOpMode {
     public char alliance = 'b';
 
     double coneDifference = 1.3125;
-    double coneOneGrabHeight = 5.75;
+    double coneOneGrabHeight = 6;
     double coneTwoGrabHeight = coneOneGrabHeight - coneDifference;
     double coneThreeGrabHeight = coneTwoGrabHeight - coneDifference;
     double coneFourGrabHeight = coneThreeGrabHeight - coneDifference;
