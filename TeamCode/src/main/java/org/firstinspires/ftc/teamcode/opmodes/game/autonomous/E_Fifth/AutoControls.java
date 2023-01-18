@@ -471,6 +471,8 @@ public abstract class AutoControls extends LinearOpMode {
                 return;
             }
 
+            Log.d("Autonomous", "DistanceToX: " + distanceToX + " Lift Inches reminaing: " + liftInchesRemaining + " imu: " + angles.firstAngle + " game time" + gameTimer.milliseconds());
+
 
         }
         if (targetServoPosition != -1) {
@@ -484,7 +486,7 @@ public abstract class AutoControls extends LinearOpMode {
             double adjustForColorVariable = 0;
 
             adjustForColorVariable = adjustForColor(alliance);
-            while (adjustForColorVariable > 0.1) {
+            while (adjustForColorVariable > 0.2) {
                 adjustForColorVariable = adjustForColor(alliance);
 
                 lfPower = (adjustForColorVariable);
@@ -616,10 +618,10 @@ public abstract class AutoControls extends LinearOpMode {
         double rightColor;
 
         double blueThreshold = 350;
-        double blueDivisor = 4000;
+        double blueDivisor = 5500;
 
         double redThreshold = 250;
-        double redDivisor = 4000;
+        double redDivisor = 5500;
 
         double outputValue = 0;
 
@@ -685,6 +687,12 @@ public abstract class AutoControls extends LinearOpMode {
         Robot.frontLeft.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         Robot.backRight.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         Robot.frontRight.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+    }
+    public static void ZeroPowerToFloat() {
+        Robot.backLeft.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
+        Robot.frontLeft.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
+        Robot.backRight.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
+        Robot.frontRight.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
     }
 
     @SuppressLint("DefaultLocale")

@@ -8,14 +8,13 @@ import org.firstinspires.ftc.teamcode.hardware.robot.Robot;
 //Best Battery: 12.8 / 12.9
 //Test
 
-@Autonomous(name = "Left Auto")
-public class LeftAuto extends AutoControls {
+public abstract class LeftAuto extends AutoControls {
 
-    @Override
-    public void runOpMode() throws InterruptedException {
+
+    public void startAuto() {
 
         init(hardwareMap);
-        alliance = 'b';
+
         int endParkingPosition = DetectAprilTags();
         //waitForStart();
         Robot.grabberServo.setPosition(Robot.grabberServoClosedPos);
@@ -73,6 +72,7 @@ public class LeftAuto extends AutoControls {
         sleep(250);
 
         if (endParkingPosition == 1) {
+            ZeroPowerToFloat();
             performAction(31.5, 90, 6, 11, Robot.liftJunctionGroundHeight, 25, Robot.turretForwardDegrees, 40, -1, -1, 1, 0, false);
         }
         if (endParkingPosition == 2) {

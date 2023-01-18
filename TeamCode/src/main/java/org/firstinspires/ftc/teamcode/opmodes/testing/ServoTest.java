@@ -47,7 +47,7 @@ import java.util.Locale;
 
 
 @Autonomous(name="ServoTest")
-
+@Disabled
 public class ServoTest extends LinearOpMode {
 
     @Override
