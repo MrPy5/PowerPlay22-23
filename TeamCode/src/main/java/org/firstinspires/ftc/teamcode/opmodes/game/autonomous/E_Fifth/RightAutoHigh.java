@@ -32,7 +32,7 @@ public abstract class RightAutoHigh extends AutoControls {
         performAction(0, -1, 7, 0, Robot.liftJunctionHighHeight, 5, -1, 0, -1, 0, 0, 31, false);
 
         // Go to pole + drop
-        performAction(-36, 267, 6.5, 10, Robot.liftJunctionHighHeight, 38, Robot.turretLeftDegrees, 20, Robot.grabberServoOpenPos, 0, 0, 0, false);
+        performAction(-35.25, 267, 6.5, 10, Robot.liftJunctionHighHeight, 38, Robot.turretLeftDegrees, 20, Robot.grabberServoOpenPos, 0, 0, 0, false);
         sleep(250);
 
         //drive to stack
@@ -43,7 +43,7 @@ public abstract class RightAutoHigh extends AutoControls {
         performAction(0, -1, 7, 0, Robot.liftJunctionHighHeight, 1, -1, 0, -1, 0, 0, 31, false);
 
         //Go to pole + drop
-        performAction(-36, 267, 6.5, 10, Robot.liftJunctionHighHeight, 38, Robot.turretLeftDegrees, 20, Robot.grabberServoOpenPos, 0, 0, 0, false);
+        performAction(-35.25, 267, 6.5, 10, Robot.liftJunctionHighHeight, 38, Robot.turretLeftDegrees, 20, Robot.grabberServoOpenPos, 0, 0, 0, false);
         sleep(250);
 
         //Drive to stack
@@ -55,7 +55,7 @@ public abstract class RightAutoHigh extends AutoControls {
         performAction(0, -1, 7, 0, Robot.liftJunctionHighHeight, 1, -1, 0, -1, 0, 0, 31, false);
 
         //Go to pole + drop
-        performAction(-36, 267, 6.5, 10, Robot.liftJunctionHighHeight, 38, Robot.turretLeftDegrees, 20, Robot.grabberServoOpenPos, 0, 0, 0, false);
+        performAction(-35.25, 267, 6.5, 10, Robot.liftJunctionHighHeight, 38, Robot.turretLeftDegrees, 20, Robot.grabberServoOpenPos, 0, 0, 0, false);
         sleep(250);
 
         //Drive to stack
@@ -67,7 +67,7 @@ public abstract class RightAutoHigh extends AutoControls {
         performAction(0, -1, 7, 0, Robot.liftJunctionHighHeight, 1, -1, 0, -1, 0, 0, 31, false);
 
         //Go to pole + drop
-        performAction(-36, 267, 6.5, 10, Robot.liftJunctionHighHeight, 38, Robot.turretLeftDegrees, 20, Robot.grabberServoOpenPos, 0, 0, 0, false);
+        performAction(-35.25, 267, 6.5, 10, Robot.liftJunctionHighHeight, 38, Robot.turretLeftDegrees, 20, Robot.grabberServoOpenPos, 0, 0, 0, false);
         sleep(250);
 
         if (endParkingPosition == 3) {

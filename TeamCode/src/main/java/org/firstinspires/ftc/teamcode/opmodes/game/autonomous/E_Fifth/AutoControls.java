@@ -620,8 +620,8 @@ public abstract class AutoControls extends LinearOpMode {
         double blueThreshold = 350;
         double blueDivisor = 5500;
 
-        double redThreshold = 250;
-        double redDivisor = 5500;
+        double redThreshold = 200;
+        double redDivisor = 6500;
 
         double outputValue = 0;
 
