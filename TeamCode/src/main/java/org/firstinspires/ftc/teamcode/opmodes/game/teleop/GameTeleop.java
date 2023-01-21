@@ -31,7 +31,7 @@ public class GameTeleop extends LinearOpMode {
         //---------------------------------------------------------------//
         //Manual Mode
         int scoreSteps = 0;
-        int liftRaiseWaitTime = 150;
+        int liftRaiseWaitTime = 200;
 
         ElapsedTime dropTimer = new ElapsedTime();
 
@@ -43,7 +43,7 @@ public class GameTeleop extends LinearOpMode {
 
         //---------------------------------------------------------------//
         //Auto Score
-        boolean autoScoreMode = false;
+        boolean autoScoreMode = true;
         boolean autoScoreModeReleased = true;
 
         boolean allowAutoScore = true;
@@ -242,19 +242,27 @@ public class GameTeleop extends LinearOpMode {
                 if (liftPosGroundJunctionButton) {
                     liftHeightTarget = Robot.liftJunctionGroundHeight;
                     lastHeightTargetNoReset = Robot.liftJunctionGroundHeight;
+                    scoreSteps = 0; // Panic button for incase auto score cant finish
+
 
                 }
                 if (liftPosLowButton) {
                     liftHeightTarget = Robot.liftJunctionLowHeight;
                     lastHeightTargetNoReset = Robot.liftJunctionLowHeight;
+                    scoreSteps = 0; // Panic button for incase auto score cant finish
+
                 }
                 if (liftPosMediumButton) {
                     liftHeightTarget = Robot.liftJunctionMediumHeight;
                     lastHeightTargetNoReset = Robot.liftJunctionMediumHeight;
+                    scoreSteps = 0; // Panic button for incase auto score cant finish
+
                 }
                 if (liftPosHighButton) {
                     liftHeightTarget = Robot.liftJunctionHighHeight;
                     lastHeightTargetNoReset = Robot.liftJunctionHighHeight;
+                    scoreSteps = 0; // Panic button for incase auto score cant finish
+
                 }
 
                 // manual lift
@@ -404,7 +412,7 @@ public class GameTeleop extends LinearOpMode {
                 scoreSteps = 1;
             }
 
-            if (scoreSteps == 3 && dropTimer.milliseconds() > liftRaiseWaitTime) {
+            /*if (scoreSteps == 3 && dropTimer.milliseconds() > liftRaiseWaitTime) {
                 sleep(250);
                 liftHeightTarget = lastHeightTargetNoReset;
                 grabberServoCurrentPos = Robot.grabberServoOpenPos;
@@ -430,6 +438,27 @@ public class GameTeleop extends LinearOpMode {
                 Robot.guideServo.setPosition(Robot.guideServoUp);
                 liftHeightTarget = lastHeightTargetNoReset - 5;
                 scoreSteps = 2;
+            }*/
+
+            if (!Robot.liftMotor.isBusy() && scoreSteps == 3) {
+                sleep(250);
+
+                liftHeightTarget = lastHeightTargetNoReset;
+                scoreSteps = 0;
+
+            }
+            if (scoreSteps == 2 && dropTimer.milliseconds() > liftRaiseWaitTime) {
+                grabberServoCurrentPos = Robot.grabberServoOpenPos;
+                Robot.grabberServo.setPosition(grabberServoCurrentPos);
+                scoreSteps = 3;
+            }
+            if (scoreSteps == 1) {
+                Robot.guideServo.setPosition(Robot.guideServoUp);
+
+                liftHeightTarget = lastHeightTargetNoReset - 5;
+                scoreSteps = 2;
+
+                dropTimer.reset();
             }
 
 

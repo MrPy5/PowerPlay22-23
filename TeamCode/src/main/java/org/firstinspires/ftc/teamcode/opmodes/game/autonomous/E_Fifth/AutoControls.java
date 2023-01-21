@@ -28,6 +28,7 @@ import java.util.ArrayList;
 
 public abstract class AutoControls extends LinearOpMode {
 
+    boolean log = false;
 
     Robot robot;
     BNO055IMU imu;
@@ -471,8 +472,9 @@ public abstract class AutoControls extends LinearOpMode {
                 return;
             }
 
-            Log.d("Autonomous", "DistanceToX: " + distanceToX + " Lift Inches reminaing: " + liftInchesRemaining + " imu: " + angles.firstAngle + " game time" + gameTimer.milliseconds());
-
+            if (log) {
+                Log.d("Autonomous", "DistanceToX: " + distanceToX + " Lift Inches reminaing: " + liftInchesRemaining + " imu: " + angles.firstAngle + " game time" + gameTimer.milliseconds());
+            }
 
         }
         if (targetServoPosition != -1) {
@@ -584,11 +586,13 @@ public abstract class AutoControls extends LinearOpMode {
         if (goRight) {
             adjustment = -adjustment;
         }
-        Log.d("ADJUSTMENT", "Adjustment:" + adjustment +
-                                     " DistanceToX:" + distanceToX +
-                                     " SpeedModifier:" + AdjustmentConstants.speedModifier +
-                                     " SpeedMinimum:" + AdjustmentConstants.speedMinimum +
-                                     " Degrees Off:" + degreesOff(targetHeading));
+        if (log) {
+            Log.d("ADJUSTMENT", "Adjustment:" + adjustment +
+                    " DistanceToX:" + distanceToX +
+                    " SpeedModifier:" + AdjustmentConstants.speedModifier +
+                    " SpeedMinimum:" + AdjustmentConstants.speedMinimum +
+                    " Degrees Off:" + degreesOff(targetHeading));
+        }
         return adjustment;
     }
 

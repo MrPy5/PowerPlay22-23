@@ -55,12 +55,12 @@ public class Robot {
     public static double liftConeUprightHeight = 2;
     public static double liftJunctionLowHeight = 14.5;
     public static double liftJunctionMediumHeight = 24.5; //24
-    public static double liftJunctionHighHeight = 33.5;
+    public static double liftJunctionHighHeight = 33;
     public static double liftMinHeightForTurning = 6;
     public static double liftMaximumHeight = 36;
 
-    public static double liftSpeedUp = 1;
-    public static double liftSpeedDown = 1;
+    public static double liftSpeedUp = 1.0;
+    public static double liftSpeedDown = 0.7;
     public static double manualLiftIncrement = 1.4;
     public static int liftTimerForGuide = 70;
 
