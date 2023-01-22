@@ -98,6 +98,29 @@ public class GameTeleop extends LinearOpMode {
         Robot.grabberServo.setPosition(Robot.grabberServoOpenPos);
         grabberServoCurrentPos = Robot.grabberServoOpenPos;
 
+        Robot.liftMotor.setTargetPosition((int) 0);
+        Robot.liftMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+
+        Robot.liftMotor.setPower(1);
+
+        /*while (Robot.liftMotor.isBusy()) {}
+
+
+        Robot.turretMotor.setTargetPosition(0);
+        Robot.turretMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+
+        Robot.turretMotor.setPower(0.8);
+
+        while (Robot.turretMotor.isBusy()) {}
+
+        Robot.liftMotor.setTargetPosition(0);
+        Robot.liftMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+
+        Robot.liftMotor.setPower(1);*/
+
+
+
+
 
         while (opModeIsActive()) {
             //---------------------------------------------------------------//

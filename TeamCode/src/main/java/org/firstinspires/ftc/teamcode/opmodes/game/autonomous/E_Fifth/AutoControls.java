@@ -488,7 +488,7 @@ public abstract class AutoControls extends LinearOpMode {
             double adjustForColorVariable = 0;
 
             adjustForColorVariable = adjustForColor(alliance);
-            while (adjustForColorVariable > 0.2) {
+            while (adjustForColorVariable > 0.08) {
                 adjustForColorVariable = adjustForColor(alliance);
 
                 lfPower = (adjustForColorVariable);
@@ -622,10 +622,10 @@ public abstract class AutoControls extends LinearOpMode {
         double rightColor;
 
         double blueThreshold = 350;
-        double blueDivisor = 5500;
+        double blueDivisor = 5250;
 
         double redThreshold = 200;
-        double redDivisor = 6500;
+        double redDivisor = 5500;
 
         double outputValue = 0;
 
