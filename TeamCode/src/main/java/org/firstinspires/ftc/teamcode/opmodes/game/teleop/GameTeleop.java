@@ -48,10 +48,6 @@ public class GameTeleop extends LinearOpMode {
 
         boolean allowAutoScore = true;
 
-        //---------------------------------------------------------------//
-        //SLOW Mode
-        boolean slowMode = false;
-        boolean slowmoTriggerReleased = true;
 
         //Increment
         boolean incrementUpReleased = true;
@@ -62,6 +58,10 @@ public class GameTeleop extends LinearOpMode {
         double grabberServoCurrentPos;
         boolean grabberTriggerReleased = true;
 
+        //Cone upright
+        boolean coneUprightOut = false;
+        boolean coneUprightTriggerReleased = true;
+        double currentConeUpright = Robot.coneUprightIn;
 
         //---------------------------------------------------------------//
         //TURRET VARIABLES
@@ -98,12 +98,20 @@ public class GameTeleop extends LinearOpMode {
         Robot.grabberServo.setPosition(Robot.grabberServoOpenPos);
         grabberServoCurrentPos = Robot.grabberServoOpenPos;
 
-        Robot.liftMotor.setTargetPosition((int) 0);
+        Robot.coneUpright.setPosition(Robot.coneUprightIn);
+        currentConeUpright = Robot.coneUprightIn;
+
+        Robot.guideServo.setPosition(Robot.guideServoUp);
+
+
+        //Readjust to 0
+
+        Robot.liftMotor.setTargetPosition((int) (7 * Robot.liftTicksPerInch));
         Robot.liftMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
 
         Robot.liftMotor.setPower(1);
 
-        /*while (Robot.liftMotor.isBusy()) {}
+        while (Robot.liftMotor.isBusy()) {}
 
 
         Robot.turretMotor.setTargetPosition(0);
@@ -116,10 +124,7 @@ public class GameTeleop extends LinearOpMode {
         Robot.liftMotor.setTargetPosition(0);
         Robot.liftMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
 
-        Robot.liftMotor.setPower(1);*/
-
-
-
+        Robot.liftMotor.setPower(0.5);
 
 
         while (opModeIsActive()) {
@@ -142,22 +147,23 @@ public class GameTeleop extends LinearOpMode {
 
             boolean uprightCone = gamepad2.left_bumper;
 
+            float uprightConeNew = gamepad2.left_trigger;
+
 
 
             //----------------------------------------------------------------//
-            //GAMEPAD1 CONTROLS = Driving + slow mode + manual lift + score button
+            //GAMEPAD1 CONTROLS = Driving +  manual lift + score button
 
-            double slowmoTrigger = gamepad1.left_trigger;
 
-            double leftStickY = gamepad1.left_stick_y * -1 * Robot.slowModeSpeed;
-            double leftStickX = gamepad1.left_stick_x * Robot.slowModeSpeed * 0.8; // testing
+            double leftStickY = gamepad1.left_stick_y * -1;
+            double leftStickX = gamepad1.left_stick_x *  0.8; // testing
 
             if (scoreSteps > 0) {
                 leftStickX = 0;
                 leftStickY = 0;
             }
 
-            double rightStickX = gamepad1.right_stick_x * Robot.slowModeTurnSpeed * .8;
+            double rightStickX = gamepad1.right_stick_x * .8;
 
             boolean liftPosUpManualButton = gamepad1.right_bumper;
             boolean liftPosDownManualButton = gamepad1.left_bumper;
@@ -185,29 +191,7 @@ public class GameTeleop extends LinearOpMode {
 
 
 
-            //-----------------------------------------------------------//
-            //SLO-MO CODE
 
-            if (slowmoTrigger > Robot.triggerSensitivity) {
-                if (slowmoTriggerReleased) {
-                    if (!slowMode) {
-                        if (Robot.liftJunctionGroundHeight == liftHeightPrevTarget) {
-                            Robot.slowModeSpeed = Robot.slowModeGroundJuctionSlow;
-                        } else {
-                            Robot.slowModeSpeed = Robot.slowModeSlow;
-                        }
-                        Robot.slowModeTurnSpeed = Robot.slowModeTurnSlow;
-                        slowMode = true;
-                    } else {
-                        Robot.slowModeSpeed = Robot.slowModeFast;
-                        Robot.slowModeTurnSpeed = Robot.slowModeTurnFast;
-                        slowMode = false;
-                    }
-                    slowmoTriggerReleased = false;
-                }
-            } else {
-                slowmoTriggerReleased = true;
-            }
 
             //-----------------------------------------------------------//
             //Manual Mode Code
@@ -402,11 +386,29 @@ public class GameTeleop extends LinearOpMode {
                 grabberTriggerReleased = true;
             }
 
+            //Olduprightcone
             if (uprightCone) {
                 Robot.grabberServo.setPosition(Robot.grabberServoUprightPos);
                 liftHeightTarget = Robot.liftConeUprightHeight;
             }
 
+            //New uprightcone
+            if (uprightConeNew > Robot.triggerSensitivity) {
+                if (coneUprightTriggerReleased) {
+                    if (currentConeUpright == Robot.coneUprightIn) {
+                        Robot.coneUpright.setPosition(Robot.coneUprightOut);
+                        currentConeUpright = Robot.coneUprightOut;
+                    }
+                    else {
+                        Robot.coneUpright.setPosition(Robot.coneUprightIn);
+                        currentConeUpright = Robot.coneUprightIn;
+                    }
+                    coneUprightTriggerReleased = false;
+                }
+            }
+            else {
+                coneUprightTriggerReleased = true;
+            }
 
             //GUIDE SERVO CODE
             if (liftCurrentHeight > Robot.guideServoDeployHeight && liftHeightTarget >= Robot.liftJunctionLowHeight && grabberServoCurrentPos == Robot.grabberServoClosedPos && scoreSteps == 0) {

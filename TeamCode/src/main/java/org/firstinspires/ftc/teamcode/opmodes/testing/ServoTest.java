@@ -47,7 +47,7 @@ import java.util.Locale;
 
 
 @Autonomous(name="ServoTest")
-@Disabled
+
 public class ServoTest extends LinearOpMode {
 
     @Override
@@ -69,7 +69,7 @@ public class ServoTest extends LinearOpMode {
                     targetPos -= 0.01;
                     sleep(250);
                 }
-                Robot.guideServo.setPosition(targetPos);
+                Robot.coneUpright.setPosition(targetPos);
                 telemetry.addData("", targetPos);
                 telemetry.update();
             }

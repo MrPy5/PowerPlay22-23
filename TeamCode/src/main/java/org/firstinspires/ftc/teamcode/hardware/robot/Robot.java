@@ -92,6 +92,12 @@ public class Robot {
     public static double guideServoUp = guideServoDown + 0.65;
     public static double guideServoDeployHeight = 10;
 
+    //Cone-Upright
+    public static Servo coneUpright;
+    public static double coneUprightOut = 0.33;
+    public static double coneUprightIn = 0.92;
+
+
     //Color Sensor
     public static ColorSensor colorSensorLeft;
     public static ColorSensor colorSensorRight;
@@ -141,7 +147,11 @@ public class Robot {
 
         //Turret
         turretMotor = hardwareMap.get(DcMotorEx.class, "turretMotor");
-        turretMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+
+        if (!isTeleop) {
+            turretMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        }
+
         turretMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         turretMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
 
@@ -160,6 +170,9 @@ public class Robot {
 
         //Guide
         guideServo = hardwareMap.get(Servo.class, "guideServo");
+
+        //UprightServo
+        coneUpright = hardwareMap.get(Servo.class, "coneUpright");
 
         //Color Sensor
         colorSensorLeft = hardwareMap.get(ColorSensor.class, "sensorColorLeft");

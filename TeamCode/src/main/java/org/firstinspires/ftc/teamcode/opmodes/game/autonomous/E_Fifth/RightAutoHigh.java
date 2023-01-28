@@ -57,18 +57,20 @@ public abstract class RightAutoHigh extends AutoControls {
         //Go to pole + drop
         performAction(-35.25, 267, 6.5, 10, Robot.liftJunctionHighHeight, 38, Robot.turretLeftDegrees, 20, Robot.grabberServoOpenPos, 0, 0, 0, false);
         sleep(250);
+        if (gameTimer.milliseconds() < 25000) {
 
-        //Drive to stack
-        performAction(36, 267, 6.5, 8, coneFourGrabHeight, 30, Robot.turretForwardDegrees, 35, Robot.grabberServoHalfwayPos, 20, 0, 0, true);
+            //Drive to stack
+            performAction(36, 267, 6.5, 8, coneFourGrabHeight, 30, Robot.turretForwardDegrees, 35, Robot.grabberServoHalfwayPos, 20, 0, 0, true);
 
-        Robot.grabberServo.setPosition(Robot.grabberServoClosedPos);
-        sleep(250);
-        //Lift 7 inches
-        performAction(0, -1, 7, 0, Robot.liftJunctionHighHeight, 1, -1, 0, -1, 0, 0, 31, false);
+            Robot.grabberServo.setPosition(Robot.grabberServoClosedPos);
+            sleep(250);
+            //Lift 7 inches
+            performAction(0, -1, 7, 0, Robot.liftJunctionHighHeight, 1, -1, 0, -1, 0, 0, 31, false);
 
-        //Go to pole + drop
-        performAction(-35.25, 267, 6.5, 10, Robot.liftJunctionHighHeight, 38, Robot.turretLeftDegrees, 20, Robot.grabberServoOpenPos, 0, 0, 0, false);
-        sleep(250);
+            //Go to pole + drop
+            performAction(-35.25, 267, 6.5, 10, Robot.liftJunctionHighHeight, 38, Robot.turretLeftDegrees, 20, Robot.grabberServoOpenPos, 0, 0, 0, false);
+            sleep(250);
+        }
 
         if (endParkingPosition == 3) {
             ZeroPowerToFloat();
