@@ -92,6 +92,17 @@ public class Robot {
     public static double guideServoUp = guideServoDown + 0.65;
     public static double guideServoDeployHeight = 10;
 
+    //Cone Upright Servos
+    public static Servo coneUprightLeftServo;
+    public static double cULeftServoClosed = .5;
+    public static double cULeftServoOpen = cULeftServoClosed + 0.0;
+    public static double cULeftServoFlick = cULeftServoClosed + 0.0;
+
+    public static Servo coneUprightRightServo;
+    public static double cURightServoClosed = .5;
+    public static double cURightServoOpen = cURightServoClosed - 0.0;
+    public static double cURightServoFlick = cURightServoClosed - 0.0;
+
     //Color Sensor
     public static ColorSensor colorSensorLeft;
     public static ColorSensor colorSensorRight;
@@ -160,6 +171,10 @@ public class Robot {
 
         //Guide
         guideServo = hardwareMap.get(Servo.class, "guideServo");
+
+        //Cone Upright Servos
+        coneUprightLeftServo = hardwareMap.get(Servo.class, "cULeftServo");
+        coneUprightRightServo = hardwareMap.get(Servo.class, "cURightServo");
 
         //Color Sensor
         colorSensorLeft = hardwareMap.get(ColorSensor.class, "sensorColorLeft");
