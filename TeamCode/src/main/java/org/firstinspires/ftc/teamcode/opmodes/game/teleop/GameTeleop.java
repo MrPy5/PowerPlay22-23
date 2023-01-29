@@ -390,27 +390,13 @@ public class GameTeleop extends LinearOpMode {
             //New Cone Uprighting
             if (coneUprightButton) {
 
-                /*
-                if (coneUprightTriggerReleased) {
-                    if (currentConeUpright == Robot.coneUprightIn) {
-                        Robot.coneUpright.setPosition(Robot.coneUprightOut);
-                        currentConeUpright = Robot.coneUprightOut;
-                    }
-                    else {
-                        Robot.coneUpright.setPosition(Robot.coneUprightIn);
-                        currentConeUpright = Robot.coneUprightIn;
-                    }
-                    coneUprightTriggerReleased = false;
-                }
-                 */
-
                 if (coneUprightButtonReleased) {
                     coneUprightButtonReleased = false;
 
                     coneUprightTryingToMove = !coneUprightTryingToMove;
 
                     if (coneUprightTryingToMove) {
-                        if (liftCurrentHeight <= Robot.liftConeUprightHeight) {
+                        if (liftCurrentHeight <= Robot.liftConeUprightHeight - .2) {
                             liftHeightTarget = Robot.liftConeUprightHeight;
                         }
                     }
@@ -420,7 +406,7 @@ public class GameTeleop extends LinearOpMode {
                 coneUprightButtonReleased = true;
             }
 
-            if (coneUprightTryingToMove && liftCurrentHeight >= Robot.liftConeUprightHeight) {
+            if (coneUprightTryingToMove && liftCurrentHeight >= Robot.liftConeUprightHeight - .2) {
                 if (!coneUprightPosIsOpen) {
                     Robot.coneUprightRightServo.setPosition(Robot.cURightOpenPos);
                     Robot.coneUprightLeftServo.setPosition(Robot.cULeftOpenPos);
@@ -622,6 +608,9 @@ public class GameTeleop extends LinearOpMode {
             telemetry.addData("Average Velocity:", GetAverageVelocity());
             telemetry.addData("Distance", Robot.colorSensorPole.green());
             telemetry.addData("Steps", scoreSteps);
+            telemetry.addData("Cone Upright button released", coneUprightButtonReleased);
+            telemetry.addData("Cone Upright trying to move", coneUprightTryingToMove);
+            telemetry.addData("Cone Upright button", coneUprightButton);
 
             telemetry.update();
 
