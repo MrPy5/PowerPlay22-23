@@ -52,7 +52,7 @@ public class Robot {
 
     public static double liftPickupHeight = 0;
     public static double liftJunctionGroundHeight = 2;
-    public static double liftConeUprightHeight = 2;
+    public static double liftConeUprightHeight = 4;
     public static double liftJunctionLowHeight = 14.5;
     public static double liftJunctionMediumHeight = 24.5; //24
     public static double liftJunctionHighHeight = 33;
@@ -84,7 +84,7 @@ public class Robot {
     public static double grabberServoClosedPos = 0.25;
     public static double grabberServoHalfwayPos = 0.60;
     public static double grabberServoUprightPos = 0.47;
-    public static double grabberServoOpenPos = 0.82;
+    public static double grabberServoOpenPos = 0.77;
 
     //Guide
     public static Servo guideServo;
@@ -93,10 +93,22 @@ public class Robot {
     public static double guideServoDeployHeight = 10;
 
     //Cone-Upright
+
+    /*
     public static Servo coneUpright;
     public static double coneUprightOut = 0.33;
     public static double coneUprightIn = 0.92;
+    */
 
+    public static Servo coneUprightLeftServo;
+    public static double cULeftClosedPos = .15;
+    public static double cULeftOpenPos = cULeftClosedPos + .54;
+    public static double cULeftFlickPos = cULeftClosedPos + .73;
+
+    public static Servo coneUprightRightServo;
+    public static double cURightClosedPos = .89;
+    public static double cURightOpenPos = cURightClosedPos - .53;
+    public static double cURightFlickPos = cURightClosedPos - .73;
 
     //Color Sensor
     public static ColorSensor colorSensorLeft;
@@ -172,7 +184,8 @@ public class Robot {
         guideServo = hardwareMap.get(Servo.class, "guideServo");
 
         //UprightServo
-        coneUpright = hardwareMap.get(Servo.class, "coneUpright");
+        coneUprightLeftServo = hardwareMap.get(Servo.class, "coneUprightLeftServo");
+        coneUprightRightServo = hardwareMap.get(Servo.class, "coneUprightRightServo");
 
         //Color Sensor
         colorSensorLeft = hardwareMap.get(ColorSensor.class, "sensorColorLeft");

@@ -42,6 +42,7 @@ import org.firstinspires.ftc.teamcode.hardware.robot.Robot;
 public class ServoTestConeUpright extends LinearOpMode {
 
     ElapsedTime timer = new ElapsedTime();
+    boolean dpadUpReleased = true;
 
     double pos = .5;
     char leftRight = 'L';
@@ -81,8 +82,8 @@ public class ServoTestConeUpright extends LinearOpMode {
                 timer.reset();
             }
 
-            if (gamepad1.dpad_up && timer.seconds() > gamepadRepeatSeconds) {
-                timer.reset();
+            if (gamepad1.dpad_up && dpadUpReleased) {
+                dpadUpReleased = false;
                 if (leftRight == 'L') {
                     leftRight = 'R';
                     pos = rightServoPos;
@@ -92,12 +93,15 @@ public class ServoTestConeUpright extends LinearOpMode {
                     pos = leftServoPos;
                     if (pos == -1) {pos = .5;}
                 }
+            } else {
+                dpadUpReleased = true;
             }
 
             telemetry.addData("Press Dpad Up to switch servos", leftRight);
             telemetry.addData("Press bumpers to raise/lower pos", pos);
             telemetry.addData("Left Servo pos", leftServoPos);
             telemetry.addData("Right Servo pos", rightServoPos);
+            telemetry.addData("Dpad Released: ", dpadUpReleased);
 
             telemetry.update();
         }

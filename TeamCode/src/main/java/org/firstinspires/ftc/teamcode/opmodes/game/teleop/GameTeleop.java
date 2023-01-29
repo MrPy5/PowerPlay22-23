@@ -59,9 +59,10 @@ public class GameTeleop extends LinearOpMode {
         boolean grabberTriggerReleased = true;
 
         //Cone upright
-        boolean coneUprightOut = false;
-        boolean coneUprightTriggerReleased = true;
-        double currentConeUpright = Robot.coneUprightIn;
+        boolean coneUprightPosIsOpen = false;
+        boolean coneUprightButtonReleased = true;
+        boolean coneUprightTryingToMove = false;
+        boolean coneFlickButtonReleased = true;
 
         //---------------------------------------------------------------//
         //TURRET VARIABLES
@@ -98,8 +99,8 @@ public class GameTeleop extends LinearOpMode {
         Robot.grabberServo.setPosition(Robot.grabberServoOpenPos);
         grabberServoCurrentPos = Robot.grabberServoOpenPos;
 
-        Robot.coneUpright.setPosition(Robot.coneUprightIn);
-        currentConeUpright = Robot.coneUprightIn;
+        Robot.coneUprightLeftServo.setPosition(Robot.cULeftClosedPos);
+        Robot.coneUprightRightServo.setPosition(Robot.cURightClosedPos);
 
         Robot.guideServo.setPosition(Robot.guideServoUp);
 
@@ -118,6 +119,7 @@ public class GameTeleop extends LinearOpMode {
         Robot.turretMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
 
         Robot.turretMotor.setPower(0.8);
+
 
         while (Robot.turretMotor.isBusy()) {}
 
@@ -145,14 +147,10 @@ public class GameTeleop extends LinearOpMode {
 
             boolean manualModeButton = gamepad2.start;
 
-            boolean uprightCone = gamepad2.left_bumper;
-
-            float uprightConeNew = gamepad2.left_trigger;
-
-
+            //boolean uprightCone = gamepad2.left_bumper;
 
             //----------------------------------------------------------------//
-            //GAMEPAD1 CONTROLS = Driving +  manual lift + score button
+            //GAMEPAD1 CONTROLS = Driving +  manual lift + score button + uprighting servos
 
 
             double leftStickY = gamepad1.left_stick_y * -1;
@@ -172,7 +170,8 @@ public class GameTeleop extends LinearOpMode {
 
             boolean autoScoreModeButton = gamepad1.start;
 
-
+            boolean coneUprightButton = gamepad1.dpad_down;
+            boolean coneFlickButton = gamepad1.dpad_up;
 
             //---------------------------------------------------------------//
             //READ HARDWARE VALUES
@@ -186,12 +185,6 @@ public class GameTeleop extends LinearOpMode {
             int frontRight = Robot.frontRight.getCurrentPosition();
             int backLeft = Robot.backLeft.getCurrentPosition();
             int backRight = Robot.backRight.getCurrentPosition();
-
-
-
-
-
-
 
             //-----------------------------------------------------------//
             //Manual Mode Code
@@ -386,14 +379,18 @@ public class GameTeleop extends LinearOpMode {
                 grabberTriggerReleased = true;
             }
 
-            //Olduprightcone
+            /*
+            //Old Cone Uprighting
             if (uprightCone) {
                 Robot.grabberServo.setPosition(Robot.grabberServoUprightPos);
                 liftHeightTarget = Robot.liftConeUprightHeight;
             }
+             */
 
-            //New uprightcone
-            if (uprightConeNew > Robot.triggerSensitivity) {
+            //New Cone Uprighting
+            if (coneUprightButton) {
+
+                /*
                 if (coneUprightTriggerReleased) {
                     if (currentConeUpright == Robot.coneUprightIn) {
                         Robot.coneUpright.setPosition(Robot.coneUprightOut);
@@ -405,10 +402,63 @@ public class GameTeleop extends LinearOpMode {
                     }
                     coneUprightTriggerReleased = false;
                 }
+                 */
+
+                if (coneUprightButtonReleased) {
+                    coneUprightButtonReleased = false;
+
+                    coneUprightTryingToMove = !coneUprightTryingToMove;
+
+                    if (coneUprightTryingToMove) {
+                        if (liftCurrentHeight <= Robot.liftConeUprightHeight) {
+                            liftHeightTarget = Robot.liftConeUprightHeight;
+                        }
+                    }
+                }
             }
             else {
-                coneUprightTriggerReleased = true;
+                coneUprightButtonReleased = true;
             }
+
+            if (coneUprightTryingToMove && liftCurrentHeight >= Robot.liftConeUprightHeight) {
+                if (!coneUprightPosIsOpen) {
+                    Robot.coneUprightRightServo.setPosition(Robot.cURightOpenPos);
+                    Robot.coneUprightLeftServo.setPosition(Robot.cULeftOpenPos);
+                    coneUprightPosIsOpen = true;
+                    coneUprightTryingToMove = false;
+                } else {
+                        /*
+                        Robot.coneUprightRightServo.setPosition(Robot.cURightFlickPos);
+                        Robot.coneUprightLeftServo.setPosition(Robot.cULeftFlickPos);
+
+                        liftHeightTarget = Robot.liftPickupHeight;
+                        */
+
+                    Robot.coneUprightRightServo.setPosition(Robot.cURightClosedPos);
+                    Robot.coneUprightLeftServo.setPosition((Robot.cULeftClosedPos));
+                    coneUprightPosIsOpen = false;
+                    coneUprightTryingToMove = false;
+                }
+            }
+
+            if (coneFlickButton && coneFlickButtonReleased) {
+                coneFlickButtonReleased = false;
+
+                if (coneUprightPosIsOpen) {
+                    Robot.coneUprightLeftServo.setPosition(Robot.cULeftFlickPos);
+                    Robot.coneUprightRightServo.setPosition(Robot.cURightFlickPos);
+                    coneUprightPosIsOpen = false;
+                } else {
+                    if (liftCurrentHeight >= Robot.liftConeUprightHeight) {
+                        Robot.coneUprightLeftServo.setPosition(Robot.cULeftOpenPos);
+                        Robot.coneUprightRightServo.setPosition(Robot.cURightOpenPos);
+                        coneUprightPosIsOpen = true;
+                    }
+                }
+            } else {
+                coneFlickButtonReleased = true;
+            }
+
 
             //GUIDE SERVO CODE
             if (liftCurrentHeight > Robot.guideServoDeployHeight && liftHeightTarget >= Robot.liftJunctionLowHeight && grabberServoCurrentPos == Robot.grabberServoClosedPos && scoreSteps == 0) {

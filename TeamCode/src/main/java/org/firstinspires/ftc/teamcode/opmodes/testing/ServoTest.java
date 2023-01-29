@@ -69,7 +69,7 @@ public class ServoTest extends LinearOpMode {
                     targetPos -= 0.01;
                     sleep(250);
                 }
-                Robot.coneUpright.setPosition(targetPos);
+                Robot.coneUprightRightServo.setPosition(targetPos);
                 telemetry.addData("", targetPos);
                 telemetry.update();
             }
