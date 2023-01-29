@@ -190,7 +190,7 @@ public class GameTeleop extends LinearOpMode {
             //Cone Uprighting
 
             if (!cUExtendButton) {cUExtendButtonReleased = true;}
-            if (cUExtendButton & cUExtendButtonReleased) {
+            if (cUExtendButton && cUExtendButtonReleased) {
                 cUExtendButtonReleased = false;
                 if (cULeftServoNextPos == Robot.cULeftClosedPos) {
                     cULeftServoNextPos = Robot.cULeftOpenPos;
@@ -206,7 +206,7 @@ public class GameTeleop extends LinearOpMode {
                 }
             }
             if (!cURetractButton) {cURetractButtonReleased = true;}
-            if (cURetractButton & cURetractButtonReleased) {
+            if (cURetractButton && cURetractButtonReleased) {
                 cURetractButtonReleased = false;
                 if (cULeftServoNextPos == Robot.cULeftFlickPos) {
                     cULeftServoNextPos = Robot.cULeftOpenPos;
