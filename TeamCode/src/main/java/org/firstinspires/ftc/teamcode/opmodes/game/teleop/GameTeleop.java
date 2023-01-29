@@ -441,18 +441,20 @@ public class GameTeleop extends LinearOpMode {
                 }
             }
 
-            if (coneFlickButton && coneFlickButtonReleased) {
-                coneFlickButtonReleased = false;
+            if (coneFlickButton) {
+                if (coneFlickButtonReleased) {
+                    coneFlickButtonReleased = false;
 
-                if (coneUprightPosIsOpen) {
-                    Robot.coneUprightLeftServo.setPosition(Robot.cULeftFlickPos);
-                    Robot.coneUprightRightServo.setPosition(Robot.cURightFlickPos);
-                    coneUprightPosIsOpen = false;
-                } else {
-                    if (liftCurrentHeight >= Robot.liftConeUprightHeight) {
-                        Robot.coneUprightLeftServo.setPosition(Robot.cULeftOpenPos);
-                        Robot.coneUprightRightServo.setPosition(Robot.cURightOpenPos);
-                        coneUprightPosIsOpen = true;
+                    if (coneUprightPosIsOpen) {
+                        Robot.coneUprightLeftServo.setPosition(Robot.cULeftFlickPos);
+                        Robot.coneUprightRightServo.setPosition(Robot.cURightFlickPos);
+                        coneUprightPosIsOpen = false;
+                    } else {
+                        if (liftCurrentHeight >= Robot.liftConeUprightHeight) {
+                            Robot.coneUprightLeftServo.setPosition(Robot.cULeftOpenPos);
+                            Robot.coneUprightRightServo.setPosition(Robot.cURightOpenPos);
+                            coneUprightPosIsOpen = true;
+                        }
                     }
                 }
             } else {

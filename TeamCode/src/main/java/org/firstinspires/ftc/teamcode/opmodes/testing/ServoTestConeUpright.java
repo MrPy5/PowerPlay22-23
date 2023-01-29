@@ -82,16 +82,22 @@ public class ServoTestConeUpright extends LinearOpMode {
                 timer.reset();
             }
 
-            if (gamepad1.dpad_up && dpadUpReleased) {
-                dpadUpReleased = false;
-                if (leftRight == 'L') {
-                    leftRight = 'R';
-                    pos = rightServoPos;
-                    if (pos == -1) {pos = .5;}
-                } else {
-                    leftRight = 'L';
-                    pos = leftServoPos;
-                    if (pos == -1) {pos = .5;}
+            if (gamepad1.dpad_up) {
+                if (dpadUpReleased) {
+                    dpadUpReleased = false;
+                    if (leftRight == 'L') {
+                        leftRight = 'R';
+                        pos = rightServoPos;
+                        if (pos == -1) {
+                            pos = .5;
+                        }
+                    } else {
+                        leftRight = 'L';
+                        pos = leftServoPos;
+                        if (pos == -1) {
+                            pos = .5;
+                        }
+                    }
                 }
             } else {
                 dpadUpReleased = true;
