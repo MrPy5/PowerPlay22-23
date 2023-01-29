@@ -93,13 +93,6 @@ public class Robot {
     public static double guideServoDeployHeight = 10;
 
     //Cone-Upright
-
-    /*
-    public static Servo coneUpright;
-    public static double coneUprightOut = 0.33;
-    public static double coneUprightIn = 0.92;
-    */
-
     public static Servo coneUprightLeftServo;
     public static double cULeftClosedPos = .15;
     public static double cULeftOpenPos = cULeftClosedPos + .54;
