@@ -263,7 +263,7 @@ public abstract class AutoControls extends LinearOpMode {
 
     }
 
-    public void performAction(double targetXInches, double heading, double speedModifier, double speedMinimum, double liftHeightTarget, double liftPerformWithInchesLeft, double turretTargetDegrees, double turretPerformWithInchesLeft, double targetServoPosition, double servoPerformWithInchesLeft, double distanceToleranceParam, double liftQuitWithInchesLeft, boolean colorCorrection) {
+    public void performAction(double targetXInches, double heading, double speedModifier, double speedMinimum, double liftHeightTarget, double liftPerformWithInchesLeft, double turretTargetDegrees, double turretPerformWithInchesLeft, double targetServoPosition, double servoPerformWithInchesLeft, double distanceToleranceParam, double liftQuitWithInchesLeft, boolean colorCorrection, boolean doLeft, double cUPerformWithInchesLeft) {
 
         //speedModifier = speedModifier * multiplier; //multiplier;
 
