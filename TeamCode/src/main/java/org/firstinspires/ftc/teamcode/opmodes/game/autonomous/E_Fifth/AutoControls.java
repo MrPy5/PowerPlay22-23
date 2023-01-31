@@ -263,7 +263,7 @@ public abstract class AutoControls extends LinearOpMode {
 
     }
 
-    public void performAction(double targetXInches, double heading, double speedModifier, double speedMinimum, double liftHeightTarget, double liftPerformWithInchesLeft, double turretTargetDegrees, double turretPerformWithInchesLeft, double targetServoPosition, double servoPerformWithInchesLeft, double distanceToleranceParam, double liftQuitWithInchesLeft, boolean colorCorrection, double[] cUServo, double cUPerformWithInchesLeft) {
+    public void performAction(double targetXInches, double heading, double speedModifier, double speedMinimum, double liftHeightTarget, double liftPerformWithInchesLeft, double turretTargetDegrees, double turretPerformWithInchesLeft, double targetServoPosition, double servoPerformWithInchesLeft, double distanceToleranceParam, double liftQuitWithInchesLeft, boolean colorCorrection) {
 
         //speedModifier = speedModifier * multiplier; //multiplier;
 
@@ -434,20 +434,7 @@ public abstract class AutoControls extends LinearOpMode {
                     grabberServoCurrentPos = targetServoPosition;
                 }
             }
-            telemetry.addData(":", cUServo[0]);
-            if (cUServo[0] != -1 && Math.abs(distanceToX) <= cUPerformWithInchesLeft && currentLiftInches >= Robot.liftConeUprightHeight - 2) {
-                if (cUServo[0] == 0) {
-                    Robot.coneUprightLeftServo.setPosition(cUServo[1]);
-                }
-                else if (cUServo[0] == 1) {
-                    Robot.coneUprightRightServo.setPosition(cUServo[1]);
-                    telemetry.addData("donw", "");
-                }
-                else {
-                    Robot.coneUprightRightServo.setPosition(cUServo[1]);
-                    Robot.coneUprightLeftServo.setPosition(cUServo[1]);
-                }
-            }
+
 
 
             if (liftHeightTarget != -1) {
@@ -652,6 +639,9 @@ public abstract class AutoControls extends LinearOpMode {
             if (leftColor > redThreshold || rightColor > redThreshold) {
                 outputValue = (rightColor - leftColor) / redDivisor;
             }
+            else {
+                outputValue = 0.15;
+            }
         }
         else {
             leftColor = Robot.colorSensorLeft.blue();
@@ -660,8 +650,12 @@ public abstract class AutoControls extends LinearOpMode {
             if (leftColor > blueThreshold || rightColor > blueThreshold) {
                 outputValue = (rightColor - leftColor) / blueDivisor;
             }
-
+            else {
+                outputValue = 0.15;
+            }
         }
+
+
 
         telemetry.addData("Left Color", leftColor);
         telemetry.addData("Right Color", rightColor);

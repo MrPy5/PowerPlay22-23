@@ -17,8 +17,8 @@ public abstract class TestAuto extends AutoControls {
         waitForStart();
 
         Robot.grabberServo.setPosition(Robot.grabberServoClosedPos);
-        performAction(-1, 0, 6.5, 9, Robot.liftJunctionMediumHeight, 10, -1, 22, -1, 0, 0, 0, false, new double[]{0, Robot.cULeftSweepPos}, 10);
-        performAction(41, 0, 6.5, 9, Robot.liftJunctionMediumHeight, 50, -1, 22, -1, 0, 0, 0, false, new double[]{0, Robot.cULeftFlickPos}, 25);
+        performAction(-1, 0, 6.5, 9, Robot.liftJunctionMediumHeight, 10, -1, 22, -1, 0, 0, 0, false);
+        performAction(41, 0, 6.5, 9, Robot.liftJunctionMediumHeight, 50, -1, 22, -1, 0, 0, 0, false);
 
 
 
