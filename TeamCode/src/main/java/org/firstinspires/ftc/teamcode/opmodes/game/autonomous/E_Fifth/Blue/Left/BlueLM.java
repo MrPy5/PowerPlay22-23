@@ -12,6 +12,7 @@ public class BlueLM extends LeftAuto {
     public void runOpMode() throws InterruptedException {
 
         alliance = 'b';
+        side = 'l';
         startAuto();
     }
 }

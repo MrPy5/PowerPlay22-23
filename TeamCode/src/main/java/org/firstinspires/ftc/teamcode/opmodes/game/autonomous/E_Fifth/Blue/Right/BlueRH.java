@@ -12,6 +12,7 @@ public class BlueRH extends RightAutoHigh {
     public void runOpMode() throws InterruptedException {
 
         alliance = 'b';
+        side = 'r';
         startAuto();
     }
 }

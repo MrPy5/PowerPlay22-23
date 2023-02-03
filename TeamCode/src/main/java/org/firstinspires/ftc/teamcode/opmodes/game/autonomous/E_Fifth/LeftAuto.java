@@ -18,9 +18,9 @@ public abstract class LeftAuto extends AutoControls {
         int endParkingPosition = DetectAprilTags();
         //waitForStart();
         Robot.grabberServo.setPosition(Robot.grabberServoClosedPos);
-        performAction(41, 0, 6.5, 9, Robot.liftJunctionMediumHeight, 39, Robot.turretRightDegrees, 22, Robot.grabberServoOpenPos, 0, 0, 0, false);
+        performAction(16.5, 0, 3, 8, Robot.liftJunctionLowHeight, 15, Robot.turretRightDegrees, 10, Robot.grabberServoOpenPos, 0, 0, 0, false);
         sleep(250);
-        performAction(12, 0, 3, 9, -1, 0, Robot.turretForwardDegrees, 12, -1, 0, 0, 0, false);
+        performAction(37, 0, 6.5, 9, Robot.liftJunctionMediumHeight, 47, Robot.turretForwardDegrees, 12, -1, 0, 0, 0, false);
 
         //Turn
         //performAction(0, 87, 7, 0, -1, 0, -1, 0, -1, 0, 0, 0);

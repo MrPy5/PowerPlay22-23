@@ -130,6 +130,7 @@ public abstract class AutoControls extends LinearOpMode {
 
     double multiplier = 0;
     public char alliance = 'b';
+    public char side = 'l';
 
     double coneDifference = 1.3125;
     double coneOneGrabHeight = 6;
@@ -384,8 +385,8 @@ public abstract class AutoControls extends LinearOpMode {
             }
 
             double adjustForColorVariable = 0;
-            if (colorCorrection) {
-                adjustForColorVariable = adjustForColor(alliance);
+            if (colorCorrection && distanceToX <= 16) {
+                adjustForColorVariable = adjustForColorPlusWander(alliance);
             }
 
             lfPower = (wheelPower * reverse + adjustment + adjustForColorVariable);
@@ -490,9 +491,9 @@ public abstract class AutoControls extends LinearOpMode {
         if (colorCorrection) {
             double adjustForColorVariable = 0;
 
-            adjustForColorVariable = adjustForColor(alliance);
-            while (adjustForColorVariable > 0.08) {
-                adjustForColorVariable = adjustForColor(alliance);
+            adjustForColorVariable = adjustForColorPlusWander(alliance);
+            while (adjustForColorVariable > 0.04) {
+                adjustForColorVariable = adjustForColorPlusWander(alliance);
 
                 lfPower = (adjustForColorVariable);
                 rfPower = (-adjustForColorVariable);
@@ -620,6 +621,61 @@ public abstract class AutoControls extends LinearOpMode {
 
         return degreesOff;
     }
+    public double adjustForColorPlusWander(char color) {
+        double leftColor;
+        double rightColor;
+
+        double blueThreshold = 350;
+        double blueDivisor = 3500;
+
+        double redThreshold = 200;
+        double redDivisor = 5200;
+
+        double outputValue = 0;
+
+        if (color == 'r') {
+            leftColor = Robot.colorSensorLeft.red();
+            rightColor = Robot.colorSensorRight.red();
+
+            if (leftColor > redThreshold || rightColor > redThreshold) {
+                outputValue = (rightColor - leftColor) / redDivisor;
+            }
+            else {
+                if (side == 'l') {
+                    outputValue = 0.2;
+                }
+                else {
+                    outputValue = -0.2;
+                }
+            }
+        }
+        else {
+            leftColor = Robot.colorSensorLeft.blue();
+            rightColor = Robot.colorSensorRight.blue();
+
+            if (leftColor > blueThreshold || rightColor > blueThreshold) {
+                outputValue = (rightColor - leftColor) / blueDivisor;
+            }
+            else {
+                if (side == 'l') {
+                    outputValue = 0.2;
+                }
+                else {
+                    outputValue = -0.2;
+                }
+            }
+        }
+
+        telemetry.addData("Left Color", leftColor);
+        telemetry.addData("Right Color", rightColor);
+        telemetry.addData("Output Value", outputValue);
+        telemetry.update();
+
+        return outputValue;
+
+
+    }
+
     public double adjustForColor(char color) {
         double leftColor;
         double rightColor;
@@ -639,9 +695,6 @@ public abstract class AutoControls extends LinearOpMode {
             if (leftColor > redThreshold || rightColor > redThreshold) {
                 outputValue = (rightColor - leftColor) / redDivisor;
             }
-            else {
-                outputValue = 0.15;
-            }
         }
         else {
             leftColor = Robot.colorSensorLeft.blue();
@@ -650,9 +703,7 @@ public abstract class AutoControls extends LinearOpMode {
             if (leftColor > blueThreshold || rightColor > blueThreshold) {
                 outputValue = (rightColor - leftColor) / blueDivisor;
             }
-            else {
-                outputValue = 0.15;
-            }
+
         }
 
 

@@ -18,9 +18,9 @@ public abstract class RightAutoMid extends AutoControls {
         int endParkingPosition = DetectAprilTags();
         //waitForStart();
         Robot.grabberServo.setPosition(Robot.grabberServoClosedPos);
-        performAction(43, 0, 7, 9, Robot.liftJunctionMediumHeight, 37, Robot.turretLeftDegrees, 22, Robot.grabberServoOpenPos, 0, 0, 0, false);
+        performAction(16.5, 0, 2, 6, Robot.liftJunctionLowHeight, 11, Robot.turretLeftDegrees, 9, Robot.grabberServoOpenPos, 0, 0, 0, false);
         sleep(250);
-        performAction(9.5, 0, 3, 9, -1, 0, Robot.turretForwardDegrees, 14, -1, 0, 0, 0, false);
+        performAction(35, 0, 7, 9, Robot.liftJunctionMediumHeight, 43, Robot.turretForwardDegrees, 14, -1, 0, 0, 0, false);
 
         //Turn
         //performAction(0, 270, 7, 0, -1, 0, -1, 0, -1, 0, 0, 0);
@@ -33,7 +33,7 @@ public abstract class RightAutoMid extends AutoControls {
         performAction(0, -1, 7, 0, Robot.liftJunctionMediumHeight, 5, -1, 0, -1, 0, 0, 31, false);
 
         // Go to pole + drop
-        performAction(-36, 272, 6.5, 10, Robot.liftJunctionMediumHeight, 38, Robot.turretRightDegrees, 20, Robot.grabberServoOpenPos, 0, 0, 0, false);
+        performAction(-36, 271, 6.5, 10, Robot.liftJunctionMediumHeight, 38, Robot.turretRightDegrees, 20, Robot.grabberServoOpenPos, 0, 0, 0, false);
         sleep(250);
 
         //drive to stack
@@ -44,7 +44,7 @@ public abstract class RightAutoMid extends AutoControls {
         performAction(0, -1, 7, 0, Robot.liftJunctionMediumHeight, 1, -1, 0, -1, 0, 0, 31, false);
 
         //Go to pole + drop
-        performAction(-36, 272, 6.5, 10, Robot.liftJunctionMediumHeight, 38, Robot.turretRightDegrees, 20, Robot.grabberServoOpenPos, 0, 0, 0, false);
+        performAction(-36, 271, 6.5, 10, Robot.liftJunctionMediumHeight, 38, Robot.turretRightDegrees, 20, Robot.grabberServoOpenPos, 0, 0, 0, false);
         sleep(250);
 
         //Drive to stack
@@ -56,7 +56,7 @@ public abstract class RightAutoMid extends AutoControls {
         performAction(0, -1, 7, 0, Robot.liftJunctionMediumHeight, 1, -1, 0, -1, 0, 0, 31, false);
 
         //Go to pole + drop
-        performAction(-36, 272, 6.5, 10, Robot.liftJunctionMediumHeight, 38, Robot.turretRightDegrees, 20, Robot.grabberServoOpenPos, 0, 0, 0, false);
+        performAction(-36, 271, 6.5, 10, Robot.liftJunctionMediumHeight, 38, Robot.turretRightDegrees, 20, Robot.grabberServoOpenPos, 0, 0, 0, false);
         sleep(250);
 
         if (gameTimer.milliseconds() < 25000) {
@@ -69,7 +69,7 @@ public abstract class RightAutoMid extends AutoControls {
             performAction(0, -1, 7, 0, Robot.liftJunctionMediumHeight, 1, -1, 0, -1, 0, 0, 31, false);
 
             //Go to pole + drop
-            performAction(-36, 272, 6.5, 10, Robot.liftJunctionMediumHeight, 38, Robot.turretRightDegrees, 20, Robot.grabberServoOpenPos, 0, 0, 0, false);
+            performAction(-36, 271, 6.5, 10, Robot.liftJunctionMediumHeight, 38, Robot.turretRightDegrees, 20, Robot.grabberServoOpenPos, 0, 0, 0, false);
             sleep(250);
         }
 

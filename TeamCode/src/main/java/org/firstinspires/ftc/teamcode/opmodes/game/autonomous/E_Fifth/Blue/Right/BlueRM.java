@@ -12,6 +12,7 @@ public class BlueRM extends RightAutoMid {
     public void runOpMode() throws InterruptedException {
 
         alliance = 'b';
+        side = 'r';
         startAuto();
     }
 }
