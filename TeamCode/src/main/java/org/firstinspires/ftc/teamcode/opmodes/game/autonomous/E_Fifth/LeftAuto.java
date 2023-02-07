@@ -82,7 +82,7 @@ public abstract class LeftAuto extends AutoControls {
             performAction(0, 90, 0, 0, Robot.liftJunctionGroundHeight, 1, -1, 0, -1, -1, 0, 0, false);
         }
         if (endParkingPosition == 3) {
-            performAction(-14.5, 90, 5, 20, -1, 0, Robot.turretForwardDegrees, 13, -1, -1, 1, 0, false);
+            performAction(-15, 90, 5, 20, -1, 0, Robot.turretForwardDegrees, 13, -1, -1, 1, 0, false);
             performAction(0, 90, 0, 0, Robot.liftJunctionGroundHeight, 1, -1, 0, -1, -1, 0, 0, false);
         }
 
