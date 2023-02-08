@@ -232,6 +232,13 @@ public class GameTeleop extends LinearOpMode {
                     liftHeightTarget = Robot.liftConeUprightHeight;
 
                 } else {
+                    cURightServoPos = cURightServoNextPos;
+                    cULeftServoPos = cULeftServoNextPos;
+
+                    Robot.coneUprightLeftServo.setPosition(cULeftServoPos);
+                    Robot.coneUprightRightServo.setPosition(cURightServoPos);
+
+                    /*
                     if (cUMoveTimer.milliseconds() > cULastMoveTime + 25) {
                         cULastMoveTime = cUMoveTimer.milliseconds();
 
@@ -283,6 +290,8 @@ public class GameTeleop extends LinearOpMode {
                         Robot.coneUprightLeftServo.setPosition(cULeftServoPos);
                         Robot.coneUprightRightServo.setPosition(cURightServoPos);
                     }
+
+                     */
                 }
             }
 
