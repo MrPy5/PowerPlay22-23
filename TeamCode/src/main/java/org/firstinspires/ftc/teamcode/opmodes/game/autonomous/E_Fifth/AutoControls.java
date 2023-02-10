@@ -679,22 +679,22 @@ public abstract class AutoControls extends LinearOpMode {
         }
 
         double speedMinimum;
-        double speedModifier = 12;
+        double speedModifier = AdjustmentConstants.speedModifier;
 
         if (degreesOff > 10) {
-            AdjustmentConstants.speedModifier = 9;
+            speedModifier = 9;
         }
 
         if (distanceToX == 0) {
             speedMinimum = AdjustmentConstants.speedMinimum;
         } else {
-            speedMinimum = 2;
+            speedMinimum = 3;
         }
 
         if (degreesOff < .3) {
             adjustment = 0;
         } else {
-            adjustment = (Math.pow((degreesOff + AdjustmentConstants.graphShift) / AdjustmentConstants.speedModifier, AdjustmentConstants.curvePower) + speedMinimum) / 100;
+            adjustment = (Math.pow((degreesOff + AdjustmentConstants.graphShift) / speedModifier, AdjustmentConstants.curvePower) + speedMinimum) / 100;
         }
 
         if (goRight) {
