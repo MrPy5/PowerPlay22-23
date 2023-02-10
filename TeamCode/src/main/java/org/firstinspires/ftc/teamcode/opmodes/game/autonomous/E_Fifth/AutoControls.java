@@ -530,7 +530,24 @@ public abstract class AutoControls extends LinearOpMode {
             }
 
             if (log) {
-                Log.d("Autonomous", "DistanceToX: " + distanceToX + " Lift Inches reminaing: " + liftInchesRemaining + " imu: " + angles.firstAngle + " game time" + gameTimer.milliseconds());
+                Log.d("performAction","targetXInches:" + targetXInches
+                        + " heading:" + heading
+                        + " speedModifier:" + speedModifier
+                        + " speedMinimum:" + speedMinimum
+                        + " liftHeightTarget:" + liftHeightTarget
+                        + " liftPerformWithInchesLeft:" + liftPerformWithInchesLeft
+                        + " turretTargetDegrees:" + turretTargetDegrees
+                        + " turretPerformWithInchesLeft:" + turretPerformWithInchesLeft
+                        + " targetServoPosition:" + targetServoPosition
+                        + " servoPerformWithInchesLeft:" + servoPerformWithInchesLeft
+                        + " distanceToleranceParam:" + distanceToleranceParam
+                        + " liftQuitWithInchesLeft:" + liftQuitWithInchesLeft
+                        + " colorCorrection:" + colorCorrection
+                        + " cuInfo:" + cuInfo
+                        + " DistanceToX:" + distanceToX
+                        + " liftInchesRemaining: " + liftInchesRemaining
+                        + " firstAngle: " + angles.firstAngle
+                        + " game time" + gameTimer.milliseconds());
             }
 
         }
@@ -625,8 +642,6 @@ public abstract class AutoControls extends LinearOpMode {
 
 
 
-
-
     public double getAverageOdometerPosition() {
         return ((Robot.odometerLeft.getCurrentPosition() + Robot.odometerRight.getCurrentPosition()) / 2.0) / Robot.odometerTicksPerInch;
     }
@@ -685,7 +700,7 @@ public abstract class AutoControls extends LinearOpMode {
             speedModifier = 9;
         }
 
-        if (distanceToX == 0) {
+        if (distanceToX == 0) {  // this????
             speedMinimum = AdjustmentConstants.speedMinimum;
         } else {
             speedMinimum = 3;
@@ -701,11 +716,11 @@ public abstract class AutoControls extends LinearOpMode {
             adjustment = -adjustment;
         }
         if (log) {
-            Log.d("ADJUSTMENT", "Adjustment:" + adjustment +
+            Log.d("headingAdjustment", "Adjustment:" + adjustment +
                     " DistanceToX:" + distanceToX +
                     " SpeedModifier:" + AdjustmentConstants.speedModifier +
                     " SpeedMinimum:" + AdjustmentConstants.speedMinimum +
-                    " Degrees Off:" + degreesOff(targetHeading));
+                    " Degrees Off:" + degreesOff);
         }
         return adjustment;
     }
@@ -728,9 +743,14 @@ public abstract class AutoControls extends LinearOpMode {
             degreesOff = 360 - degreesOff;
         }
 
-
+        if (log) {
+            Log.d("degreesOff", "degreesOff:" + degreesOff +
+                    " currentHeading:" + currentHeading +
+                    " targetHeading:" + targetHeading);
+        }
         return degreesOff;
     }
+
     public double adjustForColorPlusWander(char color) {
         double leftColor;
         double rightColor;
@@ -781,6 +801,13 @@ public abstract class AutoControls extends LinearOpMode {
         telemetry.addData("Output Value", outputValue);
         telemetry.update();
 
+        if (log) {
+            Log.d("adjustForColorPlusWander", "color:" + color +
+                    " outputValue:" + outputValue +
+                    " rightColor:" + rightColor +
+                    " leftColor:" + leftColor);
+        }
+
         return outputValue;
 
 
@@ -816,12 +843,17 @@ public abstract class AutoControls extends LinearOpMode {
 
         }
 
-
-
         telemetry.addData("Left Color", leftColor);
         telemetry.addData("Right Color", rightColor);
         telemetry.addData("Output Value", outputValue);
         telemetry.update();
+
+        if (log) {
+            Log.d("adjustForColor", "color:" + color +
+                    " outputValue:" + outputValue +
+                    " rightColor:" + rightColor +
+                    " leftColor:" + leftColor);
+        }
 
         return outputValue;
 
