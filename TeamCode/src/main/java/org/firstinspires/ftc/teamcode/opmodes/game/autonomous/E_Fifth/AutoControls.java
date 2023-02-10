@@ -28,7 +28,7 @@ import java.util.ArrayList;
 
 public abstract class AutoControls extends LinearOpMode {
 
-    boolean log = false;
+    boolean log = true;
 
     Robot robot;
     BNO055IMU imu;
@@ -148,6 +148,8 @@ public abstract class AutoControls extends LinearOpMode {
     double cuRightPos = Robot.cURightClosedPos;
 
     double cuMilliseconds = 17;
+
+    double quitTime = 29750;
 
     public void init(HardwareMap hwMap) {
         Robot robot = new Robot(hwMap, false);
@@ -333,7 +335,7 @@ public abstract class AutoControls extends LinearOpMode {
         }
 
         //---First turn---//
-        while (degreesOff(heading) > .5) {
+        while (degreesOff(heading) > .5 && opModeIsActive()) {
             double adjustment = 0;
             if (heading != -1) {
                 adjustment = headingAdjustment(heading, 0);
@@ -367,7 +369,7 @@ public abstract class AutoControls extends LinearOpMode {
         ElapsedTime timeoutTimer = new ElapsedTime();
 
         //---Main Loop---//
-        while ((Math.abs(distanceToX) > distanceTolerance || currentSpeed > stoppingSpeed || turningVelocity > turningVelocityTolerance || liftInchesRemaining > liftToleranceInches || turretDegreesRemaining > turretToleranceDegrees || degreesOff(heading) > 1) && opModeIsActive() && timeoutTimer.milliseconds() < 500 && (liftHeightTarget == -1 || liftInchesRemaining > liftQuitWithInchesLeft)) {
+        while ((Math.abs(distanceToX) > distanceTolerance || currentSpeed > stoppingSpeed || turningVelocity > turningVelocityTolerance || liftInchesRemaining > liftToleranceInches || turretDegreesRemaining > turretToleranceDegrees || degreesOff(heading) > 1) && opModeIsActive() && timeoutTimer.milliseconds() < 500 && (liftHeightTarget == -1 || liftInchesRemaining > liftQuitWithInchesLeft) && gameTimer.milliseconds() < quitTime) {
 
             double adjustment = 0;
             if (heading != -1) {
@@ -567,7 +569,7 @@ public abstract class AutoControls extends LinearOpMode {
 
         if (Math.abs(distanceToX) <= cuInfo[0] && cuInfo[0] != -1) {
             if (cuInfo[1] == 0) {
-                while (!(cuLeftPos + 0.01 > cuInfo[2] && cuLeftPos - 0.01 < cuInfo[2])) {
+                while (!(cuLeftPos + 0.01 > cuInfo[2] && cuLeftPos - 0.01 < cuInfo[2]) && opModeIsActive() && gameTimer.milliseconds() < quitTime) {
                     telemetry.addData("cu", cuLeftPos);
                     telemetry.update();
                     if (cUMoveTimer.milliseconds() > cULastMoveTime + cuMilliseconds) {
@@ -591,7 +593,7 @@ public abstract class AutoControls extends LinearOpMode {
 
             }
             if (cuInfo[1] == 1) {
-                while (!(cuRightPos + 0.01 > cuInfo[2] && cuRightPos - 0.01 < cuInfo[2])) {
+                while (!(cuRightPos + 0.01 > cuInfo[2] && cuRightPos - 0.01 < cuInfo[2]) && opModeIsActive() && gameTimer.milliseconds() < quitTime) {
                     if (cUMoveTimer.milliseconds() > cULastMoveTime + cuMilliseconds) {
                         cULastMoveTime = cUMoveTimer.milliseconds();
 
@@ -703,7 +705,7 @@ public abstract class AutoControls extends LinearOpMode {
         if (distanceToX == 0) {  // this????
             speedMinimum = AdjustmentConstants.speedMinimum;
         } else {
-            speedMinimum = 3;
+            speedMinimum = 2;
         }
 
         if (degreesOff < .3) {
