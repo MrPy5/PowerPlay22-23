@@ -74,7 +74,7 @@ public class Robot {
     //---SERVOS---//
         //Grabber
         public static Servo grabberServo;
-        public static double grabberServoClosedPos = 0.25;
+        public static double grabberServoClosedPos = 0.23;
         public static double grabberServoHalfwayPos = 0.60;
         public static double grabberServoUprightPos = 0.47;
         public static double grabberServoOpenPos = 0.70;
@@ -90,7 +90,7 @@ public class Robot {
         public static double cULeftClosedPos = .09;
         public static double cULeftOpenPos = cULeftClosedPos + .5;
         public static double cULeftFlickPos = cULeftClosedPos + .71;
-        public static double cULeftSweepPos = cULeftClosedPos + .20;
+        public static double cULeftSweepPos = cULeftClosedPos + .10;
 
         public static Servo coneUprightRightServo;
         public static double cURightClosedPos = .89;

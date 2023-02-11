@@ -12,6 +12,7 @@ public class flickTest extends TestAuto {
     public void runOpMode() throws InterruptedException {
 
         alliance = 'r';
+        side = 'l';
         startAuto();
     }
 }

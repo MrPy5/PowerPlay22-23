@@ -189,6 +189,11 @@ public class GameTeleop extends LinearOpMode {
                 cURetractButtonReleased = true;
             }
 
+            if (liftHeightTarget >= Robot.liftJunctionLowHeight) {
+                cULeftServoNextPos = Robot.cULeftClosedPos;
+                cURightServoNextPos = Robot.cURightClosedPos;
+            }
+
             if (cUExtendButton && cUExtendButtonReleased) {
                 cUExtendButtonReleased = false;
                 if (cULeftServoNextPos == Robot.cULeftClosedPos) {
@@ -222,10 +227,7 @@ public class GameTeleop extends LinearOpMode {
                 }
             }
 
-            if (liftCurrentHeight >= Robot.liftJunctionLowHeight) {
-                cULeftServoNextPos = Robot.cULeftClosedPos;
-                cURightServoNextPos = Robot.cURightClosedPos;
-            }
+
 
             if (cULeftServoNextPos != cULeftServoPos || cURightServoNextPos != cURightServoPos) {
                 if (liftCurrentHeight <= Robot.liftConeUprightHeight - .2) {

@@ -28,7 +28,7 @@ import java.util.ArrayList;
 
 public abstract class AutoControls extends LinearOpMode {
 
-    boolean log = true;
+    boolean log = false;
 
     Robot robot;
     BNO055IMU imu;
@@ -149,7 +149,7 @@ public abstract class AutoControls extends LinearOpMode {
 
     double cuMilliseconds = 17;
 
-    double quitTime = 29750;
+    double quitTime = 29850;
 
     public void init(HardwareMap hwMap) {
         Robot robot = new Robot(hwMap, false);
@@ -160,6 +160,8 @@ public abstract class AutoControls extends LinearOpMode {
         sleep(1000);
         Robot.guideServo.setPosition(Robot.guideServoUp);
         Robot.grabberServo.setPosition(Robot.grabberServoOpenPos);
+        Robot.coneUprightRightServo.setPosition(Robot.cURightClosedPos);
+        Robot.coneUprightLeftServo.setPosition(Robot.cULeftClosedPos);
 
         ZeroPowerToBrake();
         multiplier = getVoltageMultiplier();
@@ -279,6 +281,23 @@ public abstract class AutoControls extends LinearOpMode {
     public void performAction(double targetXInches, double heading, double speedModifier, double speedMinimum, double liftHeightTarget, double liftPerformWithInchesLeft, double turretTargetDegrees, double turretPerformWithInchesLeft, double targetServoPosition, double servoPerformWithInchesLeft, double distanceToleranceParam, double liftQuitWithInchesLeft, boolean colorCorrection, double[] cuInfo) {
 
         //speedModifier = speedModifier * multiplier; //multiplier;
+        if (log) {
+            Log.d("performActionBegin","targetXInches:" + targetXInches
+                    + " heading:" + heading
+                    + " speedModifier:" + speedModifier
+                    + " speedMinimum:" + speedMinimum
+                    + " liftHeightTarget:" + liftHeightTarget
+                    + " liftPerformWithInchesLeft:" + liftPerformWithInchesLeft
+                    + " turretTargetDegrees:" + turretTargetDegrees
+                    + " turretPerformWithInchesLeft:" + turretPerformWithInchesLeft
+                    + " targetServoPosition:" + targetServoPosition
+                    + " servoPerformWithInchesLeft:" + servoPerformWithInchesLeft
+                    + " distanceToleranceParam:" + distanceToleranceParam
+                    + " liftQuitWithInchesLeft:" + liftQuitWithInchesLeft
+                    + " colorCorrection:" + colorCorrection
+                    + " cuInfo:" + cuInfo);
+
+        }
 
         ResetEncoders();
         double currentLiftInches = 0;
@@ -335,7 +354,7 @@ public abstract class AutoControls extends LinearOpMode {
         }
 
         //---First turn---//
-        while (degreesOff(heading) > .5 && opModeIsActive()) {
+        while (degreesOff(heading) > .5 && opModeIsActive() && gameTimer.milliseconds() < quitTime) {
             double adjustment = 0;
             if (heading != -1) {
                 adjustment = headingAdjustment(heading, 0);
@@ -353,14 +372,6 @@ public abstract class AutoControls extends LinearOpMode {
             angles = imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES);
             if (Math.abs(angles.secondAngle) > 10 || Math.abs(angles.thirdAngle) > 10) {
                 requestOpModeStop();
-            }
-
-            if (gameTimer.milliseconds() > 29750) {
-                Robot.frontLeft.setPower(0);
-                Robot.frontRight.setPower(0);
-                Robot.backLeft.setPower(0);
-                Robot.backRight.setPower(0);
-                return;
             }
 
 
@@ -397,7 +408,7 @@ public abstract class AutoControls extends LinearOpMode {
             }
 
             double adjustForColorVariable = 0;
-            if (colorCorrection && distanceToX <= 16) {
+            if (colorCorrection && Math.abs(distanceToX) <= 16 && Math.abs(distanceToX) >= 8) {
                 adjustForColorVariable = adjustForColorPlusWander(alliance);
             }
 
@@ -448,10 +459,21 @@ public abstract class AutoControls extends LinearOpMode {
                 }
             }
 
+            if (currentLiftInches > 3 && cuInfo[0] != -1) {
+                if (cuInfo[1] == 0) {
+                    Robot.coneUprightLeftServo.setPosition(Robot.cULeftSweepPos);
+                    cuLeftPos = Robot.cULeftSweepPos;
+                }
+
+                if (cuInfo[1] == 1) {
+                    Robot.coneUprightRightServo.setPosition(Robot.cURightSweepPos);
+                    cuRightPos = Robot.cURightSweepPos;
+                }
+            }
             if (Math.abs(distanceToX) <= cuInfo[0] && cuInfo[0] != -1) {
                 if (cuInfo[1] == 0) {
 
-                    if (cUMoveTimer.milliseconds() > cULastMoveTime + cuMilliseconds) {
+                    if (cUMoveTimer.milliseconds() > cULastMoveTime + cuMilliseconds + 10) {
                             cULastMoveTime = cUMoveTimer.milliseconds();
 
 
@@ -471,7 +493,7 @@ public abstract class AutoControls extends LinearOpMode {
 
                 }
                 if (cuInfo[1] == 1) {
-                    if (cUMoveTimer.milliseconds() > cULastMoveTime + cuMilliseconds) {
+                    if (cUMoveTimer.milliseconds() > cULastMoveTime + cuMilliseconds + 10) {
                         cULastMoveTime = cUMoveTimer.milliseconds();
 
 
@@ -505,6 +527,9 @@ public abstract class AutoControls extends LinearOpMode {
             }
 
             angles   = imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES);
+
+            telemetry.addData("color: ", adjustForColorVariable);
+
             telemetry.addData("imu", angles.firstAngle);
             telemetry.addData("game time", cUMoveTimer.seconds());
             telemetry.addData("XPos: ", currentXInches);
@@ -523,33 +548,20 @@ public abstract class AutoControls extends LinearOpMode {
                 requestOpModeStop();
             }
 
-            if (gameTimer.milliseconds() > 29750) {
-                Robot.frontLeft.setPower(0);
-                Robot.frontRight.setPower(0);
-                Robot.backLeft.setPower(0);
-                Robot.backRight.setPower(0);
-                return;
-            }
 
             if (log) {
-                Log.d("performAction","targetXInches:" + targetXInches
-                        + " heading:" + heading
-                        + " speedModifier:" + speedModifier
-                        + " speedMinimum:" + speedMinimum
-                        + " liftHeightTarget:" + liftHeightTarget
-                        + " liftPerformWithInchesLeft:" + liftPerformWithInchesLeft
-                        + " turretTargetDegrees:" + turretTargetDegrees
-                        + " turretPerformWithInchesLeft:" + turretPerformWithInchesLeft
-                        + " targetServoPosition:" + targetServoPosition
-                        + " servoPerformWithInchesLeft:" + servoPerformWithInchesLeft
-                        + " distanceToleranceParam:" + distanceToleranceParam
-                        + " liftQuitWithInchesLeft:" + liftQuitWithInchesLeft
-                        + " colorCorrection:" + colorCorrection
-                        + " cuInfo:" + cuInfo
-                        + " DistanceToX:" + distanceToX
+                Log.d("performActionLoop",
+                        "DistanceToX:" + distanceToX
                         + " liftInchesRemaining: " + liftInchesRemaining
                         + " firstAngle: " + angles.firstAngle
-                        + " game time" + gameTimer.milliseconds());
+                        + " game time: " + gameTimer.milliseconds()
+                        + " adjustmentforAngle: " + adjustment
+                        + " adjustmentforColor: " + adjustForColorVariable
+                        + " rightFront:" + rfPower
+                        + " rightRear:" + rrPower
+                        + " leftFront:" + lfPower
+                        + " leftRear:" + lrPower
+                        + " reverse: " + reverse);
             }
 
         }
@@ -699,7 +711,7 @@ public abstract class AutoControls extends LinearOpMode {
         double speedModifier = AdjustmentConstants.speedModifier;
 
         if (degreesOff > 10) {
-            speedModifier = 9;
+            speedModifier = 10;
         }
 
         if (distanceToX == 0) {  // this????
@@ -718,7 +730,9 @@ public abstract class AutoControls extends LinearOpMode {
             adjustment = -adjustment;
         }
         if (log) {
-            Log.d("headingAdjustment", "Adjustment:" + adjustment +
+            Log.d("headingAdjustment", "currentHeading:" + currentHeading +
+                    " targetHeading:" + targetHeading +
+                    " Adjustment:" + adjustment +
                     " DistanceToX:" + distanceToX +
                     " SpeedModifier:" + AdjustmentConstants.speedModifier +
                     " SpeedMinimum:" + AdjustmentConstants.speedMinimum +
@@ -757,11 +771,11 @@ public abstract class AutoControls extends LinearOpMode {
         double leftColor;
         double rightColor;
 
-        double blueThreshold = 350;
-        double blueDivisor = 3500;
+        double blueThreshold = 300;
+        double blueDivisor = 3000;
 
-        double redThreshold = 200;
-        double redDivisor = 5200;
+        double redThreshold = 250;
+        double redDivisor = 4500;
 
         double outputValue = 0;
 
@@ -772,14 +786,14 @@ public abstract class AutoControls extends LinearOpMode {
             if (leftColor > redThreshold || rightColor > redThreshold) {
                 outputValue = (rightColor - leftColor) / redDivisor;
             }
-            else {
+            /*else {
                 if (side == 'l') {
                     outputValue = 0.2;
                 }
                 else {
                     outputValue = -0.2;
                 }
-            }
+            }*/
         }
         else {
             leftColor = Robot.colorSensorLeft.blue();
@@ -788,14 +802,14 @@ public abstract class AutoControls extends LinearOpMode {
             if (leftColor > blueThreshold || rightColor > blueThreshold) {
                 outputValue = (rightColor - leftColor) / blueDivisor;
             }
-            else {
+            /*else {
                 if (side == 'l') {
                     outputValue = 0.2;
                 }
                 else {
                     outputValue = -0.2;
                 }
-            }
+            }*/
         }
 
         telemetry.addData("Left Color", leftColor);

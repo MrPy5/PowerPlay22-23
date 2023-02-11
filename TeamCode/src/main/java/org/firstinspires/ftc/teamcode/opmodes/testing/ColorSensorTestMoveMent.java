@@ -32,11 +32,11 @@ package org.firstinspires.ftc.teamcode.opmodes.testing;
 import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
+import org.firstinspires.ftc.teamcode.hardware.robot.Robot;
 import org.firstinspires.ftc.teamcode.opmodes.game.autonomous.C_Third.AutoControls;
 
 
 @TeleOp(name = "Color Sensor Test", group = "Sensor")
-@Disabled
 
 public class ColorSensorTestMoveMent extends AutoControls {
 
@@ -46,8 +46,16 @@ public class ColorSensorTestMoveMent extends AutoControls {
         init(hardwareMap);
         waitForStart();
         while (opModeIsActive()) {
-            adjustForColor('r');
-            sleep(20);
+            telemetry.addData("Left sensor red", Robot.colorSensorLeft.red());
+            telemetry.addData("Left sensor blue", Robot.colorSensorLeft.blue());
+            telemetry.addData("Right sensor red", Robot.colorSensorRight.red());
+            telemetry.addData("Right sesor blue", Robot.colorSensorRight.blue());
+            telemetry.update();
+
+
+
+
+
         }
 
     }
