@@ -43,11 +43,11 @@ public class Robot {
         public static double liftTicksPerInch = liftMotorTicksPerRevolution / (liftSpoolDiameter * Math.PI * liftCascadeMultiplier);
 
         public static double liftPickupHeight = 0;
-        public static double liftJunctionGroundHeight = 2;
-        public static double liftConeUprightHeight = 4;
-        public static double liftJunctionLowHeight = 14.5;
-        public static double liftJunctionMediumHeight = 24.5; //24
-        public static double liftJunctionHighHeight = 33;
+        public static double liftJunctionGroundHeight = 2.5;
+        public static double liftConeUprightHeight = 4.5;
+        public static double liftJunctionLowHeight = 15;
+        public static double liftJunctionMediumHeight = 25; //24
+        public static double liftJunctionHighHeight = 34;
         public static double liftMinHeightForTurning = 6;
         public static double liftMaximumHeight = 36;
 

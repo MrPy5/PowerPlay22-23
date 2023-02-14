@@ -133,7 +133,7 @@ public abstract class AutoControls extends LinearOpMode {
     public char side = 'l';
 
     double coneDifference = 1.3125;
-    double coneOneGrabHeight = 6;
+    double coneOneGrabHeight = 6.5;
     double coneTwoGrabHeight = coneOneGrabHeight - coneDifference;
     double coneThreeGrabHeight = coneTwoGrabHeight - coneDifference;
     double coneFourGrabHeight = coneThreeGrabHeight - coneDifference;
@@ -159,7 +159,7 @@ public abstract class AutoControls extends LinearOpMode {
         telemetry.update();
         sleep(1000);
         Robot.guideServo.setPosition(Robot.guideServoUp);
-        Robot.grabberServo.setPosition(Robot.grabberServoOpenPos);
+        Robot.grabberServo.setPosition(Robot.grabberServoOpenPos + 0.15);
         Robot.coneUprightRightServo.setPosition(Robot.cURightClosedPos);
         Robot.coneUprightLeftServo.setPosition(Robot.cULeftClosedPos);
 
@@ -408,7 +408,7 @@ public abstract class AutoControls extends LinearOpMode {
             }
 
             double adjustForColorVariable = 0;
-            if (colorCorrection && Math.abs(distanceToX) <= 16 && Math.abs(distanceToX) >= 8) {
+            if (colorCorrection && Math.abs(distanceToX) <= 16 && Math.abs(distanceToX) >= 2) {
                 adjustForColorVariable = adjustForColorPlusWander(alliance);
             }
 
@@ -542,7 +542,7 @@ public abstract class AutoControls extends LinearOpMode {
             telemetry.addData("Lift: ", liftInchesRemaining > liftToleranceInches);
             telemetry.addData("turret: ", turretDegreesRemaining > turretToleranceDegrees);
             telemetry.addData("rotation: ", degreesOff(heading) > 1);
-            telemetry.update();
+            //telemetry.update();
 
             if (Math.abs(angles.secondAngle) > 10 || Math.abs(angles.thirdAngle) > 10) {
                 requestOpModeStop();
@@ -771,10 +771,10 @@ public abstract class AutoControls extends LinearOpMode {
         double leftColor;
         double rightColor;
 
-        double blueThreshold = 300;
-        double blueDivisor = 3000;
+        double blueThreshold = 290;
+        double blueDivisor = 4000;
 
-        double redThreshold = 250;
+        double redThreshold = 200;
         double redDivisor = 4500;
 
         double outputValue = 0;
