@@ -1,5 +1,7 @@
 package org.firstinspires.ftc.teamcode.opmodes.game.teleop;
 
+import android.util.Log;
+
 import com.qualcomm.hardware.lynx.LynxModule;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
@@ -636,6 +638,10 @@ public class GameTeleop extends LinearOpMode {
 
             telemetry.update();
 
+            boolean colorOverThreshold = Robot.colorSensorPole.green() > Robot.colorThreshold;
+            String color = String.valueOf(colorOverThreshold);
+            Log.d("ColorDetection", "Green:" + color);
+
         }
     }
 
@@ -724,7 +730,8 @@ public class GameTeleop extends LinearOpMode {
 
     public int CheckForPole(double avgWheelVelocityFPS, double lastHeightTargetNoReset, int frontLeft, int frontRight, int backLeft, int backRight, double originalAveragePosition) {
 
-        int adjustmentAmount = (int) (avgWheelVelocityFPS * Robot.ticksPerInch * 0);
+        //int adjustmentAmount = (int) (avgWheelVelocityFPS * Robot.ticksPerInch * 0);
+
         if (Math.abs(avgWheelVelocityFPS) < 1.2) {
             if (Robot.colorSensorPole.green() > Robot.colorThreshold && (Robot.liftMotor.getCurrentPosition() * Robot.ticksPerInch) >= lastHeightTargetNoReset - 0.5) {
                 double speed = 0.01;
@@ -734,10 +741,12 @@ public class GameTeleop extends LinearOpMode {
                 Robot.backLeft.setPower(speed);
                 Robot.backRight.setPower(speed);
 
-                Robot.frontLeft.setTargetPosition(frontLeft - adjustmentAmount);
-                Robot.frontRight.setTargetPosition(frontRight - adjustmentAmount);
-                Robot.backLeft.setTargetPosition(backLeft - adjustmentAmount);
-                Robot.backRight.setTargetPosition(backRight - adjustmentAmount);
+                // - adjustmentAmount
+
+                Robot.frontLeft.setTargetPosition(frontLeft);
+                Robot.frontRight.setTargetPosition(frontRight);
+                Robot.backLeft.setTargetPosition(backLeft);
+                Robot.backRight.setTargetPosition(backRight);
 
 
                 Robot.frontLeft.setMode(DcMotor.RunMode.RUN_TO_POSITION);
@@ -755,7 +764,7 @@ public class GameTeleop extends LinearOpMode {
 
 
                 while (opModeIsActive() && Robot.frontLeft.isBusy()){ //(Math.abs(originalAveragePosition - adjustmentAmount) - Math.abs(GetAveragePosition())) * Robot.ticksPerInch > 0.25) { //loop until within quarter inch of target
-                    telemetry.addData("distance travelled", (Math.abs(originalAveragePosition - adjustmentAmount) - Math.abs(GetAveragePosition())) * Robot.ticksPerInch);
+                    telemetry.addData("distance travelled", (Math.abs(originalAveragePosition) - Math.abs(GetAveragePosition())) * Robot.ticksPerInch);
                     telemetry.update();
 
                     if (speed < 0.1 && Math.abs(GetAverageVelocity()) < 0.2) {
@@ -783,7 +792,24 @@ public class GameTeleop extends LinearOpMode {
                 telemetry.update();
 
 
+                ElapsedTime timeHeldFor = new ElapsedTime();
+                ElapsedTime totalTime = new ElapsedTime();
+                totalTime.startTime();
+                timeHeldFor.startTime();
 
+                while (timeHeldFor.milliseconds() < 200 && opModeIsActive()) {
+                    if (Robot.colorSensorPole.green() < Robot.colorThreshold) {
+                            timeHeldFor.reset();
+                    }
+                    if (gamepad1.right_trigger > Robot.triggerSensitivity) {
+                        return 1;
+                    }
+                    if (gamepad1.b) {
+                        return 0;
+                    }
+                    telemetry.addLine("In loop");
+                    telemetry.update();
+                }
 
                 return 1;
             }

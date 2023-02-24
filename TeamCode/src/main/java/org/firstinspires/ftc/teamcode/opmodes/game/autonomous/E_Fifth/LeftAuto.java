@@ -27,7 +27,7 @@ public abstract class LeftAuto extends AutoControls {
         cUMoveTimer.startTime();
 
         Robot.grabberServo.setPosition(Robot.grabberServoClosedPos);
-        performAction(16.25, 0, 4, 6, Robot.liftJunctionLowHeight, 15, Robot.turretRightDegrees, 10, Robot.grabberServoOpenPos, 0, 0, 0, false, new double[] {10, 0, Robot.cULeftFlickPos});
+        performAction(16.25, 0, 4, 6, Robot.liftJunctionLowHeight, 14, Robot.turretRightDegrees, 10, Robot.grabberServoOpenPos, 0, 0, 0, false, new double[] {-1, 0, Robot.cULeftFlickPos});
 
         //sleep(250);
 

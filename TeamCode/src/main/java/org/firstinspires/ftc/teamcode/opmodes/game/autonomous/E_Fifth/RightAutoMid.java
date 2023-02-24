@@ -24,7 +24,7 @@ public abstract class RightAutoMid extends AutoControls {
         cUMoveTimer.startTime();
 
         Robot.grabberServo.setPosition(Robot.grabberServoClosedPos);
-        performAction(18.5, 0, 4, 6, Robot.liftJunctionLowHeight, 11, Robot.turretLeftDegrees, 9, Robot.grabberServoOpenPos, 0, 0, 0, false, new double[] {6, 1, Robot.cURightFlickPos});
+        performAction(18.5, 0, 4, 6, Robot.liftJunctionLowHeight, 8, Robot.turretLeftDegrees, 9, Robot.grabberServoOpenPos, 0, 0, 0, false, new double[] {6, 1, Robot.cURightFlickPos});
 
 
         Robot.coneUprightRightServo.setPosition(Robot.cURightClosedPos);

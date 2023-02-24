@@ -29,6 +29,7 @@ import java.util.ArrayList;
 public abstract class AutoControls extends LinearOpMode {
 
     boolean log = false;
+    boolean doTelemetry = false;
 
     Robot robot;
     BNO055IMU imu;
@@ -147,7 +148,7 @@ public abstract class AutoControls extends LinearOpMode {
     double cuLeftPos = Robot.cULeftClosedPos;
     double cuRightPos = Robot.cURightClosedPos;
 
-    double cuMilliseconds = 17;
+    double cuMilliseconds = 5;
 
     double quitTime = 29850;
 
@@ -157,9 +158,8 @@ public abstract class AutoControls extends LinearOpMode {
         initCamera();
         telemetry.addData("here", "here");
         telemetry.update();
-        sleep(1000);
         Robot.guideServo.setPosition(Robot.guideServoUp);
-        Robot.grabberServo.setPosition(Robot.grabberServoOpenPos + 0.15);
+        //Robot.grabberServo.setPosition(Robot.grabberServoOpenPos + 0.15);
         Robot.coneUprightRightServo.setPosition(Robot.cURightClosedPos);
         Robot.coneUprightLeftServo.setPosition(Robot.cULeftClosedPos);
 
@@ -377,10 +377,11 @@ public abstract class AutoControls extends LinearOpMode {
 
         }
 
+
         ElapsedTime timeoutTimer = new ElapsedTime();
 
         //---Main Loop---//
-        while ((Math.abs(distanceToX) > distanceTolerance || currentSpeed > stoppingSpeed || turningVelocity > turningVelocityTolerance || liftInchesRemaining > liftToleranceInches || turretDegreesRemaining > turretToleranceDegrees || degreesOff(heading) > 1) && opModeIsActive() && timeoutTimer.milliseconds() < 500 && (liftHeightTarget == -1 || liftInchesRemaining > liftQuitWithInchesLeft) && gameTimer.milliseconds() < quitTime) {
+        while ((Math.abs(distanceToX) > distanceTolerance || currentSpeed > stoppingSpeed || turningVelocity > turningVelocityTolerance || liftInchesRemaining > liftToleranceInches || turretDegreesRemaining > turretToleranceDegrees || degreesOff(heading) > 1) && opModeIsActive() && /*timeoutTimer.milliseconds() < 500 && */ (liftHeightTarget == -1 || liftInchesRemaining > liftQuitWithInchesLeft) && gameTimer.milliseconds() < quitTime) {
 
             double adjustment = 0;
             if (heading != -1) {
@@ -527,23 +528,23 @@ public abstract class AutoControls extends LinearOpMode {
             }
 
             angles   = imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES);
+            if (doTelemetry) {
+                telemetry.addData("color: ", adjustForColorVariable);
 
-            telemetry.addData("color: ", adjustForColorVariable);
-
-            telemetry.addData("imu", angles.firstAngle);
-            telemetry.addData("game time", cUMoveTimer.seconds());
-            telemetry.addData("XPos: ", currentXInches);
-            telemetry.addData("distanceToX: ", distanceToX);
-            telemetry.addData("Current Speed:", currentSpeed);
-            telemetry.addData("Wheel Power: ", wheelPower);
-            telemetry.addData("average: ", getAverageOdometerPosition());
-            telemetry.addData("Distance:" , Math.abs(distanceToX) > 0.25);
-            telemetry.addData("Speed: ", currentSpeed > .25);
-            telemetry.addData("Lift: ", liftInchesRemaining > liftToleranceInches);
-            telemetry.addData("turret: ", turretDegreesRemaining > turretToleranceDegrees);
-            telemetry.addData("rotation: ", degreesOff(heading) > 1);
-            //telemetry.update();
-
+                telemetry.addData("imu", angles.firstAngle);
+                telemetry.addData("game time", cUMoveTimer.seconds());
+                telemetry.addData("XPos: ", currentXInches);
+                telemetry.addData("distanceToX: ", distanceToX);
+                telemetry.addData("Current Speed:", currentSpeed);
+                telemetry.addData("Wheel Power: ", wheelPower);
+                telemetry.addData("average: ", getAverageOdometerPosition());
+                telemetry.addData("Distance:", Math.abs(distanceToX) > 0.25);
+                telemetry.addData("Speed: ", currentSpeed > .25);
+                telemetry.addData("Lift: ", liftInchesRemaining > liftToleranceInches);
+                telemetry.addData("turret: ", turretDegreesRemaining > turretToleranceDegrees);
+                telemetry.addData("rotation: ", degreesOff(heading) > 1);
+                //telemetry.update();
+            }
             if (Math.abs(angles.secondAngle) > 10 || Math.abs(angles.thirdAngle) > 10) {
                 requestOpModeStop();
             }
@@ -565,7 +566,6 @@ public abstract class AutoControls extends LinearOpMode {
             }
 
         }
-
 
         Robot.frontLeft.setPower(0);
         Robot.frontRight.setPower(0);
@@ -811,12 +811,12 @@ public abstract class AutoControls extends LinearOpMode {
                 }
             }*/
         }
-
-        telemetry.addData("Left Color", leftColor);
-        telemetry.addData("Right Color", rightColor);
-        telemetry.addData("Output Value", outputValue);
-        telemetry.update();
-
+        if (doTelemetry) {
+            telemetry.addData("Left Color", leftColor);
+            telemetry.addData("Right Color", rightColor);
+            telemetry.addData("Output Value", outputValue);
+            telemetry.update();
+        }
         if (log) {
             Log.d("adjustForColorPlusWander", "color:" + color +
                     " outputValue:" + outputValue +
@@ -858,12 +858,12 @@ public abstract class AutoControls extends LinearOpMode {
             }
 
         }
-
-        telemetry.addData("Left Color", leftColor);
-        telemetry.addData("Right Color", rightColor);
-        telemetry.addData("Output Value", outputValue);
-        telemetry.update();
-
+        if (doTelemetry) {
+            telemetry.addData("Left Color", leftColor);
+            telemetry.addData("Right Color", rightColor);
+            telemetry.addData("Output Value", outputValue);
+            telemetry.update();
+        }
         if (log) {
             Log.d("adjustForColor", "color:" + color +
                     " outputValue:" + outputValue +
@@ -921,13 +921,15 @@ public abstract class AutoControls extends LinearOpMode {
     @SuppressLint("DefaultLocale")
     void tagToTelemetry(AprilTagDetection detection)
     {
-        telemetry.addLine(String.format("\nDetected tag ID=%d", detection.id));
-        telemetry.addLine(String.format("Translation X: %.2f feet", detection.pose.x*FEET_PER_METER));
-        telemetry.addLine(String.format("Translation Y: %.2f feet", detection.pose.y*FEET_PER_METER));
-        telemetry.addLine(String.format("Translation Z: %.2f feet", detection.pose.z*FEET_PER_METER));
-        telemetry.addLine(String.format("Rotation Yaw: %.2f degrees", Math.toDegrees(detection.pose.yaw)));
-        telemetry.addLine(String.format("Rotation Pitch: %.2f degrees", Math.toDegrees(detection.pose.pitch)));
-        telemetry.addLine(String.format("Rotation Roll: %.2f degrees", Math.toDegrees(detection.pose.roll)));
+        if (doTelemetry) {
+            telemetry.addLine(String.format("\nDetected tag ID=%d", detection.id));
+            telemetry.addLine(String.format("Translation X: %.2f feet", detection.pose.x * FEET_PER_METER));
+            telemetry.addLine(String.format("Translation Y: %.2f feet", detection.pose.y * FEET_PER_METER));
+            telemetry.addLine(String.format("Translation Z: %.2f feet", detection.pose.z * FEET_PER_METER));
+            telemetry.addLine(String.format("Rotation Yaw: %.2f degrees", Math.toDegrees(detection.pose.yaw)));
+            telemetry.addLine(String.format("Rotation Pitch: %.2f degrees", Math.toDegrees(detection.pose.pitch)));
+            telemetry.addLine(String.format("Rotation Roll: %.2f degrees", Math.toDegrees(detection.pose.roll)));
+        }
     }
 
 
