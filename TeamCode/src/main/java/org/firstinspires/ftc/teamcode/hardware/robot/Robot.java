@@ -53,7 +53,7 @@ public class Robot {
         public static double liftMaximumHeight = 36;
 
         public static double liftSpeedUp = 1.0;
-        public static double liftSpeedDown = 0.7;
+        public static double liftSpeedDown = 0.5;
         public static double manualLiftIncrement = 1.4;
         public static int liftTimerForGuide = 70;
 
@@ -95,7 +95,7 @@ public class Robot {
 
         public static Servo coneUprightRightServo;
         public static double cURightClosedPos = .89;
-        public static double cURightOpenPos = cURightClosedPos - .53;
+        public static double cURightOpenPos = cURightClosedPos - .65;
         public static double cURightFlickPos = cURightClosedPos - .75;
         public static double cURightSweepPos = cURightClosedPos - .10; //-.35
 

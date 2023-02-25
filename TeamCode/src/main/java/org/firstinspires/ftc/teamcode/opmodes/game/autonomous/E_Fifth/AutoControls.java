@@ -414,7 +414,7 @@ public abstract class AutoControls extends LinearOpMode {
             }
 
             double adjustForColorVariable = 0;
-            if (colorCorrection && Math.abs(distanceToX) <= 16 && Math.abs(distanceToX) >= 2) {
+            if (colorCorrection && Math.abs(distanceToX) <= 16) {
                 adjustForColorVariable = adjustForColorPlusWander(alliance);
             }
 
