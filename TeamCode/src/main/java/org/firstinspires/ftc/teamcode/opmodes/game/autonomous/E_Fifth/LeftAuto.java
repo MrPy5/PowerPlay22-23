@@ -38,7 +38,7 @@ public abstract class LeftAuto extends AutoControls {
 
 
 
-        performAction(23.5, 87, 5, 11, coneOneGrabHeight, 24, -1, 0, Robot.grabberServoHalfwayPos, 24, 0, 0, true, new double[] {-1, 0, 0});
+        performAction(23.75, 87, 5.5, 11, coneOneGrabHeight, 24, -1, 0, Robot.grabberServoHalfwayPos, 24, 0, 0, true, new double[] {-1, 0, 0});
 
         Robot.grabberServo.setPosition(Robot.grabberServoClosedPos);
         sleep(200);
