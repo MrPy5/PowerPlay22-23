@@ -804,7 +804,7 @@ public class GameTeleop extends LinearOpMode {
                     if (gamepad1.right_trigger > Robot.triggerSensitivity) {
                         return 1;
                     }
-                    if (gamepad1.b) {
+                    if (gamepad1.left_trigger > Robot.triggerSensitivity) {
                         return 0;
                     }
                     telemetry.addLine("In loop");

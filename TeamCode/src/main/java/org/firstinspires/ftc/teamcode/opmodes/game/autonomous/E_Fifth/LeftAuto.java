@@ -27,18 +27,18 @@ public abstract class LeftAuto extends AutoControls {
         cUMoveTimer.startTime();
 
         Robot.grabberServo.setPosition(Robot.grabberServoClosedPos);
-        performAction(16.25, 0, 4, 6, Robot.liftJunctionLowHeight, 14, Robot.turretRightDegrees, 10, Robot.grabberServoOpenPos, 0, 0, 0, false, new double[] {-1, 0, Robot.cULeftFlickPos});
+        performAction(16.25, 0, 4, 6, Robot.liftJunctionLowHeight, 13, Robot.turretRightDegrees, 10, Robot.grabberServoOpenPos, 0, 0, 0, false, new double[] {1, 1, Robot.cURightOpenPos});
 
         //sleep(250);
 
 
         Robot.coneUprightLeftServo.setPosition(Robot.cULeftClosedPos);
 
-        performAction(37.25, 0, 6.5, 9, Robot.liftJunctionMediumHeight, 47, Robot.turretForwardDegrees, 12, -1, 0, 0, 0, false, new double[] {-1, 0, 0});
+        performAction(37.25, 0, 6.5, 9, Robot.liftJunctionMediumHeight, 47, Robot.turretForwardDegrees, 12, -1, 0, 0, 0, false, new double[] {37, 1, Robot.cURightClosedPos});
 
 
 
-        performAction(24.5, 88, 5, 11, coneOneGrabHeight, 24, -1, 0, Robot.grabberServoHalfwayPos, 24, .5, 0, true, new double[] {-1, 0, 0});
+        performAction(24, 88, 5, 11, coneOneGrabHeight, 24, -1, 0, Robot.grabberServoHalfwayPos, 24, .5, 0, true, new double[] {-1, 0, 0});
 
         Robot.grabberServo.setPosition(Robot.grabberServoClosedPos);
         sleep(250);
@@ -46,22 +46,22 @@ public abstract class LeftAuto extends AutoControls {
         performAction(0, -1, 7, 0, Robot.liftJunctionMediumHeight, 5, -1, 0, -1, 0, 0, 20, false, new double[] {-1, 0, 0});
 
         // Go to pole + drop
-        performAction(-34, 88, 7, 9, Robot.liftJunctionMediumHeight, 38, Robot.turretLeftDegrees, 20, Robot.grabberServoOpenPos, 0, 0, 0, false, new double[] {-1, 0, 0});
+        performAction(-35, 88, 7, 10, Robot.liftJunctionMediumHeight, 38, Robot.turretLeftDegrees, 20, Robot.grabberServoOpenPos, 0, 0, 0, false, new double[] {-1, 0, 0});
         sleep(250);
 
         //drive to stack
-        performAction(36.25, 86, 7, 8, coneTwoGrabHeight, 30, Robot.turretForwardDegrees, 35, Robot.grabberServoHalfwayPos, 20, 0, 0, true, new double[] {-1, 0, 0});
+        performAction(34.75, 86, 7, 8, coneTwoGrabHeight, 30, Robot.turretForwardDegrees, 35, Robot.grabberServoHalfwayPos, 20, 0, 0, true, new double[] {-1, 0, 0});
 
         Robot.grabberServo.setPosition(Robot.grabberServoClosedPos);
         sleep(250);
         performAction(0, -1, 7, 0, Robot.liftJunctionMediumHeight, 1, -1, 0, -1, 0, 0, 20, false, new double[] {-1, 0, 0});
 
         //Go to pole + drop
-        performAction(-34.5, 88, 7, 9, Robot.liftJunctionMediumHeight, 38, Robot.turretLeftDegrees, 20, Robot.grabberServoOpenPos, 0, 0, 0, false, new double[] {-1, 0, 0});
+        performAction(-34.5, 88, 7, 10, Robot.liftJunctionMediumHeight, 38, Robot.turretLeftDegrees, 20, Robot.grabberServoOpenPos, 0, 0, 0, false, new double[] {-1, 0, 0});
         sleep(250);
 
         //Drive to stack
-        performAction(36.25, 86, 7, 8, coneThreeGrabHeight, 30, Robot.turretForwardDegrees, 35, Robot.grabberServoHalfwayPos, 20, 0, 0, true, new double[] {-1, 0, 0});
+        performAction(34.75, 86, 7, 8, coneThreeGrabHeight, 30, Robot.turretForwardDegrees, 35, Robot.grabberServoHalfwayPos, 20, 0, 0, true, new double[] {-1, 0, 0});
 
         Robot.grabberServo.setPosition(Robot.grabberServoClosedPos);
         sleep(250);
@@ -69,12 +69,12 @@ public abstract class LeftAuto extends AutoControls {
         performAction(0, -1, 7, 0, Robot.liftJunctionMediumHeight, 1, -1, 0, -1, 0, 0, 20, false, new double[] {-1, 0, 0});
 
         //Go to pole + drop
-        performAction(-34.5, 88, 7, 9, Robot.liftJunctionMediumHeight, 38, Robot.turretLeftDegrees, 20, Robot.grabberServoOpenPos, 0, 0, 0, false, new double[] {-1, 0, 0});
+        performAction(-34.5, 88, 7, 10, Robot.liftJunctionMediumHeight, 38, Robot.turretLeftDegrees, 20, Robot.grabberServoOpenPos, 0, 0, 0, false, new double[] {-1, 0, 0});
         sleep(250);
 
         if (gameTimer.milliseconds() < lastConeQuitTime) {
             //Drive to stack
-            performAction(36.25, 86, 7, 8, coneFourGrabHeight, 30, Robot.turretForwardDegrees, 35, Robot.grabberServoHalfwayPos, 20, 0, 0, true, new double[] {-1, 0, 0});
+            performAction(34.75, 86, 7, 8, coneFourGrabHeight, 30, Robot.turretForwardDegrees, 35, Robot.grabberServoHalfwayPos, 20, 0, 0, true, new double[] {-1, 0, 0});
 
             Robot.grabberServo.setPosition(Robot.grabberServoClosedPos);
             sleep(250);
@@ -82,7 +82,7 @@ public abstract class LeftAuto extends AutoControls {
             performAction(0, -1, 7, 0, Robot.liftJunctionMediumHeight, 1, -1, 0, -1, 0, 0, 20, false, new double[] {-1, 0, 0});
 
             //Go to pole + drop
-            performAction(-34.5, 88, 7, 9, Robot.liftJunctionMediumHeight, 38, Robot.turretLeftDegrees, 20, Robot.grabberServoOpenPos, 0, 0, 0, false, new double[] {-1, 0, 0});
+            performAction(-34.5, 88, 7, 10, Robot.liftJunctionMediumHeight, 38, Robot.turretLeftDegrees, 20, Robot.grabberServoOpenPos, 0, 0, 0, false, new double[] {-1, 0, 0});
             sleep(250);
         }
         Robot.guideServo.setPosition(Robot.guideServoUp + 0.1);

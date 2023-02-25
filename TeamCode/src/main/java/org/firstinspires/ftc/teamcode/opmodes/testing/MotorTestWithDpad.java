@@ -19,7 +19,6 @@ import org.firstinspires.ftc.teamcode.hardware.robot.Robot;
 
 
 @TeleOp(name = "Trigger/Bumper Motor/Encoder test")
-@Disabled
 public class MotorTestWithDpad extends LinearOpMode {
 
     double triggerSensitivity = 0.01;
@@ -32,25 +31,25 @@ public class MotorTestWithDpad extends LinearOpMode {
 
         while (opModeIsActive()) {
             if (gamepad1.left_trigger > triggerSensitivity) {
-                Robot.frontLeft.setPower(.3);
+                Robot.frontLeft.setPower(.6);
                 telemetry.addData("FrontLeft:", Robot.frontLeft.getCurrentPosition());
             } else {
                 Robot.frontLeft.setPower(0);
             }
             if (gamepad1.right_trigger > triggerSensitivity) {
-                Robot.frontRight.setPower(.3);
+                Robot.frontRight.setPower(.6);
                 telemetry.addData("FrontRight:", Robot.frontRight.getCurrentPosition());
             } else {
                 Robot.frontRight.setPower(0);
             }
             if (gamepad1.left_bumper) {
-                Robot.backLeft.setPower(.3);
+                Robot.backLeft.setPower(.6);
                 telemetry.addData("BackLeft:", Robot.backLeft.getCurrentPosition());
             } else {
                 Robot.backLeft.setPower(0);
             }
             if (gamepad1.right_bumper) {
-                Robot.backRight.setPower(.3);
+                Robot.backRight.setPower(.6);
                 telemetry.addData("BackRight:", Robot.backRight.getCurrentPosition());
             } else {
                 Robot.backRight.setPower(0);

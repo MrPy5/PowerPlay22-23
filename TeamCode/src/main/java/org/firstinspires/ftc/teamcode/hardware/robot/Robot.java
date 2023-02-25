@@ -5,7 +5,7 @@ import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.HardwareMap;
-import com.qualcomm.robotcore.hardware.PIDCoefficients;
+import com.qualcomm.robotcore.hardware.PIDFCoefficients;
 import com.qualcomm.robotcore.hardware.Servo;
 
 public class Robot {
@@ -47,7 +47,7 @@ public class Robot {
         public static double liftJunctionGroundHeight = 2.5;
         public static double liftConeUprightHeight = 4.5;
         public static double liftJunctionLowHeight = 15;
-        public static double liftJunctionMediumHeight = 24; //24
+        public static double liftJunctionMediumHeight = 24.5; //24
         public static double liftJunctionHighHeight = 34;
         public static double liftMinHeightForTurning = 6;
         public static double liftMaximumHeight = 36;
@@ -172,7 +172,7 @@ public class Robot {
         liftMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         liftMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
 
-        liftMotor.setPIDCoefficients(DcMotor.RunMode.RUN_USING_ENCODER, new PIDCoefficients(8,3,0));
+        liftMotor.setPIDFCoefficients(DcMotor.RunMode.RUN_USING_ENCODER, new PIDFCoefficients(8,3,0, 12));
 
         //---Grabber---//
         grabberServo = hardwareMap.get(Servo.class, "gripperServo");

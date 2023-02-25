@@ -29,7 +29,7 @@ import java.util.ArrayList;
 public abstract class AutoControls extends LinearOpMode {
 
     boolean log = false;
-    boolean doTelemetry = false;
+    boolean doTelemetry = true;
 
     Robot robot;
     BNO055IMU imu;
@@ -381,7 +381,12 @@ public abstract class AutoControls extends LinearOpMode {
         ElapsedTime timeoutTimer = new ElapsedTime();
 
         //---Main Loop---//
-        while ((Math.abs(distanceToX) > distanceTolerance || currentSpeed > stoppingSpeed || turningVelocity > turningVelocityTolerance || liftInchesRemaining > liftToleranceInches || turretDegreesRemaining > turretToleranceDegrees || degreesOff(heading) > 1) && opModeIsActive() && /*timeoutTimer.milliseconds() < 500 && */ (liftHeightTarget == -1 || liftInchesRemaining > liftQuitWithInchesLeft) && gameTimer.milliseconds() < quitTime) {
+        while ((Math.abs(distanceToX) > distanceTolerance || currentSpeed > stoppingSpeed /*|| turningVelocity > turningVelocityTolerance */
+                || liftInchesRemaining > liftToleranceInches || turretDegreesRemaining > turretToleranceDegrees /*|| degreesOff(heading) > 1 */)
+                && opModeIsActive()
+                /*&& timeoutTimer.milliseconds() < 500*/
+                && (liftHeightTarget == -1 || liftInchesRemaining > liftQuitWithInchesLeft)
+                && gameTimer.milliseconds() < quitTime) {
 
             double adjustment = 0;
             if (heading != -1) {
@@ -532,23 +537,26 @@ public abstract class AutoControls extends LinearOpMode {
                 telemetry.addData("color: ", adjustForColorVariable);
 
                 telemetry.addData("imu", angles.firstAngle);
+                telemetry.addData("headingAdjustment: ", adjustment);
                 telemetry.addData("game time", cUMoveTimer.seconds());
                 telemetry.addData("XPos: ", currentXInches);
                 telemetry.addData("distanceToX: ", distanceToX);
                 telemetry.addData("Current Speed:", currentSpeed);
                 telemetry.addData("Wheel Power: ", wheelPower);
+                telemetry.addData("Turning Velocity: ", turningVelocity);
                 telemetry.addData("average: ", getAverageOdometerPosition());
-                telemetry.addData("Distance:", Math.abs(distanceToX) > 0.25);
+                telemetry.addData("Distance:", Math.abs(distanceToX) > distanceTolerance);
                 telemetry.addData("Speed: ", currentSpeed > .25);
                 telemetry.addData("Lift: ", liftInchesRemaining > liftToleranceInches);
                 telemetry.addData("turret: ", turretDegreesRemaining > turretToleranceDegrees);
                 telemetry.addData("rotation: ", degreesOff(heading) > 1);
-                //telemetry.update();
+                telemetry.addData("Turning Velocity: ", turningVelocity > turningVelocityTolerance);
+                telemetry.addData("Lift done: ", liftInchesRemaining > liftQuitWithInchesLeft);
+                telemetry.update();
             }
             if (Math.abs(angles.secondAngle) > 10 || Math.abs(angles.thirdAngle) > 10) {
                 requestOpModeStop();
             }
-
 
             if (log) {
                 Log.d("performActionLoop",
@@ -811,13 +819,14 @@ public abstract class AutoControls extends LinearOpMode {
                 }
             }*/
         }
+        /*
         if (doTelemetry) {
             telemetry.addData("Left Color", leftColor);
             telemetry.addData("Right Color", rightColor);
             telemetry.addData("Output Value", outputValue);
             telemetry.update();
-        }
-        if (log) {
+        }*/
+        /*if (log)*/ {
             Log.d("adjustForColorPlusWander", "color:" + color +
                     " outputValue:" + outputValue +
                     " rightColor:" + rightColor +
