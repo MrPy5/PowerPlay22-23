@@ -11,7 +11,7 @@ import org.firstinspires.ftc.teamcode.hardware.robot.Robot;
 
 public abstract class LeftAuto extends AutoControls {
 
-    double lastConeQuitTime = 26000;
+    double lastConeQuitTime = 25000;
 
     public void startAuto() {
 
@@ -20,8 +20,13 @@ public abstract class LeftAuto extends AutoControls {
 
 
         int endParkingPosition = DetectAprilTags();
+
         if (endParkingPosition == 1) {
-            lastConeQuitTime = lastConeQuitTime - 500;
+            lastConeQuitTime = lastConeQuitTime - 750;
+        }
+
+        if (endParkingPosition == 3) {
+            lastConeQuitTime = lastConeQuitTime - 350;
         }
 
         cUMoveTimer.startTime();
@@ -38,7 +43,7 @@ public abstract class LeftAuto extends AutoControls {
 
 
 
-        performAction(23.75, 87, 5.5, 11, coneOneGrabHeight, 24, -1, 0, Robot.grabberServoHalfwayPos, 24, 0, 0, true, new double[] {-1, 0, 0});
+        performAction(24.25, 87, 5.5, 11, coneOneGrabHeight, 24, -1, 0, Robot.grabberServoHalfwayPos, 24, 0, 0, true, new double[] {-1, 0, 0});
 
         Robot.grabberServo.setPosition(Robot.grabberServoClosedPos);
         sleep(200);
@@ -61,7 +66,7 @@ public abstract class LeftAuto extends AutoControls {
         sleep(200);
 
         //Drive to stack
-        performAction(34.75, 87, 7, 8, coneThreeGrabHeight, 30, Robot.turretForwardDegrees, 35, Robot.grabberServoHalfwayPos, 20, 0, 0, true, new double[] {-1, 0, 0});
+        performAction(34.5, 87, 7, 8, coneThreeGrabHeight, 30, Robot.turretForwardDegrees, 35, Robot.grabberServoHalfwayPos, 20, 0, 0, true, new double[] {-1, 0, 0});
 
         Robot.grabberServo.setPosition(Robot.grabberServoClosedPos);
         sleep(200);
@@ -74,7 +79,7 @@ public abstract class LeftAuto extends AutoControls {
 
         if (gameTimer.milliseconds() < lastConeQuitTime) {
             //Drive to stack
-            performAction(34.75, 87, 7, 8, coneFourGrabHeight, 30, Robot.turretForwardDegrees, 35, Robot.grabberServoHalfwayPos, 20, 0, 0, true, new double[] {-1, 0, 0});
+            performAction(34.5, 87, 7, 8, coneFourGrabHeight, 30, Robot.turretForwardDegrees, 35, Robot.grabberServoHalfwayPos, 20, 0, 0, true, new double[] {-1, 0, 0});
 
             Robot.grabberServo.setPosition(Robot.grabberServoClosedPos);
             sleep(200);
@@ -88,7 +93,7 @@ public abstract class LeftAuto extends AutoControls {
 
         if (gameTimer.milliseconds() < lastConeQuitTime) {
             //Drive to stack
-            performAction(34.75, 87, 7, 8, coneFiveGrabHeight, 30, Robot.turretForwardDegrees, 35, Robot.grabberServoHalfwayPos, 20, 0, 0, true, new double[] {-1, 0, 0});
+            performAction(34.5, 87, 7, 8, coneFiveGrabHeight, 30, Robot.turretForwardDegrees, 35, Robot.grabberServoHalfwayPos, 20, 0, 0, true, new double[] {-1, 0, 0});
 
             Robot.grabberServo.setPosition(Robot.grabberServoClosedPos);
             sleep(200);
@@ -114,7 +119,7 @@ public abstract class LeftAuto extends AutoControls {
             performAction(0, 90, 0, 0, Robot.liftJunctionGroundHeight, 1, -1, 0, -1, -1, 0, 0.5, false, new double[] {-1, 0, 0});
         }
         if (endParkingPosition == 3) {
-            performAction(-15, 90, 5, 20, -1, 0, Robot.turretForwardDegrees, 13, -1, -1, 1, 0.5, false, new double[] {-1, 0, 0});
+            performAction(-15, 90, 4, 20, -1, 0, Robot.turretForwardDegrees, 13, -1, -1, 1, 0.5, false, new double[] {-1, 0, 0});
             performAction(0, 90, 0, 0, Robot.liftJunctionGroundHeight, 1, -1, 0, -1, -1, 0, 0.5, false, new double[] {-1, 0, 0});
         }
 
