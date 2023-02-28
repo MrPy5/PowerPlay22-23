@@ -82,7 +82,7 @@ public class GameTeleop extends LinearOpMode {
 
         //---Lift---//
         double liftCurrentHeight;
-        double liftSpeedPower;
+        double liftSpeedPower = 0;
         double liftHeightTarget = 0;
         double liftHeightPrevTarget = 0;
         double lastHeightTargetNoReset = 0;
@@ -192,18 +192,11 @@ public class GameTeleop extends LinearOpMode {
             }
 
             if (liftHeightTarget >= Robot.liftJunctionLowHeight) {
-                cULeftServoNextPos = Robot.cULeftClosedPos;
                 cURightServoNextPos = Robot.cURightClosedPos;
             }
 
             if (cUExtendButton && cUExtendButtonReleased) {
                 cUExtendButtonReleased = false;
-                if (cULeftServoNextPos == Robot.cULeftClosedPos) {
-                    cULeftServoNextPos = Robot.cULeftOpenPos;
-                }
-                else if (cULeftServoNextPos == Robot.cULeftOpenPos) {
-                    cULeftServoNextPos = Robot.cULeftFlickPos;
-                }
                 if (cURightServoNextPos == Robot.cURightClosedPos) {
                     cURightServoNextPos = Robot.cURightOpenPos;
                 }
@@ -215,12 +208,6 @@ public class GameTeleop extends LinearOpMode {
 
             if (cURetractButton && cURetractButtonReleased) {
                 cURetractButtonReleased = false;
-                if (cULeftServoNextPos == Robot.cULeftFlickPos) {
-                    cULeftServoNextPos = Robot.cULeftOpenPos;
-                }
-                else if (cULeftServoNextPos == Robot.cULeftOpenPos) {
-                    cULeftServoNextPos = Robot.cULeftClosedPos;
-                }
                 if (cURightServoNextPos == Robot.cURightFlickPos) {
                     cURightServoNextPos = Robot.cURightOpenPos;
                 }
@@ -231,15 +218,13 @@ public class GameTeleop extends LinearOpMode {
 
 
 
-            if (cULeftServoNextPos != cULeftServoPos || cURightServoNextPos != cURightServoPos) {
+            if (cURightServoNextPos != cURightServoPos) {
                 if (liftCurrentHeight <= Robot.liftConeUprightHeight - .2) {
                     liftHeightTarget = Robot.liftConeUprightHeight;
 
                 } else {
                     cURightServoPos = cURightServoNextPos;
-                    cULeftServoPos = cULeftServoNextPos;
 
-                    Robot.coneUprightLeftServo.setPosition(cULeftServoPos);
                     Robot.coneUprightRightServo.setPosition(cURightServoPos);
 
                     /*
@@ -536,14 +521,37 @@ public class GameTeleop extends LinearOpMode {
 
                 liftHeightTarget = lastHeightTargetNoReset;
                 scoreSteps = 0;
+                Robot.liftSpeedDown = liftSpeedPower;
 
             }
-            if (scoreSteps == 2 && dropTimer.milliseconds() > liftRaiseWaitTime) {
-                grabberServoCurrentPos = Robot.grabberServoOpenPos;
-                Robot.grabberServo.setPosition(grabberServoCurrentPos);
-                scoreSteps = 3;
+            if (scoreSteps == 2) {
+                
+                Robot.frontLeft.setPower(0);
+                Robot.frontRight.setPower(0);
+                Robot.backLeft.setPower(0);
+                Robot.backRight.setPower(0);
+
+                while (opModeIsActive()) {
+                    if (gamepad1.right_trigger > Robot.triggerSensitivity) {
+                        grabberServoCurrentPos = Robot.grabberServoOpenPos;
+                        Robot.grabberServo.setPosition(grabberServoCurrentPos);
+                        scoreSteps = 3;
+                        break;
+                    }
+                    if (gamepad1.dpad_up) {
+                        liftHeightTarget = lastHeightTargetNoReset;
+                        scoreSteps = 0;
+                        allowAutoScore = true;
+                        break;
+                    }
+
+                }
             }
+
+
             if (scoreSteps == 1) {
+                liftSpeedPower = Robot.liftSpeedDown;
+                Robot.liftSpeedDown = 1;
                 Robot.guideServo.setPosition(Robot.guideServoUp);
 
                 liftHeightTarget = lastHeightTargetNoReset - 5;
@@ -607,11 +615,19 @@ public class GameTeleop extends LinearOpMode {
                     }
                 }
             }
-
-            Robot.backLeft.setPower(lrPower);
-            Robot.backRight.setPower(rrPower);
-            Robot.frontLeft.setPower(lfPower);
-            Robot.frontRight.setPower(rfPower);
+            if (scoreSteps == 0) {
+                
+                Robot.backLeft.setPower(lrPower);
+                Robot.backRight.setPower(rrPower);
+                Robot.frontLeft.setPower(lfPower);
+                Robot.frontRight.setPower(rfPower);
+            }
+            else {
+                Robot.frontLeft.setPower(0);
+                Robot.frontRight.setPower(0);
+                Robot.backLeft.setPower(0);
+                Robot.backRight.setPower(0);
+            }
 
             //---Telemetry---//
 
@@ -791,7 +807,7 @@ public class GameTeleop extends LinearOpMode {
                 telemetry.addLine("Finished travel back");
                 telemetry.update();
 
-
+                /*
                 ElapsedTime timeHeldFor = new ElapsedTime();
                 ElapsedTime totalTime = new ElapsedTime();
                 totalTime.startTime();
@@ -810,6 +826,7 @@ public class GameTeleop extends LinearOpMode {
                     telemetry.addLine("In loop");
                     telemetry.update();
                 }
+                */
 
                 return 1;
             }
@@ -831,6 +848,8 @@ public class GameTeleop extends LinearOpMode {
 
         Robot.turretMotor.setTargetPosition(0);
         Robot.turretMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+
+        Robot.coneUprightRightServo.setPosition(Robot.cURightClosedPos);
 
         Robot.turretMotor.setPower(0.8);
 

@@ -333,6 +333,10 @@ public abstract class AutoControls extends LinearOpMode {
             distanceTolerance = distanceToleranceParam;
         }
 
+        if (servoPerformWithInchesLeft <= distanceTolerance) {
+            servoPerformWithInchesLeft = distanceTolerance + 0.01;
+        }
+
 
         currentXInches = (getAverageOdometerPosition() - startXPos);
 
@@ -725,7 +729,7 @@ public abstract class AutoControls extends LinearOpMode {
         if (distanceToX == 0) {  // this????
             speedMinimum = AdjustmentConstants.speedMinimum;
         } else {
-            speedMinimum = 2;
+            speedMinimum = 3;
         }
 
         if (degreesOff < .3) {
