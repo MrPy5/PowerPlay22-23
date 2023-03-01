@@ -134,7 +134,7 @@ public abstract class AutoControls extends LinearOpMode {
     public char side = 'l';
 
     double coneDifference = 1.3125;
-    double coneOneGrabHeight = 6.5;
+    double coneOneGrabHeight = 6.1;
     double coneTwoGrabHeight = coneOneGrabHeight - coneDifference;
     double coneThreeGrabHeight = coneTwoGrabHeight - coneDifference;
     double coneFourGrabHeight = coneThreeGrabHeight - coneDifference;

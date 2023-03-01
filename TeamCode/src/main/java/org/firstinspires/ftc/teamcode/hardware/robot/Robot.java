@@ -88,13 +88,13 @@ public class Robot {
 
         //Cone-Upright
         public static Servo coneUprightLeftServo;
-        public static double cULeftClosedPos = .09;
+        public static double cULeftClosedPos = .07;
         public static double cULeftOpenPos = cULeftClosedPos + .5;
         public static double cULeftFlickPos = cULeftClosedPos + .71;
         public static double cULeftSweepPos = cULeftClosedPos + .10;
 
         public static Servo coneUprightRightServo;
-        public static double cURightClosedPos = .98;
+        public static double cURightClosedPos = .77;
         public static double cURightOpenPos = cURightClosedPos - .59; // .39
         public static double cURightFlickPos = cURightClosedPos - .28; //.7
         public static double cURightSweepPos = cURightClosedPos - .10; //-.35
