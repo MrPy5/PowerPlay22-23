@@ -165,6 +165,10 @@ public class Robot {
         //---Lift---/
         liftMotor = hardwareMap.get(DcMotorEx.class, "liftMotor");
 
+        if (isTeleop) {
+            liftSpeedDown = 0.5;
+        }
+
         if (!isTeleop) {
             liftMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         }

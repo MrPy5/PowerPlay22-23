@@ -62,7 +62,7 @@ public class GameTeleop extends LinearOpMode {
 
         //---Cone Upright (cU)---//
         double cURightServoPos = Robot.cURightClosedPos;
-        double cURightServoNextPos = cURightServoPos;
+        double cURightServoTargetPos = cURightServoPos;
         double cULeftServoPos = Robot.cULeftClosedPos;
         double cULeftServoNextPos = cULeftServoPos;
         boolean cUExtendButtonReleased = true;
@@ -155,6 +155,10 @@ public class GameTeleop extends LinearOpMode {
                 leftStickY = 0;
             }
 
+            if (scoreSteps == 0) {
+                Robot.liftSpeedDown = 0.5; //Reset lift speed after autodrop
+            }
+
             double rightStickX = gamepad1.right_stick_x * .8;
 
             boolean liftPosUpManualButton = gamepad1.right_bumper;
@@ -164,8 +168,8 @@ public class GameTeleop extends LinearOpMode {
 
             boolean autoScoreModeButton = gamepad1.start;
 
-            boolean cUExtendButton = gamepad1.dpad_up;
-            boolean cURetractButton = gamepad1.dpad_down;
+            boolean cUExtendButton = gamepad1.dpad_right;
+            boolean cURetractButton = gamepad1.dpad_left;
 
             boolean resetToZero = gamepad1.touchpad_finger_1 && gamepad1.touchpad_finger_2;
 
@@ -192,45 +196,46 @@ public class GameTeleop extends LinearOpMode {
             }
 
             if (liftHeightTarget >= Robot.liftJunctionLowHeight) {
-                cURightServoNextPos = Robot.cURightClosedPos;
+                cURightServoTargetPos = Robot.cURightClosedPos;
             }
 
             if (cUExtendButton && cUExtendButtonReleased) {
                 cUExtendButtonReleased = false;
-                if (cURightServoNextPos == Robot.cURightClosedPos) {
-                    cURightServoNextPos = Robot.cURightOpenPos;
+                if (cURightServoPos == Robot.cURightClosedPos) {
+                    cURightServoTargetPos = Robot.cURightFlickPos;
                 }
-                else if (cURightServoNextPos == Robot.cURightOpenPos) {
-                    cURightServoNextPos = Robot.cURightFlickPos;
+                else if (cURightServoPos == Robot.cURightFlickPos) {
+                    cURightServoTargetPos = Robot.cURightOpenPos;
                 }
 
             }
 
             if (cURetractButton && cURetractButtonReleased) {
                 cURetractButtonReleased = false;
-                if (cURightServoNextPos == Robot.cURightFlickPos) {
-                    cURightServoNextPos = Robot.cURightOpenPos;
+                if (cURightServoPos == Robot.cURightOpenPos) {
+                    cURightServoTargetPos = Robot.cURightFlickPos;
                 }
-                else if (cURightServoNextPos == Robot.cURightOpenPos) {
-                    cURightServoNextPos = Robot.cURightClosedPos;
+                else if (cURightServoPos == Robot.cURightFlickPos) {
+                    cURightServoTargetPos = Robot.cURightClosedPos;
                 }
             }
 
 
 
-            if (cURightServoNextPos != cURightServoPos) {
+            if (cURightServoTargetPos != cURightServoPos) {
                 if (liftCurrentHeight <= Robot.liftConeUprightHeight - .2) {
                     liftHeightTarget = Robot.liftConeUprightHeight;
 
                 } else {
-                    cURightServoPos = cURightServoNextPos;
+                    cURightServoPos = cURightServoTargetPos;
 
                     Robot.coneUprightRightServo.setPosition(cURightServoPos);
 
-                    /*
-                    if (cUMoveTimer.milliseconds() > cULastMoveTime + 25) {
+
+                    if (cUMoveTimer.milliseconds() > cULastMoveTime + 45) {
                         cULastMoveTime = cUMoveTimer.milliseconds();
 
+                        /*
                         //Left
                         if (cULeftServoNextPos == Robot.cULeftFlickPos || cULeftServoPos == Robot.cULeftFlickPos) {
                             if (cULeftServoNextPos < cULeftServoPos) {
@@ -252,35 +257,29 @@ public class GameTeleop extends LinearOpMode {
                         else {
                             cULeftServoPos = cULeftServoNextPos;
                         }
+                        */
 
                         //Right
-                        if (cURightServoNextPos == Robot.cURightFlickPos || cURightServoPos == Robot.cURightFlickPos) {
-                            if (cURightServoNextPos < cURightServoPos) {
-                                cURightServoPos = cURightServoPos - cUIncrement;
 
-                                if (cURightServoPos < cURightServoNextPos) {
-                                    cURightServoPos = cURightServoNextPos;
-                                }
+                        if (cURightServoTargetPos < cURightServoPos) {
+                            cURightServoPos = cURightServoPos - cUIncrement;
 
-                            } else {
-                                cURightServoPos = cURightServoPos + cUIncrement;
-
-                                if (cURightServoPos > cURightServoNextPos) {
-                                    cURightServoPos = cURightServoNextPos;
-                                }
-
+                            if (cURightServoPos < cURightServoTargetPos) {
+                                cURightServoPos = cURightServoTargetPos;
                             }
-                        }
-                        else {
-                            cURightServoPos = cURightServoNextPos;
+
+                        } else if (cURightServoTargetPos > cURightServoPos) {
+                            cURightServoPos = cURightServoPos + cUIncrement;
+
+                            if (cURightServoPos > cURightServoTargetPos) {
+                                cURightServoPos = cURightServoTargetPos;
+                            }
+
                         }
 
-
-                        Robot.coneUprightLeftServo.setPosition(cULeftServoPos);
                         Robot.coneUprightRightServo.setPosition(cURightServoPos);
                     }
 
-                     */
                 }
             }
 
@@ -559,7 +558,6 @@ public class GameTeleop extends LinearOpMode {
 
                 dropTimer.reset();
             }
-
 
             //---Tightening Code---//
 
