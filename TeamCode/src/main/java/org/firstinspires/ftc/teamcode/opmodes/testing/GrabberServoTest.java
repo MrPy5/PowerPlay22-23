@@ -29,26 +29,15 @@
 
 package org.firstinspires.ftc.teamcode.opmodes.testing;
 
-import com.qualcomm.hardware.bosch.BNO055IMU;
-import com.qualcomm.hardware.bosch.JustLoggingAccelerationIntegrator;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
-import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
-import com.qualcomm.robotcore.hardware.DcMotor;
 
-import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
-import org.firstinspires.ftc.robotcore.external.navigation.AxesOrder;
-import org.firstinspires.ftc.robotcore.external.navigation.AxesReference;
-import org.firstinspires.ftc.robotcore.external.navigation.Orientation;
 import org.firstinspires.ftc.teamcode.hardware.robot.Robot;
 
 
-import java.util.Locale;
+@Autonomous(name="GrabberServoTest")
 
-
-@Autonomous(name="ServoTest")
-
-public class ServoTest extends LinearOpMode {
+public class GrabberServoTest extends LinearOpMode {
 
     @Override
     public void runOpMode() {
@@ -69,7 +58,7 @@ public class ServoTest extends LinearOpMode {
                     targetPos -= 0.01;
                     sleep(250);
                 }
-                Robot.coneUprightRightServo.setPosition(targetPos);
+                Robot.grabberServo.setPosition(targetPos);
                 telemetry.addData("", targetPos);
                 telemetry.update();
             }
