@@ -538,7 +538,7 @@ public class GameTeleop extends LinearOpMode {
                         scoreSteps = 3;
                         break;
                     }
-                    if (gamepad1.dpad_up) {
+                    if (gamepad1.left_trigger > Robot.triggerSensitivity) {
                         liftHeightTarget = lastHeightTargetNoReset;
                         scoreSteps = 0;
                         allowAutoScore = true;

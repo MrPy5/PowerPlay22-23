@@ -47,7 +47,7 @@ public class Robot {
         public static double liftJunctionGroundHeight = 2.5;
         public static double liftConeUprightHeight = 4.5;
         public static double liftJunctionLowHeight = 15;
-        public static double liftJunctionMediumHeight = 24.5; //24
+        public static double liftJunctionMediumHeight = 24.5; //24.5
         public static double liftJunctionHighHeight = 34;
         public static double liftMinHeightForTurning = 6;
         public static double liftMaximumHeight = 36;
@@ -75,8 +75,8 @@ public class Robot {
     //---SERVOS---//
         //Grabber
         public static Servo grabberServo;
-        public static double grabberServoClosedPos = 0.36;
-        public static double grabberServoHalfwayPos = 0.73;
+        public static double grabberServoClosedPos = 0.35;
+        public static double grabberServoHalfwayPos = 0.68;
         public static double grabberServoUprightPos = 0.60;
         public static double grabberServoOpenPos = 0.81;
 
@@ -172,7 +172,7 @@ public class Robot {
         liftMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         liftMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
 
-        liftMotor.setPIDFCoefficients(DcMotor.RunMode.RUN_USING_ENCODER, new PIDFCoefficients(8,3,0, 12));
+        liftMotor.setPIDFCoefficients(DcMotor.RunMode.RUN_USING_ENCODER, new PIDFCoefficients(8,3,2, 12));
 
         //---Grabber---//
         grabberServo = hardwareMap.get(Servo.class, "gripperServo");

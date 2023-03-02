@@ -134,7 +134,7 @@ public abstract class AutoControls extends LinearOpMode {
     public char side = 'l';
 
     double coneDifference = 1.3125;
-    double coneOneGrabHeight = 6.1;
+    double coneOneGrabHeight = 6.4;
     double coneTwoGrabHeight = coneOneGrabHeight - coneDifference;
     double coneThreeGrabHeight = coneTwoGrabHeight - coneDifference;
     double coneFourGrabHeight = coneThreeGrabHeight - coneDifference;
@@ -148,7 +148,7 @@ public abstract class AutoControls extends LinearOpMode {
     double cuLeftPos = Robot.cULeftClosedPos;
     double cuRightPos = Robot.cURightClosedPos;
 
-    double cuMilliseconds = 5;
+    double cuMilliseconds = 3;
 
     double quitTime = 29850;
 
@@ -326,7 +326,7 @@ public abstract class AutoControls extends LinearOpMode {
 
         //Drive
         double distanceTolerance = 0.3; //inches away that allow us to exit the loop
-        double stoppingSpeed = 0.25; //speed that is slow enough to exit the loop
+        double stoppingSpeed = 0.15; //speed that is slow enough to exit the loop
         double turningVelocityTolerance = 0.3;
 
         if (distanceToleranceParam != 0) {
@@ -418,7 +418,7 @@ public abstract class AutoControls extends LinearOpMode {
             }
 
             double adjustForColorVariable = 0;
-            if (colorCorrection && Math.abs(distanceToX) <= 16) {
+            if (colorCorrection && Math.abs(distanceToX) <= 17) {
                 adjustForColorVariable = adjustForColorPlusWander(alliance);
             }
 
@@ -462,6 +462,7 @@ public abstract class AutoControls extends LinearOpMode {
                     liftHeightPrevTarget = liftHeightTarget;
                 }
             }
+
             if (targetServoPosition != -1 && Math.abs(distanceToX) <= servoPerformWithInchesLeft) {
                 if (grabberServoCurrentPos != targetServoPosition) {
                     Robot.grabberServo.setPosition(targetServoPosition);
@@ -469,7 +470,7 @@ public abstract class AutoControls extends LinearOpMode {
                 }
             }
 
-            if (currentLiftInches > 3 && cuInfo[0] != -1) {
+            /*if (currentLiftInches > 3 && cuInfo[0] != -1) {
                 if (cuInfo[1] == 0) {
                     Robot.coneUprightLeftServo.setPosition(Robot.cULeftSweepPos);
                     cuLeftPos = Robot.cULeftSweepPos;
@@ -479,11 +480,11 @@ public abstract class AutoControls extends LinearOpMode {
                     Robot.coneUprightRightServo.setPosition(Robot.cURightSweepPos);
                     cuRightPos = Robot.cURightSweepPos;
                 }
-            }
+            }*/
             if (Math.abs(distanceToX) <= cuInfo[0] && cuInfo[0] != -1) {
                 if (cuInfo[1] == 0) {
 
-                    if (cUMoveTimer.milliseconds() > cULastMoveTime + cuMilliseconds + 10) {
+                    /*if (cUMoveTimer.milliseconds() > cULastMoveTime + cuMilliseconds) {
                             cULastMoveTime = cUMoveTimer.milliseconds();
 
 
@@ -497,13 +498,13 @@ public abstract class AutoControls extends LinearOpMode {
                             }
 
 
-                    }
-                    Robot.coneUprightLeftServo.setPosition(cuLeftPos);
+                    }*/
+                    Robot.coneUprightLeftServo.setPosition(cuInfo[2]);
 
 
                 }
                 if (cuInfo[1] == 1) {
-                    if (cUMoveTimer.milliseconds() > cULastMoveTime + cuMilliseconds + 10) {
+                    /*if (cUMoveTimer.milliseconds() > cULastMoveTime + cuMilliseconds) {
                         cULastMoveTime = cUMoveTimer.milliseconds();
 
 
@@ -517,8 +518,8 @@ public abstract class AutoControls extends LinearOpMode {
                         }
 
 
-                    }
-                    Robot.coneUprightRightServo.setPosition(cuRightPos);
+                    }*/
+                    Robot.coneUprightRightServo.setPosition(cuInfo[2]);
 
                 }
             }
@@ -591,7 +592,7 @@ public abstract class AutoControls extends LinearOpMode {
             }
         }
 
-        if (Math.abs(distanceToX) <= cuInfo[0] && cuInfo[0] != -1) {
+        /*if (Math.abs(distanceToX) <= cuInfo[0] && cuInfo[0] != -1) {
             if (cuInfo[1] == 0) {
                 while (!(cuLeftPos + 0.01 > cuInfo[2] && cuLeftPos - 0.01 < cuInfo[2]) && opModeIsActive() && gameTimer.milliseconds() < quitTime) {
                     telemetry.addData("cu", cuLeftPos);
@@ -637,7 +638,7 @@ public abstract class AutoControls extends LinearOpMode {
                 }
 
             }
-        }
+        }*/
 
 
 
@@ -784,7 +785,7 @@ public abstract class AutoControls extends LinearOpMode {
         double rightColor;
 
         double blueThreshold = 290;
-        double blueDivisor = 4000;
+        double blueDivisor = 3500;
 
         double redThreshold = 200;
         double redDivisor = 4500;
