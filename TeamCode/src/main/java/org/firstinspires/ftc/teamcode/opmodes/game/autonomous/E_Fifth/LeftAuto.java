@@ -109,7 +109,7 @@ public abstract class LeftAuto extends AutoControls {
         if (endParkingPosition == 1) {
 
             ZeroPowerToFloat();
-            performAction(25, 90, 5, 7, Robot.liftJunctionGroundHeight, 25, Robot.turretForwardDegrees, 40, -1, -1, 0, 0.5, false, new double[] {-1, 0, 0});
+            performAction(27, 90, 5, 7, Robot.liftJunctionGroundHeight, 25, Robot.turretForwardDegrees, 40, -1, -1, 0, 0.5, false, new double[] {-1, 0, 0});
         }
         if (endParkingPosition == 2) {
             performAction(9.25, 90, 3.5, 7, -1, 0, Robot.turretForwardDegrees, 8.5, Robot.grabberServoClosedPos, 7, 0, 0.5, false, new double[] {-1, 0, 0});
@@ -118,7 +118,7 @@ public abstract class LeftAuto extends AutoControls {
             performAction(0, 90, 0, 0, Robot.liftJunctionGroundHeight, 1, -1, 0, -1, -1, 0, 0.5, false, new double[] {-1, 0, 0});
         }
         if (endParkingPosition == 3) {
-            performAction(-14.5, 90, 4, 7, -1, 0, Robot.turretForwardDegrees, 13, Robot.grabberServoClosedPos, 14, 1, 0.5, false, new double[] {-1, 0, 0});
+            performAction(-15, 90, 4, 7, -1, 0, Robot.turretForwardDegrees, 13, Robot.grabberServoClosedPos, 14, 1, 0.5, false, new double[] {-1, 0, 0});
 
 
 

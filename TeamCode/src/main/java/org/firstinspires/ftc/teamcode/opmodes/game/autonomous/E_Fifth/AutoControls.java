@@ -451,6 +451,8 @@ public abstract class AutoControls extends LinearOpMode {
             }
 
 
+            liftCurrentHeight = Robot.liftMotor.getCurrentPosition() / Robot.liftTicksPerInch;
+
             if (turretTargetDegrees != -1 && Math.abs(distanceToX) <= turretPerformWithInchesLeft) {
                 if (turretPrevTargetDegrees != turretTargetDegrees) {
                     TurnTurret(turretTargetDegrees);
@@ -463,7 +465,14 @@ public abstract class AutoControls extends LinearOpMode {
             if (liftHeightTarget != -1 && Math.abs(distanceToX) <= liftPerformWithInchesLeft) {
                 if (liftHeightPrevTarget != liftHeightTarget) {
                     RaiseLift(liftHeightTarget);
-                    Robot.liftMotor.setPower(liftSpeedUp);
+                    double liftSpeedPower = 0;
+                    if (liftCurrentHeight < liftHeightTarget) {
+                        liftSpeedPower = 1;
+                    }
+                    else {
+                        liftSpeedPower = 0.6;
+                    }
+                    Robot.liftMotor.setPower(liftSpeedPower);
                     telemetry.addData("liftMoving", "");
                     liftHeightPrevTarget = liftHeightTarget;
                 }
