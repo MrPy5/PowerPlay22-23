@@ -61,11 +61,11 @@ public abstract class AutoControls extends LinearOpMode {
     double driveSpeedFast = 0.4;
 
     //turret
-    double turretSpeed = 0.5;
+    static double turretSpeed = 0.6;
     double turretCurrentDegrees;
     double turretCloseToZero = 70;
 
-    double turretTicksPerDegree = Robot.turretTicksPerDegree;
+    static double turretTicksPerDegree = Robot.turretTicksPerDegree;
 
     public static double turretForwardDegrees = 0; //all rotation variables in degrees
     public static double turretRightDegrees = 90;
@@ -73,16 +73,16 @@ public abstract class AutoControls extends LinearOpMode {
     public static double turretBackDegrees = 180;
 
     public static double turretTargetDegrees = 0;
-    double turretPrevTargetDegrees = -1;
-    double turretToleranceDegrees = 0.8;
+    static double turretPrevTargetDegrees = -1;
+    static double turretToleranceDegrees = 0.8;
 
 
     //lift
-    double liftSpeedUp = 1;
+    static double liftSpeedUp = 1;
     double liftSpeedDown = .5;
     double liftSpeedPower;
 
-    double liftTicksPerInch = Robot.liftTicksPerInch;
+    static double liftTicksPerInch = Robot.liftTicksPerInch;
 
     double liftCurrentHeight; //all height variables are in inches
     double liftPickupHeight = 0;
@@ -94,14 +94,14 @@ public abstract class AutoControls extends LinearOpMode {
     double liftMaximumHeight = 36;
 
     double liftHeightTarget = 0;
-    double liftHeightPrevTarget = -1;
+    static double liftHeightPrevTarget = -1;
 
-    double liftToleranceInches = 0.25;
+    static double liftToleranceInches = 0.25;
     //grabber
     double grabberServoClosedPos = Robot.grabberServoClosedPos;
     double grabberServoOpenPos = Robot.grabberServoOpenPos;
     double grabberServoHalfwayPos = Robot.grabberServoHalfwayPos;
-    double grabberServoCurrentPos = 0;
+    static double grabberServoCurrentPos = 0;
     float changeFromZero = 0;
 
     double startingTicks;
@@ -115,34 +115,34 @@ public abstract class AutoControls extends LinearOpMode {
 
 
     // hsvValues is an array that will hold the hue, saturation, and value information.
-    float[] hsvValuesLeft = {0F, 0F, 0F};
+    static float[] hsvValuesLeft = {0F, 0F, 0F};
 
     // values is a reference to the hsvValues array.
-    final float valuesLeft[] = hsvValuesLeft;
+    static final float valuesLeft[] = hsvValuesLeft;
 
-    float[] hsvValuesRight = {0F, 0F, 0F};
+    static float[] hsvValuesRight = {0F, 0F, 0F};
 
     // values is a reference to the hsvValues array.
-    final float valuesRight[] = hsvValuesRight;
+    static final float valuesRight[] = hsvValuesRight;
 
     // sometimes it helps to multiply the raw RGB values with a scale factor
     // to amplify/attentuate the measured values.
-    final double SCALE_FACTOR = 255;
+    static final double SCALE_FACTOR = 255;
 
-    double multiplier = 0;
-    public char alliance = 'b';
-    public char side = 'l';
+    static double multiplier = 0;
+    static public char alliance = 'b';
+    static public char side = 'l';
 
-    double coneDifference = 1.3125;
-    double coneOneGrabHeight = 6.4;
-    double coneTwoGrabHeight = coneOneGrabHeight - coneDifference;
-    double coneThreeGrabHeight = coneTwoGrabHeight - coneDifference;
-    double coneFourGrabHeight = coneThreeGrabHeight - coneDifference;
-    double coneFiveGrabHeight = coneFourGrabHeight - coneDifference;
+    static double coneDifference = 1.3125;
+    static double coneOneGrabHeight = 6.4;
+    static double coneTwoGrabHeight = coneOneGrabHeight - coneDifference;
+    static double coneThreeGrabHeight = coneTwoGrabHeight - coneDifference;
+    static double coneFourGrabHeight = coneThreeGrabHeight - coneDifference;
+    static double coneFiveGrabHeight = coneFourGrabHeight - coneDifference;
 
-    ElapsedTime gameTimer = new ElapsedTime();
+    static ElapsedTime gameTimer = new ElapsedTime();
 
-    ElapsedTime cUMoveTimer = new ElapsedTime();
+    static ElapsedTime cUMoveTimer = new ElapsedTime();
 
     double cULastMoveTime = 0;
     double cuLeftPos = Robot.cULeftClosedPos;
@@ -150,7 +150,7 @@ public abstract class AutoControls extends LinearOpMode {
 
     double cuMilliseconds = 3;
 
-    double quitTime = 29850;
+    static double quitTime = 29850;
 
     public void init(HardwareMap hwMap) {
         Robot robot = new Robot(hwMap, false);
@@ -219,7 +219,7 @@ public abstract class AutoControls extends LinearOpMode {
         double voltage = hardwareMap.voltageSensor.iterator().next().getVoltage();
         double multiplier = 1;
         if (voltage > 12) {
-            multiplier = 1 + ((voltage - 12) / 8);
+            multiplier = 1 + ((voltage - 13) / 13);
         }
 
         return multiplier;
@@ -330,7 +330,7 @@ public abstract class AutoControls extends LinearOpMode {
 
         //Drive
         double distanceTolerance = 0.2; //inches away that allow us to exit the loop
-        double stoppingSpeed = 0.15; //speed that is slow enough to exit the loop
+        double stoppingSpeed = 0.25; //speed that is slow enough to exit the loop
         double turningVelocityTolerance = 0.3;
 
         if (distanceToleranceParam != 0) {
@@ -391,10 +391,10 @@ public abstract class AutoControls extends LinearOpMode {
         ElapsedTime timeoutTimer = new ElapsedTime();
 
         //---Main Loop---//
-        while ((Math.abs(distanceToX) > distanceTolerance || currentSpeed > stoppingSpeed /*|| turningVelocity > turningVelocityTolerance */
+        while ((Math.abs(distanceToX) > distanceTolerance || Math.abs(currentSpeed) > stoppingSpeed /*|| turningVelocity > turningVelocityTolerance */
                 || liftInchesRemaining > liftToleranceInches || turretDegreesRemaining > turretToleranceDegrees /*|| degreesOff(heading) > 1 */)
                 && opModeIsActive()
-                /*&& timeoutTimer.milliseconds() < 500*/
+                && timeoutTimer.milliseconds() < 500
                 && (liftHeightTarget == -1 || liftInchesRemaining > liftQuitWithInchesLeft)
                 && gameTimer.milliseconds() < quitTime) {
 
@@ -403,7 +403,7 @@ public abstract class AutoControls extends LinearOpMode {
                 adjustment = headingAdjustment(heading, distanceToX);
             }
 
-            if (Math.abs(distanceToX) > distanceTolerance || currentSpeed > stoppingSpeed) {
+            if (Math.abs(distanceToX) > distanceTolerance || Math.abs(currentSpeed) > stoppingSpeed) {
                 maxWheelPower = (Math.abs(Math.pow(distanceToX / speedModifier, 3.0)) + speedMinimum) / 100;
 
                 double speedIncrease = .1;
@@ -446,7 +446,7 @@ public abstract class AutoControls extends LinearOpMode {
 
             currentSpeed = GetAverageVelocity();
 
-            if (Math.abs(currentSpeed) > .25) {
+            if (Math.abs(currentSpeed) > stoppingSpeed - 0.05) {
                 timeoutTimer.reset();
             }
 
@@ -592,10 +592,8 @@ public abstract class AutoControls extends LinearOpMode {
         Robot.backRight.setPower(0);
 
         if (targetServoPosition != -1) {
-            if (grabberServoCurrentPos != targetServoPosition) {
-                Robot.grabberServo.setPosition(targetServoPosition);
-                grabberServoCurrentPos = targetServoPosition;
-            }
+            Robot.grabberServo.setPosition(targetServoPosition);
+            grabberServoCurrentPos = targetServoPosition;
         }
 
         /*if (Math.abs(distanceToX) <= cuInfo[0] && cuInfo[0] != -1) {

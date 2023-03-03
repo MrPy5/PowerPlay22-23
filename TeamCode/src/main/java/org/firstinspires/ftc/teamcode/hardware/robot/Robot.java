@@ -53,7 +53,7 @@ public class Robot {
         public static double liftMaximumHeight = 36;
 
         public static double liftSpeedUp = 1.0;
-        public static double liftSpeedDown = 0.5;
+        public static double liftSpeedDown = 0.4;
         public static double manualLiftIncrement = 1.4;
         public static int liftTimerForGuide = 70;
 
