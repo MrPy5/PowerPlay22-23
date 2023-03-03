@@ -329,8 +329,8 @@ public abstract class AutoControls extends LinearOpMode {
         double reverse = 1; // 1 is forward, -1 is backward
 
         //Drive
-        double distanceTolerance = 0.2; //inches away that allow us to exit the loop
-        double stoppingSpeed = 0.25; //speed that is slow enough to exit the loop
+        double distanceTolerance = 0.3; //inches away that allow us to exit the loop
+        double stoppingSpeed = 0.4; //speed that is slow enough to exit the loop
         double turningVelocityTolerance = 0.3;
 
         if (distanceToleranceParam != 0) {
@@ -404,7 +404,7 @@ public abstract class AutoControls extends LinearOpMode {
             }
 
             if (Math.abs(distanceToX) > distanceTolerance || Math.abs(currentSpeed) > stoppingSpeed) {
-                maxWheelPower = (Math.abs(Math.pow(distanceToX / speedModifier, 3.0)) + speedMinimum) / 100;
+                maxWheelPower = (Math.abs(Math.pow((distanceToX + 1) / speedModifier, 3.0)) + speedMinimum) / 100;
 
                 double speedIncrease = .1;
 

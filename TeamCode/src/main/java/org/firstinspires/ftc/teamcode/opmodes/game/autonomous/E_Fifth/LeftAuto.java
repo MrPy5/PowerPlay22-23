@@ -47,7 +47,7 @@ public abstract class LeftAuto extends AutoControls {
 
         /*Robot.grabberServo.setPosition(Robot.grabberServoClosedPos);
         sleep(200);*/
-        nextDrive = closeGrabberWithBounceback(35.25);
+        nextDrive = closeGrabberWithBounceback(35.75);
         //Lift 7 inches
         performAction(0, -1, 7, 0, Robot.liftJunctionMediumHeight, 5, -1, 0, -1, 0, 0, 20, false, new double[] {-1, 0, 0});
 
@@ -56,9 +56,9 @@ public abstract class LeftAuto extends AutoControls {
         //sleep(100);
 
         //drive to stack
-        performAction(35.25, 87, 6.5, 6, coneTwoGrabHeight, 30, Robot.turretForwardDegrees, 35, Robot.grabberServoHalfwayPos, 20, 0, 0, true, new double[] {-1, 0, 0});
+        performAction(35.75, 87, 6.5, 6, coneTwoGrabHeight, 30, Robot.turretForwardDegrees, 35, Robot.grabberServoHalfwayPos, 20, 0, 0, true, new double[] {-1, 0, 0});
 
-        nextDrive = closeGrabberWithBounceback(35.25);
+        nextDrive = closeGrabberWithBounceback(35.75);
         //Lift 7 inches
         performAction(0, -1, 7, 0, Robot.liftJunctionMediumHeight, 1, -1, 0, -1, 0, 0, 20, false, new double[] {-1, 0, 0});
 
@@ -67,9 +67,9 @@ public abstract class LeftAuto extends AutoControls {
         //sleep(100);
 
         //Drive to stack
-        performAction(35.25, 87, 6.5, 6, coneThreeGrabHeight, 30, Robot.turretForwardDegrees, 35, Robot.grabberServoHalfwayPos, 20, 0, 0, true, new double[] {-1, 0, 0});
+        performAction(35.75, 87, 6.5, 6, coneThreeGrabHeight, 30, Robot.turretForwardDegrees, 35, Robot.grabberServoHalfwayPos, 20, 0, 0, true, new double[] {-1, 0, 0});
 
-        nextDrive = closeGrabberWithBounceback(35.25);
+        nextDrive = closeGrabberWithBounceback(35.75);
         //Lift 7 inches
         performAction(0, -1, 7, 0, Robot.liftJunctionMediumHeight, 1, -1, 0, -1, 0, 0, 20, false, new double[] {-1, 0, 0});
 
@@ -79,9 +79,9 @@ public abstract class LeftAuto extends AutoControls {
 
         if (gameTimer.milliseconds() < lastConeQuitTime) {
             //Drive to stack
-            performAction(35.25, 87, 6.5, 6, coneFourGrabHeight, 30, Robot.turretForwardDegrees, 35, Robot.grabberServoHalfwayPos, 20, 0, 0, true, new double[] {-1, 0, 0});
+            performAction(35.75, 87, 6.5, 6, coneFourGrabHeight, 30, Robot.turretForwardDegrees, 35, Robot.grabberServoHalfwayPos, 20, 0, 0, true, new double[] {-1, 0, 0});
 
-            nextDrive = closeGrabberWithBounceback(35.25);
+            nextDrive = closeGrabberWithBounceback(35.75);
             //Lift 7 inches
             performAction(0, -1, 7, 0, Robot.liftJunctionMediumHeight, 1, -1, 0, -1, 0, 0, 20, false, new double[] {-1, 0, 0});
 
@@ -92,9 +92,9 @@ public abstract class LeftAuto extends AutoControls {
 
         if (gameTimer.milliseconds() < lastConeQuitTime) {
             //Drive to stack
-            performAction(35.25, 87, 6.5, 6, coneFiveGrabHeight, 30, Robot.turretForwardDegrees, 35, Robot.grabberServoHalfwayPos, 20, 0, 0, true, new double[] {-1, 0, 0});
+            performAction(35.75, 87, 6.5, 6, coneFiveGrabHeight, 30, Robot.turretForwardDegrees, 35, Robot.grabberServoHalfwayPos, 20, 0, 0, true, new double[] {-1, 0, 0});
 
-            nextDrive = closeGrabberWithBounceback(35.25);
+            nextDrive = closeGrabberWithBounceback(35.75);
             //Lift 7 inches
             performAction(0, -1, 7, 0, Robot.liftJunctionMediumHeight, 1, -1, 0, -1, 0, 0, 20, false, new double[] {-1, 0, 0});
 
