@@ -167,6 +167,10 @@ public abstract class AutoControls extends LinearOpMode {
         multiplier = getVoltageMultiplier();
         cUMoveTimer.startTime();
 
+        Robot.turretMotor.setTargetPosition(0);
+        Robot.turretMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        Robot.turretMotor.setPower(Robot.turretSpeed);
+
         //Camera Stuff
     }
 
@@ -325,7 +329,7 @@ public abstract class AutoControls extends LinearOpMode {
         double reverse = 1; // 1 is forward, -1 is backward
 
         //Drive
-        double distanceTolerance = 0.3; //inches away that allow us to exit the loop
+        double distanceTolerance = 0.2; //inches away that allow us to exit the loop
         double stoppingSpeed = 0.15; //speed that is slow enough to exit the loop
         double turningVelocityTolerance = 0.3;
 
@@ -333,9 +337,11 @@ public abstract class AutoControls extends LinearOpMode {
             distanceTolerance = distanceToleranceParam;
         }
 
+        /*
         if (servoPerformWithInchesLeft <= distanceTolerance) {
             servoPerformWithInchesLeft = distanceTolerance + 0.01;
         }
+         */
 
 
         currentXInches = (getAverageOdometerPosition() - startXPos);

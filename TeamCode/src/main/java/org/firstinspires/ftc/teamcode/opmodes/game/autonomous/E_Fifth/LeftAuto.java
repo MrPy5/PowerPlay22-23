@@ -33,7 +33,7 @@ public abstract class LeftAuto extends AutoControls {
         cUMoveTimer.startTime();
 
         Robot.grabberServo.setPosition(Robot.grabberServoClosedPos);
-        performAction(16.25, 0, 4, 7.5, Robot.liftJunctionLowHeight, 12, Robot.turretRightDegrees, 14, Robot.grabberServoOpenPos, -2, 0.1, 0, false, new double[] {2, 1, Robot.cURightOpenPos});
+        performAction(16.25, 0, 4, 7.5, Robot.liftJunctionLowHeight, 14, Robot.turretRightDegrees, 12, Robot.grabberServoOpenPos, -2, 0, 0, false, new double[] {2, 1, Robot.cURightOpenPos});
 
         //sleep(200);
 
@@ -43,7 +43,7 @@ public abstract class LeftAuto extends AutoControls {
 
 
 
-        performAction(25, 88, 5.5, 11, coneOneGrabHeight, 24, -1, 1, Robot.grabberServoHalfwayPos, 24, 0, 0, true, new double[] {-1, 0, 0});
+        performAction(25, 87.5, 5.5, 11, coneOneGrabHeight, 24, -1, 1, Robot.grabberServoHalfwayPos, 24, 0, 0, true, new double[] {-1, 0, 0});
 
         /*Robot.grabberServo.setPosition(Robot.grabberServoClosedPos);
         sleep(200);*/
@@ -52,54 +52,54 @@ public abstract class LeftAuto extends AutoControls {
         performAction(0, -1, 7, 0, Robot.liftJunctionMediumHeight, 5, -1, 0, -1, 0, 0, 20, false, new double[] {-1, 0, 0});
 
         // Go to pole + drop
-        performAction(-nextDrive, 88, 7, 11, Robot.liftJunctionMediumHeight, 38, Robot.turretLeftDegrees, 20, Robot.grabberServoOpenPos, -2, 0, 0, false, new double[] {-1, 0, 0});
+        performAction(-nextDrive, 87.5, 7, 11, Robot.liftJunctionMediumHeight, 38, Robot.turretLeftDegrees, 20, Robot.grabberServoOpenPos, -2, 0, 0, false, new double[] {-1, 0, 0});
         //sleep(100);
 
         //drive to stack
-        performAction(34.75, 88, 7, 11, coneTwoGrabHeight, 30, Robot.turretForwardDegrees, 35, Robot.grabberServoHalfwayPos, 20, 0, 0, true, new double[] {-1, 0, 0});
+        performAction(34.75, 87.5, 7, 11, coneTwoGrabHeight, 30, Robot.turretForwardDegrees, 35, Robot.grabberServoHalfwayPos, 20, 0, 0, true, new double[] {-1, 0, 0});
 
         nextDrive = closeGrabberWithBounceback(34.75);
 
         performAction(0, -1, 7, 0, Robot.liftJunctionMediumHeight, 1, -1, 0, -1, 0, 0, 20, false, new double[] {-1, 0, 0});
 
         //Go to pole + drop
-        performAction(-nextDrive, 88, 7, 11, Robot.liftJunctionMediumHeight, 38, Robot.turretLeftDegrees, 20, Robot.grabberServoOpenPos, -2, 0, 0, false, new double[] {-1, 0, 0});
+        performAction(-nextDrive, 87.5, 7, 11, Robot.liftJunctionMediumHeight, 38, Robot.turretLeftDegrees, 20, Robot.grabberServoOpenPos, -2, 0, 0, false, new double[] {-1, 0, 0});
         //sleep(100);
 
         //Drive to stack
-        performAction(34.75, 88, 7, 11, coneThreeGrabHeight, 30, Robot.turretForwardDegrees, 35, Robot.grabberServoHalfwayPos, 20, 0, 0, true, new double[] {-1, 0, 0});
+        performAction(34.75, 87.5, 7, 11, coneThreeGrabHeight, 30, Robot.turretForwardDegrees, 35, Robot.grabberServoHalfwayPos, 20, 0, 0, true, new double[] {-1, 0, 0});
 
         nextDrive = closeGrabberWithBounceback(34.75);
         //Lift 7 inches
         performAction(0, -1, 7, 0, Robot.liftJunctionMediumHeight, 1, -1, 0, -1, 0, 0, 20, false, new double[] {-1, 0, 0});
 
         //Go to pole + drop
-        performAction(-nextDrive, 88, 7, 11, Robot.liftJunctionMediumHeight, 38, Robot.turretLeftDegrees, 20, Robot.grabberServoOpenPos, -2, 0, 0, false, new double[] {-1, 0, 0});
+        performAction(-nextDrive, 87.5, 7, 11, Robot.liftJunctionMediumHeight, 38, Robot.turretLeftDegrees, 20, Robot.grabberServoOpenPos, -2, 0, 0, false, new double[] {-1, 0, 0});
         //sleep(100);
 
         if (gameTimer.milliseconds() < lastConeQuitTime) {
             //Drive to stack
-            performAction(34.75, 88, 7, 11, coneFourGrabHeight, 30, Robot.turretForwardDegrees, 35, Robot.grabberServoHalfwayPos, 20, 0, 0, true, new double[] {-1, 0, 0});
+            performAction(34.75, 87.5, 7, 11, coneFourGrabHeight, 30, Robot.turretForwardDegrees, 35, Robot.grabberServoHalfwayPos, 20, 0, 0, true, new double[] {-1, 0, 0});
 
             nextDrive = closeGrabberWithBounceback(34.75);
             //Lift 7 inches
             performAction(0, -1, 7, 0, Robot.liftJunctionMediumHeight, 1, -1, 0, -1, 0, 0, 20, false, new double[] {-1, 0, 0});
 
             //Go to pole + drop
-            performAction(-nextDrive, 88, 7, 11, Robot.liftJunctionMediumHeight, 38, Robot.turretLeftDegrees, 20, Robot.grabberServoOpenPos, -2, 0, 0, false, new double[] {-1, 0, 0});
+            performAction(-nextDrive, 87.5, 7, 11, Robot.liftJunctionMediumHeight, 38, Robot.turretLeftDegrees, 20, Robot.grabberServoOpenPos, -2, 0, 0, false, new double[] {-1, 0, 0});
             //sleep(100);
         }
 
         if (gameTimer.milliseconds() < lastConeQuitTime) {
             //Drive to stack
-            performAction(34.75, 88, 7, 11, coneFiveGrabHeight, 30, Robot.turretForwardDegrees, 35, Robot.grabberServoHalfwayPos, 20, 0, 0, true, new double[] {-1, 0, 0});
+            performAction(34.75, 87.5, 7, 11, coneFiveGrabHeight, 30, Robot.turretForwardDegrees, 35, Robot.grabberServoHalfwayPos, 20, 0, 0, true, new double[] {-1, 0, 0});
 
             nextDrive = closeGrabberWithBounceback(34.75);
             //Lift 7 inches
             performAction(0, -1, 7, 0, Robot.liftJunctionMediumHeight, 1, -1, 0, -1, 0, 0, 20, false, new double[] {-1, 0, 0});
 
             //Go to pole + drop
-            performAction(-nextDrive, 88, 7, 11, Robot.liftJunctionMediumHeight, 38, Robot.turretLeftDegrees, 20, Robot.grabberServoOpenPos, -2, 0, 0, false, new double[] {-1, 0, 0});
+            performAction(-nextDrive, 87.5, 7, 11, Robot.liftJunctionMediumHeight, 38, Robot.turretLeftDegrees, 20, Robot.grabberServoOpenPos, -2, 0, 0, false, new double[] {-1, 0, 0});
             //sleep(100);
         }
 
