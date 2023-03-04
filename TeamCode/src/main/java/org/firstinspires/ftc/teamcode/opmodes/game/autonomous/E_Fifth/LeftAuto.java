@@ -20,8 +20,8 @@ public abstract class LeftAuto extends AutoControls {
 
 
 
-        int endParkingPosition = 2;//DetectAprilTags();
-        waitForStart();
+        int endParkingPosition = DetectAprilTags();
+
         if (endParkingPosition == 1) {
             lastConeQuitTime = lastConeQuitTime - 500;
         }

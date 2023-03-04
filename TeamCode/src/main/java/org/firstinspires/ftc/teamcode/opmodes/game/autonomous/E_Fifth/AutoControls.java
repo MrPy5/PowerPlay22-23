@@ -155,7 +155,7 @@ public abstract class AutoControls extends LinearOpMode {
     public void init(HardwareMap hwMap) {
         Robot robot = new Robot(hwMap, false);
         initIMU();
-        //initCamera();
+        initCamera();
         telemetry.addData("here", "here");
         telemetry.update();
         Robot.guideServo.setPosition(Robot.guideServoUp);
@@ -399,7 +399,7 @@ public abstract class AutoControls extends LinearOpMode {
                 && gameTimer.milliseconds() < quitTime) {
 
             double adjustment = 0;
-            if (heading != -1) {
+            if (heading != -1/* && distanceToX > 3*/) {
                 adjustment = headingAdjustment(heading, distanceToX);
             }
 
@@ -424,7 +424,7 @@ public abstract class AutoControls extends LinearOpMode {
             }
 
             double adjustForColorVariable = 0;
-            if (colorCorrection && Math.abs(distanceToX) <= 17 && Math.abs(distanceToX) > 2) {
+            if (colorCorrection && Math.abs(distanceToX) <= 17) {
                 adjustForColorVariable = adjustForColorPlusWander(alliance, currentSpeed);
             }
 
@@ -743,7 +743,7 @@ public abstract class AutoControls extends LinearOpMode {
         if (distanceToX == 0) {  // this????
             speedMinimum = AdjustmentConstants.speedMinimum;
         } else {
-            speedMinimum = 4;
+            speedMinimum = 3;
         }
 
         if (degreesOff < .3) {
@@ -805,10 +805,10 @@ public abstract class AutoControls extends LinearOpMode {
         else {
             blueDivisor = 2000;
         }
-        double redThreshold = 200;
+        double redThreshold = 250;
         double redDivisor = 4500;
         if (currentSpeed < 1.5) {
-            redDivisor = 9000;
+            redDivisor = 4000;
         }
         else {
             redDivisor = 3500;
