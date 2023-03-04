@@ -155,7 +155,7 @@ public abstract class AutoControls extends LinearOpMode {
     public void init(HardwareMap hwMap) {
         Robot robot = new Robot(hwMap, false);
         initIMU();
-        initCamera();
+        //initCamera();
         telemetry.addData("here", "here");
         telemetry.update();
         Robot.guideServo.setPosition(Robot.guideServoUp);
@@ -404,7 +404,7 @@ public abstract class AutoControls extends LinearOpMode {
             }
 
             if (Math.abs(distanceToX) > distanceTolerance || Math.abs(currentSpeed) > stoppingSpeed) {
-                maxWheelPower = (Math.abs(Math.pow((distanceToX + 1) / speedModifier, 3.0)) + speedMinimum) / 100;
+                maxWheelPower = (Math.abs(Math.pow((distanceToX) / speedModifier, 3.0)) + speedMinimum) / 100;
 
                 double speedIncrease = .1;
 
@@ -424,8 +424,8 @@ public abstract class AutoControls extends LinearOpMode {
             }
 
             double adjustForColorVariable = 0;
-            if (colorCorrection && Math.abs(distanceToX) <= 17) {
-                adjustForColorVariable = adjustForColorPlusWander(alliance);
+            if (colorCorrection && Math.abs(distanceToX) <= 17 && Math.abs(distanceToX) > 2) {
+                adjustForColorVariable = adjustForColorPlusWander(alliance, currentSpeed);
             }
 
             lfPower = (wheelPower * reverse) + adjustment + adjustForColorVariable;
@@ -743,7 +743,7 @@ public abstract class AutoControls extends LinearOpMode {
         if (distanceToX == 0) {  // this????
             speedMinimum = AdjustmentConstants.speedMinimum;
         } else {
-            speedMinimum = 3;
+            speedMinimum = 4;
         }
 
         if (degreesOff < .3) {
@@ -793,15 +793,26 @@ public abstract class AutoControls extends LinearOpMode {
         return degreesOff;
     }
 
-    public double adjustForColorPlusWander(char color) {
+    public double adjustForColorPlusWander(char color, double currentSpeed) {
         double leftColor;
         double rightColor;
 
         double blueThreshold = 290;
         double blueDivisor = 3500;
-
+        if (currentSpeed < 1.5) {
+            blueDivisor = 7000;
+        }
+        else {
+            blueDivisor = 2000;
+        }
         double redThreshold = 200;
         double redDivisor = 4500;
+        if (currentSpeed < 1.5) {
+            redDivisor = 9000;
+        }
+        else {
+            redDivisor = 3500;
+        }
 
         double outputValue = 0;
 

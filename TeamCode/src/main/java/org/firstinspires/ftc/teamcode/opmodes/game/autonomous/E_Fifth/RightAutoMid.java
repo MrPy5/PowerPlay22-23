@@ -16,7 +16,7 @@ public abstract class RightAutoMid extends AutoControls {
 
         init(hardwareMap);
 
-        int endParkingPosition = DetectAprilTags();
+        int endParkingPosition = 2;//DetectAprilTags();
         if (endParkingPosition == 3) {
             lastConeQuitTime = lastConeQuitTime - 500;
         }

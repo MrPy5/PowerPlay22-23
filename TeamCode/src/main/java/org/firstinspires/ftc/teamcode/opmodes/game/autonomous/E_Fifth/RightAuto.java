@@ -20,8 +20,8 @@ public abstract class RightAuto extends AutoControls {
 
 
 
-        int endParkingPosition = DetectAprilTags();
-
+        int endParkingPosition = 2;//DetectAprilTags();
+        waitForStart();
         if (endParkingPosition == 3) {
             lastConeQuitTime = lastConeQuitTime - 500;
         }
@@ -39,7 +39,7 @@ public abstract class RightAuto extends AutoControls {
 
 
 
-        performAction(33, 0, 7, 5.5, Robot.liftJunctionMediumHeight, 47, Robot.turretForwardDegrees, 12, -1, 0, 0, 0, false, new double[] {36, 1, Robot.cURightClosedPos});
+        performAction(33, 0, 7, 5.5, Robot.liftJunctionMediumHeight, 47, Robot.turretForwardDegrees, 12, -1, 0, 0, 0, false, new double[] {31, 1, Robot.cURightClosedPos});
 
 
 
