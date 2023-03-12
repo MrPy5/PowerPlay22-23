@@ -797,21 +797,21 @@ public abstract class AutoControls extends LinearOpMode {
         double leftColor;
         double rightColor;
 
-        double blueThreshold = 290;
+        double blueThreshold = 300;
         double blueDivisor = 3500;
         if (currentSpeed < 1.5) {
             blueDivisor = 7000;
         }
         else {
-            blueDivisor = 2000;
+            blueDivisor = 4000;
         }
         double redThreshold = 250;
         double redDivisor = 4500;
         if (currentSpeed < 1.5) {
-            redDivisor = 4000;
+            redDivisor = 6000;
         }
         else {
-            redDivisor = 3500;
+            redDivisor = 4000;
         }
 
         double outputValue = 0;
@@ -821,7 +821,14 @@ public abstract class AutoControls extends LinearOpMode {
             rightColor = Robot.colorSensorRight.red();
 
             if (leftColor > redThreshold || rightColor > redThreshold) {
-                outputValue = (rightColor - leftColor) / redDivisor;
+                outputValue = (rightColor - leftColor);
+                if (leftColor > redThreshold && rightColor <= redThreshold) {
+                    outputValue -= 80;
+                }
+                if (rightColor > redThreshold && leftColor <= redThreshold) {
+                    outputValue += 80;
+                }
+                outputValue = outputValue / redDivisor;
             }
             /*else {
                 if (side == 'l') {

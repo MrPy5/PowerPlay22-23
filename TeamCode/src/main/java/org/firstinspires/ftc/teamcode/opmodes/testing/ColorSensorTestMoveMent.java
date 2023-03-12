@@ -47,9 +47,12 @@ public class ColorSensorTestMoveMent extends AutoControls {
         waitForStart();
         while (opModeIsActive()) {
             telemetry.addData("Left sensor red", Robot.colorSensorLeft.red());
-            telemetry.addData("Left sensor blue", Robot.colorSensorLeft.blue());
             telemetry.addData("Right sensor red", Robot.colorSensorRight.red());
+            telemetry.addData("Left sensor blue", Robot.colorSensorLeft.blue());
             telemetry.addData("Right sesor blue", Robot.colorSensorRight.blue());
+            telemetry.addData("Pole Color Sensor", Robot.colorSensorPole.green());
+
+
             telemetry.update();
 
 

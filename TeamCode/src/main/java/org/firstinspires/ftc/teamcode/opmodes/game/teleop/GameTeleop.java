@@ -132,6 +132,7 @@ public class GameTeleop extends LinearOpMode {
             boolean turretPosRightButton = gamepad2.dpad_right;
 
             boolean liftPosGroundButton = gamepad2.right_bumper;
+            boolean coneUprightTwo = gamepad2.left_bumper;
             boolean liftPosLowButton = gamepad2.a;
             boolean liftPosMediumButton = gamepad2.b;
             boolean liftPosGroundJunctionButton = gamepad2.x;
@@ -321,13 +322,14 @@ public class GameTeleop extends LinearOpMode {
 
             //---Auto Score Mode Button Code---//
             if (autoScoreModeButton) {
-                if (autoScoreModeReleased) {
+                autoScoreMode = false;
+                /*if (autoScoreModeReleased) {
                     autoScoreMode = !autoScoreMode;
                     autoScoreModeReleased = false;
                 }
             }
             else {
-                autoScoreModeReleased = true;
+                autoScoreModeReleased = true;*/
             }
 
             //---Lift and Turret---//
@@ -368,6 +370,13 @@ public class GameTeleop extends LinearOpMode {
                     lastHeightTargetNoReset = Robot.liftJunctionHighHeight;
                     scoreSteps = 0; // Panic button for incase auto score cant finish
 
+                }
+                if (coneUprightTwo) {
+                    liftHeightTarget = Robot.liftConeUprightHeight;
+                    lastHeightTargetNoReset = Robot.liftConeUprightHeight;
+                    scoreSteps = 0;
+                    Robot.grabberServo.setPosition(Robot.grabberServoHalfwayPos);
+                    grabberServoCurrentPos = Robot.grabberServoOpenPos;
                 }
 
                 // manual lift
@@ -520,7 +529,7 @@ public class GameTeleop extends LinearOpMode {
 
                 liftHeightTarget = lastHeightTargetNoReset;
                 scoreSteps = 0;
-                Robot.liftSpeedDown = liftSpeedPower;
+                Robot.liftSpeedDown = 0.5;
 
             }
             if (scoreSteps == 2) {

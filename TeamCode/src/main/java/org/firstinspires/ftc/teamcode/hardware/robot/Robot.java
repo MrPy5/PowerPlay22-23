@@ -45,7 +45,7 @@ public class Robot {
 
         public static double liftPickupHeight = 0;
         public static double liftJunctionGroundHeight = 2.5;
-        public static double liftConeUprightHeight = 4.5;
+        public static double liftConeUprightHeight = 3.6;
         public static double liftJunctionLowHeight = 15;
         public static double liftJunctionMediumHeight = 24.5; //24.5
         public static double liftJunctionHighHeight = 34;
@@ -53,7 +53,7 @@ public class Robot {
         public static double liftMaximumHeight = 36;
 
         public static double liftSpeedUp = 1.0;
-        public static double liftSpeedDown = 0.4;
+        public static double liftSpeedDown = 0.5;
         public static double manualLiftIncrement = 1.4;
         public static int liftTimerForGuide = 70;
 
@@ -107,12 +107,12 @@ public class Robot {
 
         //Pole Color Sensor
         public static ColorSensor colorSensorPole;
-        public static double colorThreshold = 300;
+        public static double colorThreshold = 600;
 
 
     //---MISC---//
         //Gamepad
-        public static double triggerSensitivity = 0.01;
+        public static double triggerSensitivity = 0.2;
         //Hardware Map
         public HardwareMap hardwareMap;
 

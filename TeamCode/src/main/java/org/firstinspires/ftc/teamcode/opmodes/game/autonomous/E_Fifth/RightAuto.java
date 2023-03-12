@@ -40,11 +40,11 @@ public abstract class RightAuto extends AutoControls {
 
 
 
-        performAction(34, 0, 7, 5.5, Robot.liftJunctionMediumHeight, 47, Robot.turretForwardDegrees, 12, -1, 0, 0, 0, false, new double[] {31, 1, Robot.cURightClosedPos});
+        performAction(33.25, 0, 7, 5.5, Robot.liftJunctionMediumHeight, 47, Robot.turretForwardDegrees, 12, -1, 0, 0, 0, false, new double[] {31, 1, Robot.cURightClosedPos});
 
 
 
-        performAction(25.75, 270, 5.25, 7, coneOneGrabHeight, 24, -1, 1, Robot.grabberServoHalfwayPos, 24, 0, 0, true, new double[] {-1, 0, 0});
+        performAction(26.5, 270, 5.25, 7, coneOneGrabHeight, 24, -1, 1, Robot.grabberServoHalfwayPos, 24, 0, 0, true, new double[] {-1, 0, 0});
 
         /*Robot.grabberServo.setPosition(Robot.grabberServoClosedPos);
         sleep(200);*/
@@ -57,7 +57,7 @@ public abstract class RightAuto extends AutoControls {
         //sleep(100);
 
         //drive to stack
-        performAction(36.25, 270, 6.5, 5.5, coneTwoGrabHeight, 32, Robot.turretForwardDegrees, 35, Robot.grabberServoHalfwayPos, 20, 0, 0, true, new double[] {-1, 0, 0});
+        performAction(37.75, 270, 6.5, 5.5, coneTwoGrabHeight, 32, Robot.turretForwardDegrees, 35, Robot.grabberServoHalfwayPos, 20, 0, 0, true, new double[] {-1, 0, 0});
 
         nextDrive = closeGrabberWithBounceback(36.5);
         //Lift 7 inches
@@ -68,7 +68,7 @@ public abstract class RightAuto extends AutoControls {
         //sleep(100);
 
         //Drive to stack
-        performAction(36.25, 270, 6.5, 5.5, coneThreeGrabHeight, 32, Robot.turretForwardDegrees, 35, Robot.grabberServoHalfwayPos, 20, 0, 0, true, new double[] {-1, 0, 0});
+        performAction(37, 270, 6.5, 5.5, coneThreeGrabHeight, 32, Robot.turretForwardDegrees, 35, Robot.grabberServoHalfwayPos, 20, 0, 0, true, new double[] {-1, 0, 0});
 
         nextDrive = closeGrabberWithBounceback(36.5);
         //Lift 7 inches
@@ -80,7 +80,7 @@ public abstract class RightAuto extends AutoControls {
 
         if (gameTimer.milliseconds() < lastConeQuitTime) {
             //Drive to stack
-            performAction(36.25, 270, 6.5, 5.5, coneFourGrabHeight, 32, Robot.turretForwardDegrees, 35, Robot.grabberServoHalfwayPos, 20, 0, 0, true, new double[] {-1, 0, 0});
+            performAction(37.75, 270, 6.5, 5.5, coneFourGrabHeight, 32, Robot.turretForwardDegrees, 35, Robot.grabberServoHalfwayPos, 20, 0, 0, true, new double[] {-1, 0, 0});
 
             nextDrive = closeGrabberWithBounceback(36.5);
             //Lift 7 inches
@@ -93,7 +93,7 @@ public abstract class RightAuto extends AutoControls {
 
         if (gameTimer.milliseconds() < lastConeQuitTime) {
             //Drive to stack
-            performAction(36.25, 270, 6.5, 5.5, coneFiveGrabHeight, 32, Robot.turretForwardDegrees, 35, Robot.grabberServoHalfwayPos, 20, 0, 0, true, new double[] {-1, 0, 0});
+            performAction(37.25, 270, 6.5, 5.5, coneFiveGrabHeight, 32, Robot.turretForwardDegrees, 35, Robot.grabberServoHalfwayPos, 20, 0, 0, true, new double[] {-1, 0, 0});
 
             nextDrive = closeGrabberWithBounceback(36.5);
             //Lift 7 inches
@@ -110,7 +110,7 @@ public abstract class RightAuto extends AutoControls {
         if (endParkingPosition == 3) {
 
             ZeroPowerToFloat();
-            performAction(28, 270, 5, 7, Robot.liftJunctionGroundHeight, 25, Robot.turretForwardDegrees, 40, -1, -1, 0, 0.5, false, new double[] {-1, 0, 0});
+            performAction(31.5, 270, 5, 7, Robot.liftJunctionGroundHeight, 25, Robot.turretForwardDegrees, 40, -1, -1, 0, 0.5, false, new double[] {-1, 0, 0});
         }
         if (endParkingPosition == 2) {
             performAction(10.25, 270, 3.5, 7, -1, 0, Robot.turretForwardDegrees, 8.5, Robot.grabberServoClosedPos, 7, 0, 0.5, false, new double[] {-1, 0, 0});
@@ -119,7 +119,7 @@ public abstract class RightAuto extends AutoControls {
             performAction(0, 270, 0, 0, Robot.liftJunctionGroundHeight, 1, -1, 0, -1, -1, 0, 0.5, false, new double[] {-1, 0, 0});
         }
         if (endParkingPosition == 1) {
-            performAction(-14.5, 270, 4, 7, -1, 0, Robot.turretForwardDegrees, 13, Robot.grabberServoClosedPos, 14, 1, 0.5, false, new double[] {-1, 0, 0});
+            performAction(-14, 270, 4, 7, -1, 0, Robot.turretForwardDegrees, 13, Robot.grabberServoClosedPos, 14, 1, 0.5, false, new double[] {-1, 0, 0});
 
 
 
